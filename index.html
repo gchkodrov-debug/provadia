@@ -322,6 +322,18 @@ footer{border-top:1px solid var(--line-soft); padding:3.4rem 0 3rem; background:
 .dgt-foot{margin-top:1.6rem; color:var(--faint); font-size:.92rem}
 </style>
 <style>
+/* ============ v7 — THE TAPE: live market strip, fed by the DexScreener public feed ============ */
+.tape-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:1rem}
+@media(max-width:1080px){.tape-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:680px){.tape-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:460px){.tape-grid{grid-template-columns:1fr}}
+.tape-status{margin-top:1rem; color:var(--faint); font-size:.85rem; letter-spacing:.04em; min-height:1.2em}
+.buy-door{margin-top:2.2rem}
+.brick-btn{display:inline-block; font-family:var(--serif); font-weight:800; letter-spacing:.08em; font-size:clamp(1rem,2vw,1.25rem); color:#141210; background:linear-gradient(165deg,var(--gold-hi),var(--gold)); padding:1rem 1.9rem; border:1px solid var(--gold-hi); text-decoration:none; box-shadow:0 0 34px rgba(201,162,39,.18)}
+.brick-btn:hover{filter:brightness(1.07)}
+.buy-note{color:var(--salt); font-size:.95rem; line-height:1.6; max-width:44rem; margin-top:.9rem}
+</style>
+<style>
 /* ============ v6 — THE BOOKKEEPER · THE SUPPORT DESK · THE ROAD ============ */
 .bk-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1rem}
 @media(max-width:1080px){.bk-grid{grid-template-columns:repeat(2,1fr)}}
@@ -628,6 +640,47 @@ a.dgt:hover{border-color:var(--gold)}
       </svg>
     </div>
     <p class="street-cap" data-reveal>What stands is what has been built: the salt works, the road, the town wall. <b>Houses come with the bricks — one house per brick laid.</b> The count today is 0, so there are no houses. Empty ground is shown as empty ground.</p>
+  </div>
+</section>
+
+<div class="courses" data-courses aria-hidden="true"></div>
+
+<!-- ================= THE TAPE — live from the chain (DexScreener public feed) ================= -->
+<section id="tape" data-tone="#0C0A06">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <p class="eyebrow">THE TAPE</p>
+      <h2 class="sec-title">Live from the chain — <em>the town's numbers, as they are.</em></h2>
+      <p class="lede" style="margin-top:1.2rem">Pulled straight from the public market record while you read. Nothing here is typed by hand.</p>
+    </div>
+    <div class="tape-grid">
+      <div class="dgt" data-reveal>
+        <div class="dgt-k">Price</div>
+        <div class="dgt-v" id="tape-price">—</div>
+      </div>
+      <div class="dgt" data-reveal>
+        <div class="dgt-k">Market cap</div>
+        <div class="dgt-v" id="tape-mcap">—</div>
+      </div>
+      <div class="dgt" data-reveal>
+        <div class="dgt-k">Liquidity</div>
+        <div class="dgt-v" id="tape-liq">—</div>
+      </div>
+      <div class="dgt" data-reveal>
+        <div class="dgt-k">Volume, 24h</div>
+        <div class="dgt-v" id="tape-vol">—</div>
+      </div>
+      <div class="dgt" data-reveal>
+        <div class="dgt-k">Buys / Sells, 24h</div>
+        <div class="dgt-v" id="tape-txns">—</div>
+      </div>
+    </div>
+    <p class="tape-status" id="tape-status"></p>
+    <div class="buy-door" data-reveal>
+      <a class="brick-btn" href="https://pump.fun/coin/9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump" target="_blank" rel="noopener">🧱 LAY A BRICK — buy PROVADIA on pump.fun</a>
+      <p class="buy-note">Buying names you a Bricklayer. It promises nothing else — no yield, no returns, no rights. The coin is the town's salt.</p>
+    </div>
+    <p class="dgt-foot" data-reveal>Source: DexScreener public feed for the PROVADIA pair · If the tape ever disagrees with the chain, the chain wins. · <a href="https://dexscreener.com/solana/2fvtfwcco71j8xepws7yrez3569u2gxu4fyhe2h8oxdy" target="_blank" rel="noopener">See the pair on DexScreener</a></p>
   </div>
 </section>
 
@@ -1379,6 +1432,59 @@ try{
     })(t0);
   }
 }catch(e){ /* no WebGL — the CSS depth stands on its own */ }
+</script>
+<script>
+/* ============ THE TAPE — live DexScreener feed. Fails silent: tiles stay "—", the page never breaks. ============ */
+(function(){
+  function el(id){ return document.getElementById(id); }
+  function set(id, txt){ var n = el(id); if(n) n.textContent = txt; }
+  function money(v){
+    if(v === null || v === undefined || v === "") return null;
+    var n = Number(v);
+    if(isNaN(n)) return null;
+    if(Math.abs(n) < 1000) return "$" + n.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2});
+    return "$" + n.toLocaleString("en-US", {maximumFractionDigits:0});
+  }
+  function quiet(){
+    set("tape-status", "The tape is quiet right now — read the pair at the source.");
+  }
+  try{
+    fetch("https://api.dexscreener.com/latest/dex/pairs/solana/2fvtfwcco71j8xepws7yrez3569u2gxu4fyhe2h8oxdy")
+      .then(function(r){ if(!r.ok) throw new Error("tape feed"); return r.json(); })
+      .then(function(j){
+        var p = j && (j.pair || (j.pairs && j.pairs[0]));
+        if(!p){ quiet(); return; }
+        var ok = false;
+        /* Price: the string as returned. >= 0.01 → 4 decimals; below that, trailing zeros trimmed — never rounded up. */
+        if(p.priceUsd !== null && p.priceUsd !== undefined && p.priceUsd !== ""){
+          var pn = Number(p.priceUsd), pv = null;
+          if(!isNaN(pn)){
+            if(pn >= 0.01){ pv = "$" + pn.toFixed(4); }
+            else{
+              var s = String(p.priceUsd);
+              if(s.indexOf(".") >= 0) s = s.replace(/0+$/, "").replace(/\.$/, "");
+              pv = "$" + s;
+            }
+          }
+          if(pv){ set("tape-price", pv); ok = true; }
+        }
+        var mc = money((p.marketCap !== null && p.marketCap !== undefined) ? p.marketCap : p.fdv);
+        if(mc){ set("tape-mcap", mc); ok = true; }
+        var lq = p.liquidity ? money(p.liquidity.usd) : null;
+        if(lq){ set("tape-liq", lq); ok = true; }
+        var vo = p.volume ? money(p.volume.h24) : null;
+        if(vo){ set("tape-vol", vo); ok = true; }
+        var tx = p.txns && p.txns.h24;
+        if(tx && tx.buys !== undefined && tx.sells !== undefined){
+          set("tape-txns", Number(tx.buys).toLocaleString("en-US") + " / " + Number(tx.sells).toLocaleString("en-US"));
+          ok = true;
+        }
+        if(ok) set("tape-status", "Tape live · refreshed when you opened the page.");
+        else quiet();
+      })
+      .catch(function(){ quiet(); });
+  }catch(e){ quiet(); }
+})();
 </script>
 </body>
 </html>
