@@ -308,6 +308,19 @@ footer{border-top:1px solid var(--line-soft); padding:3.4rem 0 3rem; background:
 .commitments .hashline b{color:var(--dim); font-weight:600}
 @media (prefers-reduced-motion: reduce){ .smoke{animation:none} .bell.ringing .bellbody{animation:none} }
 </style>
+<style>
+/* ============ THE DAILY DIGITS — static numbers, checked daily ============ */
+.digits-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:1rem}
+@media(max-width:1080px){.digits-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:680px){.digits-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:460px){.digits-grid{grid-template-columns:1fr}}
+.dgt{border:1px solid var(--line-soft); padding:1.6rem 1.4rem 1.7rem; background:linear-gradient(165deg, rgba(255,239,193,.045), rgba(0,0,0,.25)); position:relative; overflow:hidden}
+.dgt::after{content:""; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,var(--gold-hi),transparent 65%); opacity:.7}
+.dgt-k{font-size:.62rem; letter-spacing:.3em; text-transform:uppercase; color:var(--gold); font-family:var(--serif); line-height:1.7}
+.dgt-v{font-family:var(--serif); font-weight:800; font-size:clamp(1.9rem,3.4vw,2.6rem); line-height:1.1; color:var(--gold-hi); margin-top:.7rem}
+.dgt-n{color:var(--faint); font-size:.85rem; margin-top:.6rem; line-height:1.55}
+.dgt-foot{margin-top:1.6rem; color:var(--faint); font-size:.92rem}
+</style>
 </head>
 <body id="top">
 <div class="frame" aria-hidden="true"></div>
@@ -620,6 +633,46 @@ footer{border-top:1px solid var(--line-soft); padding:3.4rem 0 3rem; background:
       <p class="ck">The Charter — on the wall, verbatim</p>
       <blockquote>&ldquo;20% of creator fees buys physical 1g gold bars stored in a named third-party bullion vault. Each brick: receipt, photo, serial posted to public counter /47. <span class="g">The wall belongs to no one. It cannot be sold.</span> It will be buried at Provadia or donated to a museum, by Bricklayer vote. Nothing else can happen to it. <span class="g">Never backing, never redeemable.</span>&rdquo;</blockquote>
     </div>
+  </div>
+</section>
+
+<div class="courses" data-courses aria-hidden="true"></div>
+
+<!-- ================= THE DAILY DIGITS — the town's numbers, refreshed at the Night Brick close ================= -->
+<section id="digits" data-tone="#0C0A06">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <p class="eyebrow">THE DAILY DIGITS</p>
+      <p class="lede" style="margin-top:1.2rem">Refreshed once a day, at the Night Brick close. Every number below can be checked.</p>
+    </div>
+    <div class="digits-grid">
+      <div class="dgt" data-reveal>
+        <div class="dgt-k">Creator fees, all time</div>
+        <div class="dgt-v">$0.39</div>
+        <p class="dgt-n">pump.fun creator fees since launch, Nov 18, 2026</p>
+      </div>
+      <div class="dgt" data-reveal>
+        <div class="dgt-k">Golden Wall share (20%)</div>
+        <div class="dgt-v">$0.08</div>
+        <p class="dgt-n">accrued toward Brick #1; no brick bought yet</p>
+      </div>
+      <div class="dgt" data-reveal>
+        <div class="dgt-k">Gold bricks laid</div>
+        <div class="dgt-v">0 / 47</div>
+        <p class="dgt-n">the Wall grows only on receipts</p>
+      </div>
+      <div class="dgt" data-reveal>
+        <div class="dgt-k">Bricklayers (holders)</div>
+        <div class="dgt-v">3</div>
+        <p class="dgt-n">wallets holding PROVADIA, on-chain count</p>
+      </div>
+      <div class="dgt" data-reveal>
+        <div class="dgt-k">Daily anchor</div>
+        <div class="dgt-v">Not yet</div>
+        <p class="dgt-n">the first Solana anchor lands with the Foundation pour</p>
+      </div>
+    </div>
+    <p class="dgt-foot" data-reveal>Last updated: November 19, 2026 · If a number here is ever wrong, the receipts outrank the page.</p>
   </div>
 </section>
 
