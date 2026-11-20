@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PROVADIA — About Us · What This Coin Is</title>
+<meta name="description" content="PROVADIA — About Us. What this coin is, the place it is named for, why people join and hold, and the foundation under the town — every line on this page stands behind a receipt.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../sections/panels.css">
+<link rel="stylesheet" href="../sections/record/panels.css">
+<link rel="stylesheet" href="../pages.css">
+<noscript><style>#fade{display:none!important}#stage{display:none!important}.fallback-only{display:block!important}.cap-static{display:block!important}</style></noscript>
+<script>
+/* BOOT — the living world IS the site; the still town is its emergency net,
+   never the show. This classic script runs before every module: it owns
+   the veil and the fallback. The veil (with its waking line) stays up
+   while the world loads. The fallback engages ONLY on a hard failure —
+   no WebGL, a dead module graph, or the engine's own exception — never
+   merely because a phone is slow: the watchdog reads load progress, not
+   a stopwatch. Every soft path stays unlocked, so whenever the engine
+   does arrive, it takes the town. */
+(function () {
+  var booted = false, fb = false, fbLock = false;
+  var startedAt = Date.now(), lastProgress = startedAt, errorAt = 0;
+  function liftFade() {
+    var f = document.getElementById('fade');
+    if (f) { f.classList.add('quick'); f.classList.add('gone'); }
+  }
+  function inviteWake() {
+    /* A soft landing still points at the living town: one tap wakes it. */
+    var note = document.getElementById('fallback-note');
+    if (!note || document.getElementById('wakeBtn')) return;
+    var p = document.createElement('p');
+    p.className = 'fallback-wake';
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.id = 'wakeBtn';
+    b.textContent = 'Wake the living town';
+    b.addEventListener('click', function () { window.location.reload(); });
+    p.appendChild(b);
+    note.appendChild(p);
+  }
+  function engage(reason, lock) {
+    if (lock) fbLock = true;
+    if (booted || fb) return;
+    fb = true;
+    document.documentElement.classList.add('town-fallback');
+    if (!lock) inviteWake();
+    liftFade();
+  }
+  function markBooted() {
+    booted = true;
+    noteProgress();
+    if (fb && !fbLock) {
+      fb = false;
+      document.documentElement.classList.remove('town-fallback');
+    }
+    liftFade();
+  }
+  function noteProgress() { lastProgress = Date.now(); }
+  window.__townBoot = {
+    markBooted: markBooted,
+    engageFallback: engage,
+    liftFade: liftFade,
+    noteProgress: noteProgress,
+    moduleStarted: noteProgress,
+    isBooted: function () { return booted; },
+    isFallback: function () { return fb; }
+  };
+  /* Hard failure, decided at once: no WebGL at all → the still town,
+     exactly as designed. The probe context is released immediately. */
+  try {
+    var probeCanvas = document.createElement('canvas');
+    var probeGl = probeCanvas.getContext('webgl2') || probeCanvas.getContext('webgl') || probeCanvas.getContext('experimental-webgl');
+    if (!probeGl) engage('webgl', true);
+    else {
+      var loseExt = probeGl.getExtension('WEBGL_lose_context');
+      if (loseExt) loseExt.loseContext();
+    }
+  } catch (e) { engage('webgl', true); }
+  /* Load progress: every completed subresource is a sign of life, and the
+     module body itself reports in via __townBoot.moduleStarted(). */
+  if ('PerformanceObserver' in window) {
+    try {
+      var po = new PerformanceObserver(function (list) {
+        if (list.getEntries().length) noteProgress();
+      });
+      po.observe({ entryTypes: ['resource'] });
+    } catch (e) {}
+  }
+  document.addEventListener('DOMContentLoaded', noteProgress);
+  window.addEventListener('load', noteProgress);
+  /* A pre-boot error is recorded, never obeyed on its own: a stray error
+     (a webview's own injected script, an extension) must not bury a
+     healthy world. If the error was the module graph dying, silence
+     follows it — and the watchdog reads that silence as the failure. */
+  window.addEventListener('error', function (e) {
+    if (!booted && e && e.message && !errorAt) errorAt = Date.now();
+  });
+  /* Watchdog — progress-based and generous. It engages the still town
+     (soft, never locked) only when the load has truly stalled: an error
+     followed by silence, a long silence after a long wait, or an
+     absolute two-minute cap for a trickle that never arrives. */
+  var wd = setInterval(function () {
+    if (booted) { clearInterval(wd); return; }
+    var now = Date.now(), elapsed = now - startedAt, idle = now - lastProgress;
+    if ((errorAt && now - errorAt >= 8000 && idle >= 4000) ||
+        (elapsed >= 45000 && idle >= 30000) ||
+        elapsed >= 120000) {
+      engage('timeout', false);
+      clearInterval(wd);
+    }
+  }, 1000);
+})();
+</script>
+</head>
+<body>
+<div id="stage" aria-hidden="true"></div>
+<div id="fade"><div id="wake" aria-hidden="true">The town is waking</div></div>
+
+<nav class="doors" aria-label="The town's doors">
+  <a class="door-link" href="../">The Town</a>
+  <a class="door-link" href="../record/">The Record</a>
+  <a class="door-link" href="../agora/">The Forum</a>
+  <a class="door-link" href="../knock/">The Knock</a>
+  <a class="door-link" href="../ecosystem/">The Ecosystem</a>
+  <a class="door-link" href="../about/" aria-current="page">About Us</a>
+</nav>
+
+<main class="room">
+  <div id="fallback-note" class="fallback-only" role="note">
+    <p class="fallback-note-line">The living world of this town needs a WebGL-capable browser. This is its still face — every word, record and door below is the town itself.</p>
+  </div>
+
+  <header class="room-head">
+    <p class="room-eyebrow">Page 6 · About Us</p>
+    <h1 class="room-title">What This Coin Is, and Why There Is No Other Project Like It</h1>
+    <p class="room-lede">What the coin is, what kind of coin it is, why people join and hold, and the foundation under it all — every line on this page stands behind a receipt, or it does not stand here.</p>
+  </header>
+
+  <!-- FACE 1 · THE PLACE -->
+  <section class="town-panel" aria-label="The Place">
+    <div class="panel-inner">
+      <p class="panel-eyebrow">Face One · The Place</p>
+      <h2 class="panel-title">The Place</h2>
+      <p class="panel-lead">PROVADIA is a town before it is a token.</p>
+      <p class="panel-body">It is named for Provadia–Solnitsata — the salt town above Provadia, among the oldest settlements in Europe — where salt was baked into bricks and, in Professor Nikolov's reading of the evidence, carried as value. The town on this site is a rebuilding of that place: its streets, its Wall, and its book.</p>
+      <p class="panel-body">The archaeology under the name is proven, and it is told here in full. What the ground has given up:</p>
+
+      <div class="fact-list">
+        <div class="fact-block">
+          <p><span class="fact-lead">Found by accident —</span> In October 1972 an excavator operator, Raycho Marinov, struck gold in Varna's industrial zone and carried a shoebox of it to the museum.</p>
+        </div>
+        <div class="fact-block">
+          <p><span class="fact-lead">The dating —</span> Radiocarbon puts the Varna cemetery in use about 4560–4450 BC.</p>
+        </div>
+        <div class="fact-block">
+          <p><span class="fact-lead">The gold —</span> More than 3,000 objects, over 6 kg of gold — among them the sceptre of Grave 43, a stone axe on a gold-sheathed shaft, buried with the man the museum calls most likely a chief and priest.</p>
+        </div>
+      </div>
+
+      <div class="interpretation-block" role="note" aria-label="Interpretation — not settled fact">
+        <p class="interpretation-label">Interpretation — Not Settled Fact</p>
+        <p>Professor Vasil Nikolov, the salt town's excavator, holds that salt was money — that the salt brick was currency and Provadia Europe's first mint, and that salt wealth explains Varna's gold. He admits there is no direct evidence for how the trade worked; other scholars call 'Europe's oldest town' hyperbole. In this town we tell it as what it is: one professor's reading of the ground.</p>
+      </div>
+
+      <div class="foundation-stone">
+        <p class="stone-eyebrow">The threshold stone of this page</p>
+        <p>PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall’s fate — and nothing else: no redemption, no yield, no rights, no expected return.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FACE 2 · THE COIN -->
+  <section class="town-panel" aria-label="The Coin">
+    <div class="panel-inner">
+      <p class="panel-eyebrow">Face Two · The Coin</p>
+      <h2 class="panel-title">The Coin</h2>
+      <p class="panel-lead">A fixed-supply town coin whose whole life is written in a public record.</p>
+      <p class="panel-body">Strictly the launch facts, each with its receipt — no more than the receipts carry, and none fewer:</p>
+
+      <div class="fact-list">
+        <div class="fact-block">
+          <p><span class="fact-lead">Supply —</span> 1,000,000,000 · fixed.</p>
+        </div>
+        <div class="fact-block">
+          <p><span class="fact-lead">Standard —</span> Token-2022.</p>
+        </div>
+        <div class="fact-block">
+          <p><span class="fact-lead">Launch —</span> launched on pump.fun on 2026-11-18, by the founder.</p>
+        </div>
+        <div class="fact-block">
+          <p><span class="fact-lead">The founder's buy, disclosed —</span> 0.1 SOL → 3,520,918.75 PROVADIA (~0.35%), disclosed in the open.</p>
+        </div>
+        <div class="fact-block">
+          <p><span class="fact-lead">Mayhem Mode —</span> caught and switched OFF before creation.</p>
+        </div>
+      </div>
+
+      <div class="contract-block">
+        <p class="contract-label">The coin's only name on-chain:</p>
+        <div class="contract-row">
+          <p class="contract-address">9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump</p>
+        </div>
+        <ul class="contract-links">
+          <li><a href="https://pump.fun/coin/9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump" target="_blank" rel="noopener">Trade on pump.fun</a></li>
+          <li><a href="https://dexscreener.com/solana/2fvtfwcco71j8xepws7yrez3569u2gxu4fyhe2h8oxdy" target="_blank" rel="noopener">The pair on Dexscreener</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- FACE 3 · WHY THIS PROJECT -->
+  <section class="town-panel" aria-label="Why This Project">
+    <div class="panel-inner">
+      <p class="panel-eyebrow">Face Three · Why This Project</p>
+      <h2 class="panel-title">Why People Join and Hold</h2>
+
+      <div class="sub-block">
+        <h3 class="sub-block-title">The Keeper Never Sleeps</h3>
+        <p class="panel-body">Customer service in this town runs 24/7, by two doors. The first door is email: <a href="mailto:support@provadiacoin.com">support@provadiacoin.com</a>, answered on the same watch as the founder's store. The second door is the one no other project has: the Captain himself, resident in his house — Solnik, in his Chamber on <a href="../record/">the Record page</a>, a real mind who knows the record, the Wall, the rules and the roads, and answers for all of it.</p>
+        <p class="panel-body">Every other project leaves a visitor alone with a chart; this town has a keeper in the house at 3 AM.</p>
+        <div class="wall-slot" role="note" aria-label="The honest line, today">
+          <p>The honest line, today: the keeper's house is built; he wakes when the host stands. The email door answers today — write, and the town answers on its watch. The keeper's living voice wakes when the town's host stands, and this face will say so on the day it does, and not a day before.</p>
+        </div>
+      </div>
+
+      <div class="sub-block">
+        <h3 class="sub-block-title">The Town of Record</h3>
+        <p class="panel-body">Nothing renders in this town that isn't receipted — 1 claim = 1 receipt, or it never happened. Any visitor can run the Verifier with their own hands and check the town's book themselves, in their own browser. This page asks no one to take its word for anything.</p>
+        <p class="panel-body">Run it yourself → <a href="../record/">The Record</a></p>
+      </div>
+
+      <div class="sub-block">
+        <h3 class="sub-block-title">The Golden Wall</h3>
+        <p class="panel-body">20% of creator fees, off the top, forever, buys physical one-gram gold bars into a named third-party vault the founder never holds. The Wall is counted in grams and bricks only — 0/47 today, honestly. The wall belongs to no one. It is never backing, and never redeemable.</p>
+      </div>
+
+      <div class="sub-block">
+        <h3 class="sub-block-title">The Umbrella</h3>
+        <p class="panel-body">A family that builds coins for others under one law: build labor by the town, the founder's own creation charges his own — paid from his own wallet — the split shown plainly (80/10/10, on the Record page), and every house receipted at birth.</p>
+        <p class="panel-body">The law → <a href="../record/">The Record</a> · The door → <a href="../knock/">The Knock</a></p>
+      </div>
+
+      <div class="sub-block">
+        <h3 class="sub-block-title">Vault 1 — The Smart Contract</h3>
+        <p class="panel-body">A contract whose book is open: the community tenth enters Vault 1's tithe book in public, hash-chained and verifiable, and funds the town's works under the founder's ruling. Every coin in and every coin out is receipted.</p>
+        <p class="panel-body">What the tenth is spent on is the founder's decision, deferred by his ruling — said plainly, here as everywhere in this town. The contract accounts; it does not promise.</p>
+      </div>
+
+      <div class="sub-block">
+        <h3 class="sub-block-title">The Town's Claim</h3>
+        <p class="panel-body">We know of no other project that:</p>
+        <div class="fact-list">
+          <div class="fact-block">
+            <p>verifies its own record in the visitor's own browser;</p>
+          </div>
+          <div class="fact-block">
+            <p>builds coins for others under a published covenant;</p>
+          </div>
+          <div class="fact-block">
+            <p>accounts a community tenth in an open chained book.</p>
+          </div>
+        </div>
+        <p class="panel-body">That is the town's claim, stated in the town's words — never as a proven fact about the world. Check what can be checked: the record stands open on the page beside this one.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FACE 4 · THE FOUNDATION -->
+  <section class="town-panel" aria-label="The Foundation">
+    <div class="panel-inner">
+      <p class="panel-eyebrow">Face Four · The Foundation</p>
+      <h2 class="panel-title">The Foundation</h2>
+      <p class="panel-lead">Minimum-first, always.</p>
+      <p class="panel-body">One gram of gold · a contract that costs cents a year · an $11 domain — the smallest thing that produces, scaled only on a named need. Nothing in this town was bought big to look big.</p>
+
+      <div class="sub-block">
+        <h3 class="sub-block-title">The Record Before the Promotion</h3>
+        <p class="panel-body">The Day-Book stood before any launch post. The launch posts are still held today, because Brick #1 — the founder's own first brick — is honestly pending. The Wall reads 0/47 until it is bought and receipted, and then it will read one more, with the receipt beside it.</p>
+      </div>
+
+      <div class="sub-block">
+        <h3 class="sub-block-title">The Founder Is Named</h3>
+        <p class="panel-body">The founder is George, who signs the record. His share is disclosed on <a href="../record/">the Record page</a>, in the open, where anyone can read it.</p>
+      </div>
+
+      <div class="sub-block">
+        <h3 class="sub-block-title">The Support Standard</h3>
+        <p class="panel-body">The town answers to the same standard George set for his store, OneJobKits: <a href="mailto:support@provadiacoin.com">support@provadiacoin.com</a>, answered on the watch — and we never DM first. The desk itself is <a href="../agora/">the Forum page</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FACE 5 · THE DOOR -->
+  <section class="town-panel" aria-label="The Door">
+    <div class="panel-inner">
+      <p class="panel-eyebrow">Face Five · The Door</p>
+      <h2 class="panel-title">The Door</h2>
+      <p class="panel-lead">Where to go next — one doorway each.</p>
+      <ul class="way-list">
+        <li>
+          <a href="../record/">Talk to the Captain</a>
+          <p>His Chamber stands at the head of the Record page — his seat, his tales, and the roads he carries.</p>
+        </li>
+        <li>
+          <a href="../record/">Read the Whole Record</a>
+          <p>The Day-Book, the Verifier, the vaults, the split shown plainly — check the town's book with your own hands.</p>
+        </li>
+        <li>
+          <a href="../knock/">Knock for Your Own Coin</a>
+          <p>A founder's door that is a knock, not a signup — the criteria and the covenant, readable before anyone knocks.</p>
+        </li>
+        <li>
+          <a href="../ecosystem/">See the Family</a>
+          <p>Every coin under the family, on the registry's face — born, standing, fallen, struck, counted honestly.</p>
+        </li>
+        <li>
+          <a href="../agora/">Ask for Help</a>
+          <p>The Forum — where people talk, and where the support desk stands.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="room-foot">
+    <p class="footer-contract">9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump</p>
+    <p class="sign-off">Salt pays.</p>
+  </footer>
+</main>
+
+<script type="module" src="../pageworld.js"></script>
+</body>
+</html>
