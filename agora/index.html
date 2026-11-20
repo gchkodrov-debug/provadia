@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PROVADIA — The Forum · The Agora</title>
+<meta name="description" content="The Agora — Provadia's gathering square: where the town talks, where its support desk stands, and the conduct law of its rooms, written on the face.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../sections/panels.css">
+<link rel="stylesheet" href="../sections/record/panels.css">
+<link rel="stylesheet" href="../pages.css">
+<noscript><style>#fade{display:none!important}#stage{display:none!important}.fallback-only{display:block!important}.cap-static{display:block!important}</style></noscript>
+<script>
+/* BOOT — the living world IS the site; the still town is its emergency net,
+   never the show. This classic script runs before every module: it owns
+   the veil and the fallback. The veil (with its waking line) stays up
+   while the world loads. The fallback engages ONLY on a hard failure —
+   no WebGL, a dead module graph, or the engine's own exception — never
+   merely because a phone is slow: the watchdog reads load progress, not
+   a stopwatch. Every soft path stays unlocked, so whenever the engine
+   does arrive, it takes the town. */
+(function () {
+  var booted = false, fb = false, fbLock = false;
+  var startedAt = Date.now(), lastProgress = startedAt, errorAt = 0;
+  function liftFade() {
+    var f = document.getElementById('fade');
+    if (f) { f.classList.add('quick'); f.classList.add('gone'); }
+  }
+  function inviteWake() {
+    /* A soft landing still points at the living town: one tap wakes it. */
+    var note = document.getElementById('fallback-note');
+    if (!note || document.getElementById('wakeBtn')) return;
+    var p = document.createElement('p');
+    p.className = 'fallback-wake';
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.id = 'wakeBtn';
+    b.textContent = 'Wake the living town';
+    b.addEventListener('click', function () { window.location.reload(); });
+    p.appendChild(b);
+    note.appendChild(p);
+  }
+  function engage(reason, lock) {
+    if (lock) fbLock = true;
+    if (booted || fb) return;
+    fb = true;
+    document.documentElement.classList.add('town-fallback');
+    if (!lock) inviteWake();
+    liftFade();
+  }
+  function markBooted() {
+    booted = true;
+    noteProgress();
+    if (fb && !fbLock) {
+      fb = false;
+      document.documentElement.classList.remove('town-fallback');
+    }
+    liftFade();
+  }
+  function noteProgress() { lastProgress = Date.now(); }
+  window.__townBoot = {
+    markBooted: markBooted,
+    engageFallback: engage,
+    liftFade: liftFade,
+    noteProgress: noteProgress,
+    moduleStarted: noteProgress,
+    isBooted: function () { return booted; },
+    isFallback: function () { return fb; }
+  };
+  /* Hard failure, decided at once: no WebGL at all → the still town,
+     exactly as designed. The probe context is released immediately. */
+  try {
+    var probeCanvas = document.createElement('canvas');
+    var probeGl = probeCanvas.getContext('webgl2') || probeCanvas.getContext('webgl') || probeCanvas.getContext('experimental-webgl');
+    if (!probeGl) engage('webgl', true);
+    else {
+      var loseExt = probeGl.getExtension('WEBGL_lose_context');
+      if (loseExt) loseExt.loseContext();
+    }
+  } catch (e) { engage('webgl', true); }
+  /* Load progress: every completed subresource is a sign of life, and the
+     module body itself reports in via __townBoot.moduleStarted(). */
+  if ('PerformanceObserver' in window) {
+    try {
+      var po = new PerformanceObserver(function (list) {
+        if (list.getEntries().length) noteProgress();
+      });
+      po.observe({ entryTypes: ['resource'] });
+    } catch (e) {}
+  }
+  document.addEventListener('DOMContentLoaded', noteProgress);
+  window.addEventListener('load', noteProgress);
+  /* A pre-boot error is recorded, never obeyed on its own: a stray error
+     (a webview's own injected script, an extension) must not bury a
+     healthy world. If the error was the module graph dying, silence
+     follows it — and the watchdog reads that silence as the failure. */
+  window.addEventListener('error', function (e) {
+    if (!booted && e && e.message && !errorAt) errorAt = Date.now();
+  });
+  /* Watchdog — progress-based and generous. It engages the still town
+     (soft, never locked) only when the load has truly stalled: an error
+     followed by silence, a long silence after a long wait, or an
+     absolute two-minute cap for a trickle that never arrives. */
+  var wd = setInterval(function () {
+    if (booted) { clearInterval(wd); return; }
+    var now = Date.now(), elapsed = now - startedAt, idle = now - lastProgress;
+    if ((errorAt && now - errorAt >= 8000 && idle >= 4000) ||
+        (elapsed >= 45000 && idle >= 30000) ||
+        elapsed >= 120000) {
+      engage('timeout', false);
+      clearInterval(wd);
+    }
+  }, 1000);
+})();
+</script>
+</head>
+<body>
+<div id="stage" aria-hidden="true"></div>
+<div id="fade"><div id="wake" aria-hidden="true">The town is waking</div></div>
+<nav class="doors" aria-label="The doors of the town">
+<a class="door-link" href="../">The Town</a>
+<a class="door-link" href="../record/">The Record</a>
+<a class="door-link" href="../agora/" aria-current="page">The Forum</a>
+<a class="door-link" href="../knock/">The Knock</a>
+<a class="door-link" href="../ecosystem/">The Ecosystem</a>
+<a class="door-link" href="../about/">About Us</a>
+</nav>
+<main class="room">
+<div id="fallback-note" class="fallback-only" role="note">
+<p class="fallback-note-line">The living world of this town needs a WebGL-capable browser. This is its still face — every word, record and door below is the town itself.</p>
+</div>
+<header class="room-head">
+<p class="room-eyebrow">The Forum</p>
+<h1 class="room-title">The Agora</h1>
+<p class="room-lede">Where the town talks. The square, its doors, its support desk, and the law of conduct in its rooms — all of it written on the face of this page, in the town itself.</p>
+</header>
+
+<section class="town-panel" aria-label="The Agora Square">
+<div class="panel-inner">
+<p class="panel-eyebrow">The Forum · The Square</p>
+<h2 class="panel-title">The Agora Square</h2>
+<p class="panel-lead">The forum of this town is a place before it is anything else: the Agora, the gathering square at the heart of Provadia.</p>
+<p class="panel-body">The doors below stand in this square as buildings stand around a square — each one a house with its own purpose, not a button on a page. A visitor walks to them the way a visitor walks across a square.</p>
+<p class="panel-body">People talk here. They talk about the project — for it or against it, in plain words, in the open. The talk is the square's purpose. The law that governs the talk is written on the conduct face at the foot of this page, and it binds every room in the town.</p>
+</div>
+</section>
+
+<section class="town-panel sealed" aria-label="The Telegram Door">
+<div class="panel-inner">
+<p class="panel-eyebrow">The Forum · A Sealed Door</p>
+<h2 class="panel-title">The Telegram Door</h2>
+<span class="seal-line">Sealed — being built</span>
+<p class="panel-body">Behind this door, when it opens, stand two rooms of one house. The first is the town-crier channel: the crier's post, where the town's announcements are cried — the counter, the record, the news of the Wall — and no other voice speaks there. The second is its linked discussion group: the talk that answers the crier, where the town gathers and speaks back.</p>
+<p class="panel-body">This door opens when the town gathers; it is being raised with the founder, and a door that does not exist is shown sealed, never painted open.</p>
+<p class="panel-body">There is no link on this door, because there is nothing true to link to yet. When the rooms exist, their address will be written here — receipted, like everything else in this town.</p>
+</div>
+</section>
+
+<section class="town-panel sealed" aria-label="The Discord Door">
+<div class="panel-inner">
+<p class="panel-eyebrow">The Forum · A Sealed Door</p>
+<h2 class="panel-title">The Discord Door</h2>
+<span class="seal-line">Sealed — being built</span>
+<p class="panel-body">Behind this door, when it opens, stands the town's hall: the server named PROVADIA — The Town of Record. Its rooms are already drawn in its blueprint, each with its own work:</p>
+<ul class="door-list">
+<li class="door-item"><span class="door-name">#arrivals</span><span class="door-detail">where a guest first steps in</span></li>
+<li class="door-item"><span class="door-name">#town-crier</span><span class="door-detail">the crier's announcements, carried into the hall</span></li>
+<li class="door-item"><span class="door-name">#the-agora</span><span class="door-detail">the talk of the square</span></li>
+<li class="door-item"><span class="door-name">#the-wall</span><span class="door-detail">the Golden Wall and its counter</span></li>
+<li class="door-item"><span class="door-name">#day-book</span><span class="door-detail">the record, read aloud</span></li>
+<li class="door-item"><span class="door-name">#seven-secrets</span><span class="door-detail">the commitments and their telling</span></li>
+<li class="door-item"><span class="door-name">#support-desk</span><span class="door-detail">the desk's room inside the hall</span></li>
+</ul>
+<p class="panel-body">Its rolls are three: Bricklayer, Founder, and Captain.</p>
+<p class="panel-body">This door opens when the town gathers; it is being raised with the founder, and a door that does not exist is shown sealed, never painted open.</p>
+<p class="panel-body">There is no link on this door, because there is nothing true to link to yet. When the hall exists, its address will be written here — receipted, like everything else in this town.</p>
+</div>
+</section>
+
+<section class="town-panel" aria-label="The Support Desk">
+<div class="panel-inner">
+<p class="panel-eyebrow">The Forum · The Support Desk</p>
+<h2 class="panel-title">The Support Desk</h2>
+<p class="panel-lead">Coins have no support. This one does.</p>
+<p class="panel-body">That is the town's support standard, stated on the face: a question asked of this town is answered by the town, on a standing watch — not left knocking on a void. The desk has two doors.</p>
+<ul class="door-list">
+<li class="door-item">
+<span class="door-name">Email</span>
+<span class="door-detail"><a href="mailto:support@provadiacoin.com">support@provadiacoin.com</a> — Email Routing is live and proven, and this door is true today: it is answered on the same 5-minute watch and reply-right-away standard as the founder's store, around the clock.</span>
+<span class="door-status">Live</span>
+</li>
+<li class="door-item">
+<span class="door-name">The Captain</span>
+<span class="door-detail"><a href="../record/">The Captain's Chamber, on the Record page</a> — the keeper in the house: the Captain keeps his seat in his Chamber at the head of the Record, and that Chamber is his door.</span>
+</li>
+</ul>
+<p class="panel-body">The email door answers today. For the Captain's door, the honest line stands until his living voice wakes: the keeper's house is built; he wakes when the host stands.</p>
+<p class="armor-line">We never DM first.</p>
+<p class="panel-body">No claim links. No seed phrases, ever. Nobody from this town will ever ask for either — anyone who asks in the town's name is not the town.</p>
+</div>
+</section>
+
+<section class="town-panel" aria-label="Contact">
+<div class="panel-inner">
+<p class="panel-eyebrow">The Forum · Contact</p>
+<h2 class="panel-title">Contact</h2>
+<p class="panel-body">The plain contact face of the town. These are the town's doors, and the whole of them:</p>
+<ul class="door-list">
+<li class="door-item">
+<span class="door-name">Email</span>
+<span class="door-detail"><a href="mailto:support@provadiacoin.com">support@provadiacoin.com</a> — the support desk's first door, answered today.</span>
+</li>
+<li class="door-item">
+<span class="door-name">The Captain</span>
+<span class="door-detail"><a href="../record/">The Captain's Chamber, on the Record page</a> — the support desk's second door, the keeper in his house.</span>
+</li>
+<li class="door-item">
+<span class="door-name">The Town</span>
+<span class="door-detail"><a href="../">provadiacoin.com</a> — the town itself, and the road to every door in it.</span>
+</li>
+<li class="door-item">
+<span class="door-name">X</span>
+<span class="door-detail"><a href="https://x.com/ProvadiaCoin" target="_blank" rel="noopener">@ProvadiaCoin</a> — a public noticeboard where the town posts its notices. It is listed as a noticeboard, not a support channel.</span>
+</li>
+</ul>
+<p class="panel-body">Nothing else is a contact channel. Anything else claiming to be the town — any other address, account, or room — is not us.</p>
+<div class="honesty-block">
+<p>PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall’s fate — and nothing else: no redemption, no yield, no rights, no expected return.</p>
+</div>
+</div>
+</section>
+
+<section class="town-panel" aria-label="Conduct in the Rooms">
+<div class="panel-inner">
+<p class="panel-eyebrow">The Forum · Conduct</p>
+<h2 class="panel-title">Conduct in the Rooms</h2>
+<p class="panel-body">One law of conduct covers every room of this town — the Telegram group, the Discord rooms, and the Captain's Chamber alike. It is short, and it is the whole law.</p>
+<h3 class="panel-subtitle">The One-Warning Rule</h3>
+<p class="panel-body">Cursing, dirty talk, and abuse earn one calm public warning from the Captain's account or the founder's account: continue with this language or attitude and you are banned from this project. A second offense is removal — a ban from the rooms.</p>
+<p class="panel-body">Every ban is logged — handle, date, and reason — into the Day-Book's world, by the Captain's report, where it stands on the record.</p>
+<h3 class="panel-subtitle">On a ban, and money</h3>
+<p class="panel-body">What was paid to the project through a returnable rail is returned through that same rail. Market trades cannot be un-traded, and the coin stays the holder's own property: the ban closes the community, never a man's wallet.</p>
+<h3 class="panel-subtitle">Free speech in the rooms</h3>
+<p class="panel-body">Opinions are free, and criticism is protected. Liking the project or lowering it, arguing its merits, disagreeing with the Captain or with the founder, hard questions in plain words — none of it is an offense, and none of it is ever warned. The sole trigger for the rule above is profanity and abuse. Manners are the law; opinions are free.</p>
+<p class="panel-body">A warning issued for criticism is itself a breach of the house law, and is corrected by the Captain when it is reported.</p>
+</div>
+</section>
+
+<footer class="room-foot">
+<p class="footer-contract">9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump</p>
+<p class="sign-off">Salt pays.</p>
+</footer>
+</main>
+<script type="module" src="../pageworld.js"></script>
+</body>
+</html>
