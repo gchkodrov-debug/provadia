@@ -40,6 +40,12 @@
 
   /* ---- BOOT HARDENING: content is never hostage to the engine ---- */
   #fade.quick{transition-duration:.9s}
+  #wake{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;letter-spacing:.34em;font-size:13px;color:var(--gold);text-transform:uppercase;text-align:center;padding:0 20px;animation:wakePulse 2.4s ease-in-out infinite}
+  @keyframes wakePulse{0%,100%{opacity:.45}50%{opacity:1}}
+  #fade.gone #wake{animation:none}
+  .fallback-wake{margin:12px 0 0}
+  .fallback-wake button{background:rgba(201,162,39,.08);border:1px solid rgba(201,162,39,.55);color:var(--pale);font-family:Cinzel,serif;letter-spacing:.12em;font-size:.72rem;padding:.62rem 1rem;cursor:pointer;text-transform:uppercase;transition:background .2s,border-color .2s}
+  .fallback-wake button:hover{background:rgba(201,162,39,.2);border-color:var(--gold)}
   .fallback-only{display:none}
   .cap-static{display:none}
   .hero-figure{margin:16px 0 6px}
@@ -76,56 +82,113 @@
 .coin-controls{display:none!important}
 </style></noscript>
 <script>
-/* BOOT — no visitor is ever stranded on black. This classic script runs
-   before every module: it owns the fade and the still-town fallback.
-   The 3D engine enhances this page; it is not its life support. */
+/* BOOT — the living world IS the site; the still town is its emergency net,
+   never the show. This classic script runs before every module: it owns
+   the veil and the fallback. The veil (with its waking line) stays up
+   while the world loads. The fallback engages ONLY on a hard failure —
+   no WebGL, a dead module graph, or the engine's own exception — never
+   merely because a phone is slow: the watchdog reads load progress, not
+   a stopwatch. Every soft path stays unlocked, so whenever the engine
+   does arrive, it takes the town. */
 (function () {
   var booted = false, fb = false, fbLock = false;
+  var startedAt = Date.now(), lastProgress = startedAt, errorAt = 0;
   function liftFade() {
     var f = document.getElementById('fade');
     if (f) { f.classList.add('quick'); f.classList.add('gone'); }
+  }
+  function inviteWake() {
+    /* A soft landing still points at the living town: one tap wakes it. */
+    var note = document.getElementById('fallback-note');
+    if (!note || document.getElementById('wakeBtn')) return;
+    var p = document.createElement('p');
+    p.className = 'fallback-wake';
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.id = 'wakeBtn';
+    b.textContent = 'Wake the living town';
+    b.addEventListener('click', function () { window.location.reload(); });
+    p.appendChild(b);
+    note.appendChild(p);
   }
   function engage(reason, lock) {
     if (lock) fbLock = true;
     if (booted || fb) return;
     fb = true;
     document.documentElement.classList.add('town-fallback');
+    if (!lock) inviteWake();
     liftFade();
   }
   function markBooted() {
     booted = true;
+    noteProgress();
     if (fb && !fbLock) {
       fb = false;
       document.documentElement.classList.remove('town-fallback');
     }
     liftFade();
   }
+  function noteProgress() { lastProgress = Date.now(); }
   window.__townBoot = {
     markBooted: markBooted,
     engageFallback: engage,
     liftFade: liftFade,
+    noteProgress: noteProgress,
+    moduleStarted: noteProgress,
     isBooted: function () { return booted; },
     isFallback: function () { return fb; }
   };
-  /* The fade lifts on DOMContentLoaded — or on this hard timer, whichever
-     comes first. It never waits for the engine. */
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', liftFade);
-  else liftFade();
-  setTimeout(liftFade, 1400);
-  /* A script error before the engine is up → the still town, locked. */
+  /* Hard failure, decided at once: no WebGL at all → the still town,
+     exactly as designed. The probe context is released immediately. */
+  try {
+    var probeCanvas = document.createElement('canvas');
+    var probeGl = probeCanvas.getContext('webgl2') || probeCanvas.getContext('webgl') || probeCanvas.getContext('experimental-webgl');
+    if (!probeGl) engage('webgl', true);
+    else {
+      var loseExt = probeGl.getExtension('WEBGL_lose_context');
+      if (loseExt) loseExt.loseContext();
+    }
+  } catch (e) { engage('webgl', true); }
+  /* Load progress: every completed subresource is a sign of life, and the
+     module body itself reports in via __townBoot.moduleStarted(). */
+  if ('PerformanceObserver' in window) {
+    try {
+      var po = new PerformanceObserver(function (list) {
+        if (list.getEntries().length) noteProgress();
+      });
+      po.observe({ entryTypes: ['resource'] });
+    } catch (e) {}
+  }
+  document.addEventListener('DOMContentLoaded', noteProgress);
+  window.addEventListener('load', noteProgress);
+  /* A pre-boot error is recorded, never obeyed on its own: a stray error
+     (a webview's own injected script, an extension) must not bury a
+     healthy world. If the error was the module graph dying, silence
+     follows it — and the watchdog reads that silence as the failure. */
   window.addEventListener('error', function (e) {
-    if (!booted && e && e.message) engage('error', true);
+    if (!booted && e && e.message && !errorAt) errorAt = Date.now();
   });
-  /* Watchdog: engine not up in 6s → the still town. If the engine arrives
-     later it may still take over (this path is not locked). */
-  setTimeout(function () { if (!booted) engage('timeout', false); }, 6000);
+  /* Watchdog — progress-based and generous. It engages the still town
+     (soft, never locked) only when the load has truly stalled: an error
+     followed by silence, a long silence after a long wait, or an
+     absolute two-minute cap for a trickle that never arrives. */
+  var wd = setInterval(function () {
+    if (booted) { clearInterval(wd); return; }
+    var now = Date.now(), elapsed = now - startedAt, idle = now - lastProgress;
+    if ((errorAt && now - errorAt >= 8000 && idle >= 4000) ||
+        (elapsed >= 45000 && idle >= 30000) ||
+        elapsed >= 120000) {
+      engage('timeout', false);
+      clearInterval(wd);
+    }
+  }, 1000);
 })();
 </script>
 </head>
 <body>
 <div id="stage" aria-hidden="true"></div>
 <div id="scroll-space" aria-hidden="true"></div>
-<div id="fade"></div>
+<div id="fade"><div id="wake" aria-hidden="true">The town is waking</div></div>
 <div id="caption"><span id="captionName">Arrival</span><small>scroll — the street takes thee down to the Wall</small></div>
 
 <main id="stacks">
@@ -549,6 +612,11 @@ import { createWorld } from './engines/world/engine.js';
 import { createCoin } from './engines/coin/engine.js';
 import './engines/captain/captain.js';
 import './sections/record/record.js';
+
+// The whole graph has arrived and this body is running — a sign of life
+// for the boot watchdog, so a slow-but-healthy load is never mistaken
+// for a dead one.
+if (window.__townBoot) window.__townBoot.moduleStarted();
 
 // ---- copy buttons (contract address) ----
 document.querySelectorAll('[data-copy-target]').forEach((btn) => {
