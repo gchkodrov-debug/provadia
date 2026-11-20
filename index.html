@@ -21,7 +21,6 @@
   #scroll-space{height:700vh;position:relative;z-index:1;pointer-events:none}
   #fade{position:fixed;inset:0;background:#000;z-index:40;pointer-events:none;transition:opacity 2.4s ease}
   #fade.gone{opacity:0}
-  #err{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:60;display:none;max-width:92vw;background:rgba(40,8,4,.92);border:1px solid rgba(255,150,120,.5);color:#ffc9b8;padding:.6rem .9rem;font-size:.82rem;border-radius:4px}
   #caption{position:fixed;left:22px;bottom:20px;z-index:6;pointer-events:none;font-family:Cinzel,serif;letter-spacing:.26em;color:var(--pale);font-size:13px;text-transform:uppercase;text-shadow:0 2px 14px rgba(0,0,0,.8)}
   #caption small{display:block;margin-top:7px;font-family:Inter,sans-serif;letter-spacing:.12em;font-size:10.5px;color:rgba(244,239,230,.6);text-transform:none}
   .stack{position:fixed;z-index:5;right:20px;top:50%;width:min(434px,calc(100vw - 24px));max-height:88vh;overflow-y:auto;padding:2px;opacity:0;pointer-events:none;transform:translateY(-50%) translateX(14px);transition:opacity .55s ease,transform .55s ease;scrollbar-width:thin;scrollbar-color:var(--deep) transparent}
@@ -38,21 +37,114 @@
     .stack.active{transform:none}
     #caption{left:14px;bottom:auto;top:12px;font-size:11px}
   }
+
+  /* ---- BOOT HARDENING: content is never hostage to the engine ---- */
+  #fade.quick{transition-duration:.9s}
+  .fallback-only{display:none}
+  .cap-static{display:none}
+  .hero-figure{margin:16px 0 6px}
+  .hero-figure img{width:min(300px,78vw);height:auto;display:block;background:#000}
+  .hero-figure figcaption{margin-top:8px;font-size:.78rem;color:rgba(244,239,230,.55)}
+  .hero-honesty{font-size:.86rem;line-height:1.55;color:var(--pale);border-left:2px solid var(--gold);padding-left:.8rem}
+  #fallback-note{border:1px solid rgba(201,162,39,.55);background:rgba(20,18,16,.92);padding:16px 18px;margin:0 0 18px}
+  .fallback-note-line{margin:0 0 10px;font-size:.92rem;line-height:1.55;color:var(--pale)}
+  .fallback-nav{font-family:Cinzel,serif;letter-spacing:.08em;font-size:.78rem;line-height:2}
+  .fallback-nav a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(201,162,39,.4)}
+  .cap-static-eyebrow{font-family:Cinzel,serif;letter-spacing:.26em;font-size:.68rem;color:var(--gold);text-transform:uppercase;margin:0 0 .4rem}
+  .cap-static-title{font-family:Cinzel,serif;font-size:2rem;color:var(--pale);margin:.1rem 0 .6rem}
+  .cap-static-greeting{font-size:.94rem;line-height:1.6}
+  .cap-static-honesty{font-size:.86rem;line-height:1.55;color:var(--pale);border-left:2px solid var(--gold);padding-left:.8rem}
+  .cap-static-line{font-size:.86rem;color:rgba(244,239,230,.75)}
+  .cap-static-line a{color:var(--gold)}
+  [data-captain-root]:has(> .cap-chamber) > .cap-static{display:none!important}
+  html.town-fallback{scroll-behavior:smooth}
+  html.town-fallback #stage,html.town-fallback #scroll-space,html.town-fallback #caption{display:none}
+  html.town-fallback #fade{display:none}
+  html.town-fallback #stacks{position:relative;z-index:2;max-width:780px;margin:0 auto;padding:28px 16px 72px}
+  html.town-fallback .stack{position:static;opacity:1;pointer-events:auto;transform:none;width:auto;max-height:none;overflow:visible;margin:0 0 16px;padding:0}
+  html.town-fallback .fallback-only{display:block}
+  html.town-fallback .cap-static{display:block}
+  html.town-fallback .coin-controls{display:none}
 </style>
+<noscript><style>
+#fade{display:none!important}
+#stage,#scroll-space,#caption{display:none!important}
+#stacks{position:relative;z-index:2;max-width:780px;margin:0 auto;padding:28px 16px 72px}
+.stack{position:static!important;opacity:1!important;pointer-events:auto!important;transform:none!important;width:auto!important;max-height:none!important;overflow:visible!important;margin:0 0 16px;padding:0}
+.fallback-only{display:block!important}
+.cap-static{display:block!important}
+.coin-controls{display:none!important}
+</style></noscript>
+<script>
+/* BOOT — no visitor is ever stranded on black. This classic script runs
+   before every module: it owns the fade and the still-town fallback.
+   The 3D engine enhances this page; it is not its life support. */
+(function () {
+  var booted = false, fb = false, fbLock = false;
+  function liftFade() {
+    var f = document.getElementById('fade');
+    if (f) { f.classList.add('quick'); f.classList.add('gone'); }
+  }
+  function engage(reason, lock) {
+    if (lock) fbLock = true;
+    if (booted || fb) return;
+    fb = true;
+    document.documentElement.classList.add('town-fallback');
+    liftFade();
+  }
+  function markBooted() {
+    booted = true;
+    if (fb && !fbLock) {
+      fb = false;
+      document.documentElement.classList.remove('town-fallback');
+    }
+    liftFade();
+  }
+  window.__townBoot = {
+    markBooted: markBooted,
+    engageFallback: engage,
+    liftFade: liftFade,
+    isBooted: function () { return booted; },
+    isFallback: function () { return fb; }
+  };
+  /* The fade lifts on DOMContentLoaded — or on this hard timer, whichever
+     comes first. It never waits for the engine. */
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', liftFade);
+  else liftFade();
+  setTimeout(liftFade, 1400);
+  /* A script error before the engine is up → the still town, locked. */
+  window.addEventListener('error', function (e) {
+    if (!booted && e && e.message) engage('error', true);
+  });
+  /* Watchdog: engine not up in 6s → the still town. If the engine arrives
+     later it may still take over (this path is not locked). */
+  setTimeout(function () { if (!booted) engage('timeout', false); }, 6000);
+})();
+</script>
 </head>
 <body>
 <div id="stage" aria-hidden="true"></div>
 <div id="scroll-space" aria-hidden="true"></div>
 <div id="fade"></div>
-<div id="err" role="alert"></div>
 <div id="caption"><span id="captionName">Arrival</span><small>scroll — the street takes thee down to the Wall</small></div>
 
 <main id="stacks">
-  <div class="stack" data-stack="arrival"><section class="town-panel" data-station="arrival" id="station-arrival" aria-label="Arrival">
+  <div id="fallback-note" class="fallback-only" role="note">
+    <p class="fallback-note-line">The living world of this town needs a WebGL-capable browser. This is its still face — every word, record and door below is the town itself.</p>
+    <nav class="fallback-nav" aria-label="The town, station by station">
+      <a href="#station-arrival">Arrival</a> · <a href="#station-gate">The Gate</a> · <a href="#station-captain">Solnik</a> · <a href="#station-square">The Coin</a> · <a href="#station-wall">The Golden Wall</a> · <a href="#station-record">The Day-Book</a> · <a href="#station-umbrella">The Umbrella Hall</a> · <a href="#station-door">Support Desk</a>
+    </nav>
+  </div>
+  <div class="stack active" data-stack="arrival"><section class="town-panel" data-station="arrival" id="station-arrival" aria-label="Arrival">
   <div class="panel-inner">
     <p class="panel-eyebrow">Europe's First Town of Record</p>
     <h1 class="panel-title panel-title--xl">Provadia</h1>
     <p class="panel-lead">You are not reading about a town. You are standing in one.</p>
+    <figure class="fallback-only hero-figure">
+      <img src="engines/coin/front-published.jpg" alt="The PROVADIA coin — the Fortress P struck in salt bricks, ringed with 47 beads" width="1000" height="1000">
+      <figcaption>The Fortress P — the coin of this town, the face published on the market.</figcaption>
+    </figure>
+    <p class="fallback-only hero-honesty">PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall’s fate — and nothing else: no redemption, no yield, no rights, no expected return.</p>
     <p class="panel-small">Scroll, traveller — the street will take thee down to the Wall.</p>
   </div>
 </section></div>
@@ -64,8 +156,14 @@
   </div>
 </section></div>
   <div class="stack" data-stack="captain">
-    <section class="town-panel cap-panel" aria-label="Solnik at the front door">
-      <div class="panel-inner"><div data-captain-root></div></div>
+    <section class="town-panel cap-panel" id="station-captain" aria-label="Solnik at the front door">
+      <div class="panel-inner"><div data-captain-root><div class="cap-static">
+        <p class="cap-static-eyebrow">Provadia · The Front Door</p>
+        <h2 class="cap-static-title">Solnik</h2>
+        <p class="cap-static-greeting">Hail, traveller, and welcome to Provadia — a town that was old when Rome was a pasture. I am Solnik — last of the solniks, the salt-makers who founded this town — keeper of its Wall and its book. Ask me of the gold, of the salt, of the graves by the sea — for what I tell thee, I can show thee. One claim, one Witness, or it never happened.</p>
+        <p class="cap-static-honesty">PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall’s fate — and nothing else: no redemption, no yield, no rights, no expected return.</p>
+        <p class="cap-static-line">Solnik’s living voice is being wired to this seat. Until it speaks, his tales are true, and told — and the desk is open: <a href="mailto:support@provadiacoin.com">support@provadiacoin.com</a>.</p>
+      </div></div></div>
     </section>
   </div>
   <div class="stack" data-stack="square"><section class="town-panel" data-station="square" id="station-square" aria-label="The Coin">
@@ -74,6 +172,7 @@
     <h2 class="panel-title">The Coin</h2>
     <p class="panel-body">The Fortress P — the name of the coin, struck in salt bricks and crowned with seven battlements. It is the first thing the town shows thee, and the last it lets thee forget.</p>
     <p class="panel-body">Turn it over. The back keeps secrets: tilt it, and the age looks back — a sceptre, a mask, a bull, a ring — rising out of the gold one at a time, around the letter that never leaves.</p>
+    <p class="panel-body fallback-only">In this still face the coin rests, face up — its turning, its tilting and its secrets live in the living town.</p>
 
     <div class="contract-block">
       <p class="contract-label">The coin's only name on-chain:</p>
@@ -119,7 +218,7 @@
     <div class="sub-block">
       <h3 class="sub-block-title">The Night Brick</h3>
       <p class="panel-body">Every night at 21:00 UTC the town posts the counter and one true fact, and the Bricklayers answer: 🧱</p>
-      <p class="night-brick-countdown">next Night Brick in — <span id="nightBrickCountdown"></span></p>
+      <p class="night-brick-countdown">next Night Brick in — <span id="nightBrickCountdown">21:00 UTC</span></p>
     </div>
 
     <div class="bell-line">
@@ -169,6 +268,7 @@
 
   <div class="rec-card">
     <p class="rec-verdict" data-verify-verdict data-state="working">Recomputing every entry in your browser…</p>
+    <p class="rec-note fallback-only">In this still face the chain cannot be recomputed — that proof needs JavaScript. The book itself, and every entry in it, stands in the living town.</p>
     <ol class="rec-list" data-daybook-list></ol>
   </div>
 
@@ -395,11 +495,34 @@ import { createCoin } from './engines/coin/engine.js';
 import './engines/captain/captain.js';
 import './sections/record/record.js';
 
-const errBox = document.getElementById('err');
-function showErr(msg){ errBox.textContent = 'Error: ' + msg; errBox.style.display = 'block'; }
-window.addEventListener('error', (e) => showErr(e.message || e.type));
+// ---- copy buttons (contract address) ----
+document.querySelectorAll('[data-copy-target]').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    const target = document.getElementById(btn.dataset.copyTarget);
+    if (!target) return;
+    const old = btn.textContent;
+    try { await navigator.clipboard.writeText(target.textContent.trim()); btn.textContent = 'Copied'; }
+    catch(e) { btn.textContent = 'Select & copy'; }
+    setTimeout(() => { btn.textContent = old; }, 1600);
+  });
+});
+
+// ---- the Night Brick countdown (next 21:00 UTC) ----
+function tickClock(){
+  const now = new Date();
+  const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 21, 0, 0));
+  if (next <= now) next.setUTCDate(next.getUTCDate() + 1);
+  let s = Math.floor((next - now) / 1000);
+  const hh = String(Math.floor(s / 3600)).padStart(2, '0');
+  const mm = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+  const ss = String(s % 60).padStart(2, '0');
+  document.querySelectorAll('#nightBrickCountdown').forEach((el) => { el.textContent = hh + ':' + mm + ':' + ss; });
+}
+tickClock();
+setInterval(tickClock, 1000);
 
 // ---- renderer / scene / camera (house contract) ----
+try {
 const stage = document.getElementById('stage');
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -492,31 +615,6 @@ document.querySelectorAll('[data-coin]').forEach((btn) => {
 });
 setInterval(() => { try { coinState.textContent = coin.api.getState().caption; } catch(e) {} }, 500);
 
-// ---- copy buttons (contract address) ----
-document.querySelectorAll('[data-copy-target]').forEach((btn) => {
-  btn.addEventListener('click', async () => {
-    const target = document.getElementById(btn.dataset.copyTarget);
-    if (!target) return;
-    const old = btn.textContent;
-    try { await navigator.clipboard.writeText(target.textContent.trim()); btn.textContent = 'Copied'; }
-    catch(e) { btn.textContent = 'Select & copy'; }
-    setTimeout(() => { btn.textContent = old; }, 1600);
-  });
-});
-
-// ---- the Night Brick countdown (next 21:00 UTC) ----
-function tickClock(){
-  const now = new Date();
-  const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 21, 0, 0));
-  if (next <= now) next.setUTCDate(next.getUTCDate() + 1);
-  let s = Math.floor((next - now) / 1000);
-  const hh = String(Math.floor(s / 3600)).padStart(2, '0');
-  const mm = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
-  const ss = String(s % 60).padStart(2, '0');
-  document.querySelectorAll('#nightBrickCountdown').forEach((el) => { el.textContent = hh + ':' + mm + ':' + ss; });
-}
-tickClock();
-setInterval(tickClock, 1000);
 
 // ---- resize + main loop ----
 window.addEventListener('resize', () => {
@@ -537,9 +635,11 @@ function tick(){
   renderer.render(scene, camera);
 }
 tick();
-requestAnimationFrame(() => requestAnimationFrame(() => {
-  document.getElementById('fade').classList.add('gone');
-}));
+if (window.__townBoot) window.__townBoot.markBooted();
+} catch (bootErr) {
+  if (window.console) console.error(bootErr);
+  if (window.__townBoot) window.__townBoot.engageFallback('engine', true);
+}
 </script>
 </body>
 </html>
