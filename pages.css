@@ -1,0 +1,84 @@
+/* PROVADIA — the room pages (Pages 2–6). Shared furniture: the hardened
+   boot's veil, the six-door row, the room column that walks over the
+   living backdrop. Panel faces themselves come from sections/panels.css
+   and sections/record/panels.css — one DNA, no new visual language. */
+
+:root{--field:#141210;--gold:#C9A227;--pale:#FFEFC1;--deep:#6B4A12;--ink:#3D2A08;--salt:#F4EFE6}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--field);color:var(--salt);font-family:Inter,system-ui,sans-serif}
+body{overflow-x:hidden}
+
+#stage{position:fixed;inset:0;z-index:0}
+#stage canvas{display:block}
+
+/* ---- the veil (boot hardening, same policy as Page 1) ---- */
+#fade{position:fixed;inset:0;background:#000;z-index:40;pointer-events:none;transition:opacity 2.4s ease}
+#fade.gone{opacity:0}
+#fade.quick{transition-duration:.9s}
+#wake{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;letter-spacing:.34em;font-size:13px;color:var(--gold);text-transform:uppercase;text-align:center;padding:0 20px;animation:wakePulse 2.4s ease-in-out infinite}
+@keyframes wakePulse{0%,100%{opacity:.45}50%{opacity:1}}
+#fade.gone #wake{animation:none}
+.fallback-only{display:none}
+.fallback-wake{margin:12px 0 0}
+.fallback-wake button{background:rgba(201,162,39,.08);border:1px solid rgba(201,162,39,.55);color:var(--pale);font-family:Cinzel,serif;letter-spacing:.12em;font-size:.72rem;padding:.62rem 1rem;cursor:pointer;text-transform:uppercase;transition:background .2s,border-color .2s}
+.fallback-wake button:hover{background:rgba(201,162,39,.2);border-color:var(--gold)}
+#fallback-note{border:1px solid rgba(201,162,39,.55);background:rgba(20,18,16,.92);padding:16px 18px;margin:0 0 18px}
+.fallback-note-line{margin:0 0 10px;font-size:.92rem;line-height:1.55;color:var(--pale)}
+
+/* the still town: backdrop gone, every word still standing */
+html.town-fallback #stage{display:none}
+html.town-fallback #fade{display:none}
+html.town-fallback .fallback-only{display:block}
+
+/* ---- the six doors ---- */
+.doors{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 4px;padding:10px 10px 12px;background:linear-gradient(180deg,rgba(10,8,6,.92),rgba(10,8,6,.78) 70%,transparent);border-bottom:1px solid rgba(201,162,39,.18)}
+.door-link{font-family:Cinzel,serif;letter-spacing:.18em;font-size:.68rem;text-transform:uppercase;color:rgba(244,239,230,.72);text-decoration:none;padding:.5rem .8rem;border:1px solid transparent;transition:color .2s,border-color .2s,background .2s}
+.door-link:hover{color:var(--pale);border-color:rgba(201,162,39,.4)}
+.door-link[aria-current="page"]{color:var(--ink);background:var(--gold);border-color:var(--gold);font-weight:700}
+@media (max-width:760px){.door-link{font-size:.6rem;padding:.44rem .55rem;letter-spacing:.12em}}
+
+/* ---- the room ---- */
+.room{position:relative;z-index:2;max-width:900px;margin:0 auto;padding:118px 18px 96px}
+.room .town-panel,.room .rec-panel{margin:0 0 18px}
+.room-head{margin:0 0 26px;text-align:left}
+.room-eyebrow{font-family:Cinzel,serif;letter-spacing:.3em;font-size:.68rem;color:var(--gold);text-transform:uppercase;margin:0 0 .5rem}
+.room-title{font-family:Cinzel,serif;font-size:clamp(2rem,6vw,3.2rem);color:var(--pale);margin:0 0 .6rem;line-height:1.08}
+.room-lede{font-size:1rem;line-height:1.65;color:rgba(244,239,230,.82);max-width:62ch;margin:0}
+
+/* a sealed door — built, honest, shut (Receipt Law: no placeholder links) */
+.sealed{border:1px solid rgba(120,110,95,.5);background:rgba(16,14,12,.88)}
+.sealed .panel-title,.sealed h3{color:rgba(244,239,230,.75)}
+.seal-line{display:inline-block;font-family:Cinzel,serif;letter-spacing:.22em;font-size:.66rem;text-transform:uppercase;color:#cfc6ae;border:1px solid rgba(160,150,125,.55);padding:.34rem .7rem;margin:.2rem 0 .8rem}
+
+/* the registry's face — counts, always shown, never edited */
+.reg-face{display:flex;flex-wrap:wrap;gap:10px;margin:.4rem 0 1rem}
+.reg-count{flex:1 1 120px;border:1px solid rgba(201,162,39,.4);background:rgba(20,18,16,.85);padding:14px 10px;text-align:center}
+.reg-count b{display:block;font-family:Cinzel,serif;font-size:2rem;color:var(--pale);font-weight:700;line-height:1}
+.reg-count span{display:block;margin-top:7px;font-family:Cinzel,serif;letter-spacing:.22em;font-size:.62rem;text-transform:uppercase;color:var(--gold)}
+
+/* plain doorway rows inside a room (the case page's doors, the way in) */
+.way-list{list-style:none;margin:.6rem 0 0;padding:0}
+.way-list li{border-top:1px solid rgba(201,162,39,.22);padding:.7rem 0}
+.way-list a{color:var(--gold);text-decoration:none;font-family:Cinzel,serif;letter-spacing:.1em;font-size:.86rem;text-transform:uppercase}
+.way-list a:hover{color:var(--pale)}
+.way-list p{margin:.3rem 0 0;font-size:.88rem;line-height:1.55;color:rgba(244,239,230,.7)}
+
+/* the honesty sentence as a foundation stone */
+.foundation-stone{border:1px solid rgba(201,162,39,.65);background:rgba(20,18,16,.94);padding:20px 22px;font-size:1rem;line-height:1.65;color:var(--pale);margin:0 0 18px}
+.foundation-stone .stone-eyebrow{font-family:Cinzel,serif;letter-spacing:.26em;font-size:.64rem;color:var(--gold);text-transform:uppercase;margin:0 0 .6rem}
+
+/* the Captain's static face — shown until his chamber mounts, and in the
+   still town (rules carried from Page 1's sheet, unchanged) */
+.cap-static{display:none}
+html.town-fallback .cap-static{display:block}
+.cap-static-eyebrow{font-family:Cinzel,serif;letter-spacing:.26em;font-size:.68rem;color:var(--gold);text-transform:uppercase;margin:0 0 .4rem}
+.cap-static-title{font-family:Cinzel,serif;font-size:2rem;color:var(--pale);margin:.1rem 0 .6rem}
+.cap-static-greeting{font-size:.94rem;line-height:1.6}
+.cap-static-honesty{font-size:.86rem;line-height:1.55;color:var(--pale);border-left:2px solid var(--gold);padding-left:.8rem}
+.cap-static-line{font-size:.86rem;color:rgba(244,239,230,.75)}
+.cap-static-line a{color:var(--gold)}
+[data-captain-root]:has(> .cap-chamber) > .cap-static{display:none!important}
+
+.room-foot{margin:34px 0 0;text-align:center}
+.room-foot .sign-off{font-family:Cinzel,serif;letter-spacing:.2em;color:var(--gold);font-size:.8rem}
+.room-foot .footer-contract{font-size:.72rem;color:rgba(244,239,230,.45);word-break:break-all}
