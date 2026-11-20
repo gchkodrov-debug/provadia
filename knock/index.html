@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PROVADIA — The Knock · A Founder's Door</title>
+<meta name="description" content="The Knock — a founder's door in Provadia: the published criteria for a strong idea and a strong foundation, the covenant disclosed at the door, and the gate state.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../sections/panels.css">
+<link rel="stylesheet" href="../sections/record/panels.css">
+<link rel="stylesheet" href="../pages.css">
+<noscript><style>#fade{display:none!important}#stage{display:none!important}.fallback-only{display:block!important}.cap-static{display:block!important}</style></noscript>
+<script>
+/* BOOT — the living world IS the site; the still town is its emergency net,
+   never the show. This classic script runs before every module: it owns
+   the veil and the fallback. The veil (with its waking line) stays up
+   while the world loads. The fallback engages ONLY on a hard failure —
+   no WebGL, a dead module graph, or the engine's own exception — never
+   merely because a phone is slow: the watchdog reads load progress, not
+   a stopwatch. Every soft path stays unlocked, so whenever the engine
+   does arrive, it takes the town. */
+(function () {
+  var booted = false, fb = false, fbLock = false;
+  var startedAt = Date.now(), lastProgress = startedAt, errorAt = 0;
+  function liftFade() {
+    var f = document.getElementById('fade');
+    if (f) { f.classList.add('quick'); f.classList.add('gone'); }
+  }
+  function inviteWake() {
+    /* A soft landing still points at the living town: one tap wakes it. */
+    var note = document.getElementById('fallback-note');
+    if (!note || document.getElementById('wakeBtn')) return;
+    var p = document.createElement('p');
+    p.className = 'fallback-wake';
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.id = 'wakeBtn';
+    b.textContent = 'Wake the living town';
+    b.addEventListener('click', function () { window.location.reload(); });
+    p.appendChild(b);
+    note.appendChild(p);
+  }
+  function engage(reason, lock) {
+    if (lock) fbLock = true;
+    if (booted || fb) return;
+    fb = true;
+    document.documentElement.classList.add('town-fallback');
+    if (!lock) inviteWake();
+    liftFade();
+  }
+  function markBooted() {
+    booted = true;
+    noteProgress();
+    if (fb && !fbLock) {
+      fb = false;
+      document.documentElement.classList.remove('town-fallback');
+    }
+    liftFade();
+  }
+  function noteProgress() { lastProgress = Date.now(); }
+  window.__townBoot = {
+    markBooted: markBooted,
+    engageFallback: engage,
+    liftFade: liftFade,
+    noteProgress: noteProgress,
+    moduleStarted: noteProgress,
+    isBooted: function () { return booted; },
+    isFallback: function () { return fb; }
+  };
+  /* Hard failure, decided at once: no WebGL at all → the still town,
+     exactly as designed. The probe context is released immediately. */
+  try {
+    var probeCanvas = document.createElement('canvas');
+    var probeGl = probeCanvas.getContext('webgl2') || probeCanvas.getContext('webgl') || probeCanvas.getContext('experimental-webgl');
+    if (!probeGl) engage('webgl', true);
+    else {
+      var loseExt = probeGl.getExtension('WEBGL_lose_context');
+      if (loseExt) loseExt.loseContext();
+    }
+  } catch (e) { engage('webgl', true); }
+  /* Load progress: every completed subresource is a sign of life, and the
+     module body itself reports in via __townBoot.moduleStarted(). */
+  if ('PerformanceObserver' in window) {
+    try {
+      var po = new PerformanceObserver(function (list) {
+        if (list.getEntries().length) noteProgress();
+      });
+      po.observe({ entryTypes: ['resource'] });
+    } catch (e) {}
+  }
+  document.addEventListener('DOMContentLoaded', noteProgress);
+  window.addEventListener('load', noteProgress);
+  /* A pre-boot error is recorded, never obeyed on its own: a stray error
+     (a webview's own injected script, an extension) must not bury a
+     healthy world. If the error was the module graph dying, silence
+     follows it — and the watchdog reads that silence as the failure. */
+  window.addEventListener('error', function (e) {
+    if (!booted && e && e.message && !errorAt) errorAt = Date.now();
+  });
+  /* Watchdog — progress-based and generous. It engages the still town
+     (soft, never locked) only when the load has truly stalled: an error
+     followed by silence, a long silence after a long wait, or an
+     absolute two-minute cap for a trickle that never arrives. */
+  var wd = setInterval(function () {
+    if (booted) { clearInterval(wd); return; }
+    var now = Date.now(), elapsed = now - startedAt, idle = now - lastProgress;
+    if ((errorAt && now - errorAt >= 8000 && idle >= 4000) ||
+        (elapsed >= 45000 && idle >= 30000) ||
+        elapsed >= 120000) {
+      engage('timeout', false);
+      clearInterval(wd);
+    }
+  }, 1000);
+})();
+</script>
+</head>
+<body>
+<div id="stage" aria-hidden="true"></div>
+<div id="fade"><div id="wake" aria-hidden="true">The town is waking</div></div>
+<nav class="doors" aria-label="The doors of the town">
+<a class="door-link" href="../">The Town</a>
+<a class="door-link" href="../record/">The Record</a>
+<a class="door-link" href="../agora/">The Forum</a>
+<a class="door-link" href="../knock/" aria-current="page">The Knock</a>
+<a class="door-link" href="../ecosystem/">The Ecosystem</a>
+<a class="door-link" href="../about/">About Us</a>
+</nav>
+<main class="room">
+<div id="fallback-note" class="fallback-only" role="note">
+<p class="fallback-note-line">The living world of this town needs a WebGL-capable browser. This is its still face — every word, record and door below is the town itself.</p>
+</div>
+<header class="room-head">
+<p class="room-eyebrow">The Knock</p>
+<h1 class="room-title">The Knock</h1>
+<p class="room-lede">A founder's door in the town wall. Everything about it — what it asks, how it answers, and the covenant behind it — is written on this page, before the gate, for anyone to read. The gate itself is closed, and this page says so on its face.</p>
+</header>
+
+<section class="town-panel" aria-label="The Door Itself">
+<div class="panel-inner">
+<p class="panel-eyebrow">The Knock · The Door</p>
+<h2 class="panel-title">The Door Itself</h2>
+<p class="panel-lead">This is a founder's door — a door you knock on.</p>
+<p class="panel-body">It is not a signup. There is no form behind it, and no form on this page. It is not a queue you buy into: no place in any line is sold, held, or promised here. It is not a promise: a knock, when knocking opens, promises nothing to anyone.</p>
+<p class="panel-body">Behind the door stands a judgment, made by the insiders of the town, on evidence — and the criteria below, published before the gate, are the whole shape of that evidence. A founder can read everything on this page and knock on nothing yet: the gate state at the foot of the page is the town's present truth.</p>
+</div>
+</section>
+
+<section class="town-panel" aria-label="What Strong Means">
+<div class="panel-inner">
+<p class="panel-eyebrow">The Knock · The Criteria</p>
+<h2 class="panel-title">What "Strong" Means</h2>
+<p class="panel-body">The door asks for two proofs, stated plainly, in the founder's own terms. Both are judged on evidence a founder brings — never on anything he holds.</p>
+<div class="fact-list">
+<div class="fact-block">
+<p><span class="fact-lead">A strong idea —</span> a real story: what the coin is, who it is for, and why it should exist. A coin with no story has nothing to be judged.</p>
+</div>
+<div class="fact-block">
+<p><span class="fact-lead">A strong foundation —</span> the ground a founder stands on: his own means to pay his own creation charges from his own wallet — the town never fronts money — the staying power to keep his own record, and a name he is willing to sign in public.</p>
+</div>
+<div class="fact-block">
+<p><span class="fact-lead">The application package —</span> the founder comes with his documents ready: the idea in his own words, the foundation above, and the coin's image.</p>
+</div>
+</div>
+<h3 class="panel-subtitle">The Mint Mark</h3>
+<p class="panel-body">The image carries the family mint mark: the full name PROVADIA or the initial P somewhere on the coin image, so the coin is known on sight as a house of the family — the way mints have always signed their coins. The mark is attribution on the image only: the coin's name and ticker stay its own, and no Wall or gold imagery ever appears on a child's coin. An image submitted without the mark is declined, with the reason stated — every refusal carries its reason and its receipt.</p>
+<h3 class="panel-subtitle">What is never weighed</h3>
+<p class="panel-body">A PROVADIA balance. Holding the town's coin is neither required nor weighed — in any amount, for any duration. The qualifying act is a signature, not a purchase.</p>
+</div>
+</section>
+
+<section class="town-panel" aria-label="How a Knock Is Answered">
+<div class="panel-inner">
+<p class="panel-eyebrow">The Knock · The Answer</p>
+<h2 class="panel-title">How a Knock Is Answered</h2>
+<p class="panel-body">The procedure is published before the doors open, and it does not change from knock to knock:</p>
+<ol class="road-list">
+<li class="road-step road-step--outline">
+<span class="road-step-num" aria-hidden="true">1</span>
+<h3 class="road-step-title">A live conversation</h3>
+<p class="road-step-desc">the founder and the town speak, in person, about the idea and the foundation</p>
+</li>
+<li class="road-step road-step--outline">
+<span class="road-step-num" aria-hidden="true">2</span>
+<h3 class="road-step-title">The covenant read in full</h3>
+<p class="road-step-desc">the whole covenant of the section below, read before anything is signed</p>
+</li>
+<li class="road-step road-step--outline">
+<span class="road-step-num" aria-hidden="true">3</span>
+<h3 class="road-step-title">The signature</h3>
+<p class="road-step-desc">the qualifying act — a signature against the disclosed covenant</p>
+</li>
+<li class="road-step road-step--outline">
+<span class="road-step-num" aria-hidden="true">4</span>
+<h3 class="road-step-title">The decision</h3>
+<p class="road-step-desc">acceptance or refusal, made by the insiders, on the evidence</p>
+</li>
+</ol>
+<p class="panel-body">Every acceptance and every refusal is receipted in the Day-Book. A refused knock is answered with its receipt, not with silence.</p>
+<p class="panel-body">The public queue face shows the line in chronological order — names as the founders themselves give them; no scores, no ranks.</p>
+<p class="registry-empty">The queue is empty.</p>
+<p class="panel-body">It is empty because no knock can be taken yet. When the gate opens and the first knock is answered, its receipt — acceptance or refusal — will stand here in its order.</p>
+</div>
+</section>
+
+<section class="town-panel" aria-label="The Covenant, Disclosed at the Door">
+<div class="panel-inner">
+<p class="panel-eyebrow">The Knock · Disclosed at the Door</p>
+<h2 class="panel-title">The Covenant, Readable Before Anyone Knocks</h2>
+<p class="panel-lead">Nobody joins blind. The whole covenant stands here, in plain words, before the gate — read it before any knock, and hold the town to every word of it.</p>
+<h3 class="panel-subtitle">Where the money goes</h3>
+<p class="panel-body">Of a house's own creator fees: 80% to the founder · 10% to the owner personally · 10% to the community, stored in the vaults — into Vault 1's tithe book, the contract's own book, where it accumulates receipted until the town rules its use.</p>
+<h3 class="panel-subtitle">The tithe, and how it moves</h3>
+<p class="panel-body">The tithe is taken on creator fees only, and it moves by honor-forwarding: the founder forwards his house's shares himself — the town never touches a founder's wallet. Each house renders a monthly statement; its shares are forwarded within 7 days and receipted within 48 hours. The tithe is a share of flow, never a debt. There are no arrears, ever.</p>
+<h3 class="panel-subtitle">The package and the mark</h3>
+<p class="panel-body">The application package and the mint-mark requirement of the criteria above are part of this covenant: the idea in the founder's own words, his foundation, and the coin's image carrying the full name PROVADIA or the initial P. An image without the mark is declined, with the reason stated.</p>
+<h3 class="panel-subtitle">The consequences, in plain words</h3>
+<p class="panel-body">claim fees and miss your forwarding once → a notice · miss twice → a second notice · miss three times → suspended from the family until you forward the shares of what you claimed · deception or refusal → struck by the founder's ruling, published with evidence</p>
+<p class="panel-body">That is the Graduated Door — the road before the strike.</p>
+<h3 class="panel-subtitle">The covenant's pillars</h3>
+<div class="fact-list">
+<div class="fact-block">
+<p><span class="fact-lead">The founder is sovereign —</span> his wallet, his signature, his costs. The town never holds his funds, never co-signs, and never appears on his coin's controls.</p>
+</div>
+<div class="fact-block">
+<p><span class="fact-lead">The Mark —</span> a house may claim one fixed line, and nothing beyond it: “A house of the Town of PROVADIA — recorded at birth, built by the town, vouched for by no one” — set beside its registry number and the honesty sentence. Nothing more may be claimed, in any words.</p>
+</div>
+<div class="fact-block">
+<p><span class="fact-lead">The Promotion Clause —</span> the town never organizes or ranks a founder's promotion. A house's promotion is its founder's own work, as the town's is the town's.</p>
+</div>
+<div class="fact-block">
+<p><span class="fact-lead">The Strike Procedure —</span> a documented breach earns a private notice with hash-logged evidence; the house's founder has 14 days to answer; the town's founder rules alone; and the ruling is published with its evidence.</p>
+</div>
+<div class="fact-block">
+<p><span class="fact-lead">Death &amp; Departure —</span> a house silent for 60 days stands dormant; at 90 days it stands fallen. An unannounced transfer of the creator wallet is an automatic strike.</p>
+</div>
+<div class="fact-block">
+<p><span class="fact-lead">Capacity —</span> at most 2 house starts per month, and at most 5 active houses.</p>
+</div>
+<div class="fact-block">
+<p><span class="fact-lead">No Duty —</span> the town owes a house nothing. A house's losses are its own.</p>
+</div>
+<div class="fact-block">
+<p><span class="fact-lead">The Child's Whole Duty —</span> the covenant, the tithe, and its own record — nothing more is owed, and nothing more is asked.</p>
+</div>
+</div>
+<div class="foundation-stone">
+<p class="stone-eyebrow">The Honesty Sentence</p>
+<p>PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall’s fate — and nothing else: no redemption, no yield, no rights, no expected return.</p>
+</div>
+</div>
+</section>
+
+<section class="town-panel" aria-label="The Gate State">
+<div class="panel-inner">
+<p class="panel-eyebrow">The Knock · The Gate</p>
+<h2 class="panel-title">The Gate State</h2>
+<p class="panel-body">The Launch Gate is law: the doors of this house open at 100 Bricklayers on the roll — not before, and not by exception.</p>
+<p class="panel-lead">Bricklayers on the roll: <span data-bricklayer-count>0</span> of 100</p>
+<p class="panel-body">Until the roll reaches that number, this page is the door, the criteria, the covenant, and this gate state — a founder can read everything here and knock on nothing yet. There is no list to join in the meantime, and no date is promised for the gate.</p>
+</div>
+</section>
+
+<footer class="room-foot">
+<p class="footer-contract">9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump</p>
+<p class="sign-off">Salt pays.</p>
+</footer>
+</main>
+<script type="module" src="../pageworld.js"></script>
+<script type="module" src="../sections/record/registry.js"></script>
+</body>
+</html>
