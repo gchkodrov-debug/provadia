@@ -1,0 +1,567 @@
+/* THE SECRET SIDE — built into the town (Option B, founder's ruling
+   2026-11-20). This module is the Secret Side piece's own code, copied
+   whole from provadia-secretside/index.html. The ONE adaptation: it
+   mounts to its stage (#ss-stage / #scene) instead of owning the whole
+   window — the three sizing reads below take the container's size —
+   and it loads as an independent script so its failure can never take
+   the town's boot down. Every behavior is the piece's own. */
+    import * as THREE from './three.module.min.js';
+
+    const COLORS = {
+      field: 0x141210,
+      gold: 0xC9A227,
+      paleGold: 0xFFEFC1,
+      deepGold: 0x6B4A12,
+      shadowGold: 0x3D2A08,
+      salt: 0xF4EFE6
+    };
+
+    const container = document.getElementById('scene');
+    const markNameEl = document.getElementById('markName');
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(container.clientWidth || window.innerWidth, container.clientHeight || window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.12;
+    container.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(COLORS.field);
+    scene.fog = new THREE.FogExp2(COLORS.field, 0.02);
+
+    const camera = new THREE.PerspectiveCamera(43, (container.clientWidth || window.innerWidth) / (container.clientHeight || window.innerHeight), 0.1, 100);
+    camera.position.set(0, 0.35, 7.4);
+
+    const key = new THREE.DirectionalLight(COLORS.paleGold, 3.1);
+    key.position.set(-7, 11, 10);
+    key.castShadow = true;
+    key.shadow.mapSize.set(2048, 2048);
+    key.shadow.camera.left = -6;
+    key.shadow.camera.right = 6;
+    key.shadow.camera.top = 6;
+    key.shadow.camera.bottom = -6;
+    key.shadow.camera.near = 4;
+    key.shadow.camera.far = 40;
+    key.shadow.bias = -0.0004;
+    key.shadow.normalBias = 0.025;
+    scene.add(key, key.target);
+
+    const rim = new THREE.DirectionalLight(COLORS.gold, 0.85);
+    rim.position.set(6, 2, -7);
+    scene.add(rim);
+
+    const hemisphere = new THREE.HemisphereLight(COLORS.salt, COLORS.field, 0.26);
+    scene.add(hemisphere);
+
+    const ember = new THREE.PointLight(COLORS.gold, 1.6, 10, 2);
+    ember.position.set(0, 0.4, 2.6);
+    scene.add(ember);
+
+    const ground = new THREE.Mesh(
+      new THREE.CircleGeometry(42, 96),
+      new THREE.MeshStandardMaterial({ color: COLORS.field, roughness: 0.98, metalness: 0.02 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -2.75;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // Soft gold glow behind the coin.
+    const glowCanvas = document.createElement('canvas');
+    glowCanvas.width = 512;
+    glowCanvas.height = 512;
+    const gtx = glowCanvas.getContext('2d');
+    const glowGrad = gtx.createRadialGradient(256, 256, 10, 256, 256, 256);
+    glowGrad.addColorStop(0, 'rgba(201,162,38,0.30)');
+    glowGrad.addColorStop(0.45, 'rgba(107,74,18,0.14)');
+    glowGrad.addColorStop(1, 'rgba(20,18,16,0)');
+    gtx.fillStyle = glowGrad;
+    gtx.fillRect(0, 0, 512, 512);
+    const glow = new THREE.Mesh(
+      new THREE.PlaneGeometry(11, 11),
+      new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(glowCanvas), transparent: true, depthWrite: false })
+    );
+    glow.position.set(0, 0.1, -3.4);
+    scene.add(glow);
+
+    // ---------- THE COIN ----------
+    const coin = new THREE.Group();
+    coin.position.set(0, 0.1, 0);
+    const gold = new THREE.MeshStandardMaterial({
+      color: COLORS.gold,
+      emissive: COLORS.shadowGold,
+      emissiveIntensity: 0.2,
+      metalness: 0.76,
+      roughness: 0.29
+    });
+    const reliefGold = new THREE.MeshStandardMaterial({
+      color: COLORS.gold,
+      emissive: COLORS.shadowGold,
+      emissiveIntensity: 0.16,
+      metalness: 0.69,
+      roughness: 0.32
+    });
+    const paleGold = new THREE.MeshStandardMaterial({
+      color: COLORS.paleGold,
+      emissive: COLORS.deepGold,
+      emissiveIntensity: 0.13,
+      metalness: 0.67,
+      roughness: 0.26
+    });
+
+    const coinBodyGeometry = new THREE.CylinderGeometry(2, 2, 0.36, 96, 1, false);
+    coinBodyGeometry.rotateX(Math.PI / 2);
+    const coinBody = new THREE.Mesh(coinBodyGeometry, gold);
+    coinBody.castShadow = true;
+    coinBody.receiveShadow = true;
+    coin.add(coinBody);
+
+    // FRONT — the P-side is the ORIGINAL published coin face: the brick
+    // Fortress P exactly as published on the market (pump.fun). The face
+    // is the published artwork itself (PROV_p-fortress_avatar_1000_v01.png,
+    // its disc inscribed into the texture), seated on the same 3D coin
+    // body as the reverse, under the same single 45° upper-left key light;
+    // the artwork's own luminance rides as bump so its brick courses,
+    // battlements and plinth catch the light as the coin turns. Its bead
+    // ring is the published ring, in the artwork. (The old procedural
+    // front — a rectangular brick slab with an arc of merlons — was the
+    // gate build's shorthand, not the published coin; it is gone.)
+    const frontTexture = new THREE.TextureLoader().load('./marks/front-published.webp');
+    frontTexture.colorSpace = THREE.SRGBColorSpace;
+    frontTexture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    const frontFace = new THREE.Mesh(
+      new THREE.CircleGeometry(1.94, 96),
+      new THREE.MeshStandardMaterial({
+        map: frontTexture,
+        bumpMap: frontTexture,
+        bumpScale: 0.12,
+        metalness: 0.2,
+        roughness: 0.48,
+        emissive: 0x6B531F,
+        emissiveMap: frontTexture,
+        emissiveIntensity: 0.7
+      })
+    );
+    frontFace.position.z = 0.186;
+    frontFace.receiveShadow = true;
+    coin.add(frontFace);
+
+    // Shared bead geometry — the reverse's 47-bead ring (built below)
+    // is made from it.
+    const beadGeometry = new THREE.SphereGeometry(0.047, 10, 8);
+
+    // REVERSE — the Secret Side. A shader face: four marks live in the gold
+    // as luminance relief, weighted by the viewing angle (lenticular logic).
+    const maxAniso = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    function loadMark(path) {
+      const tex = new THREE.TextureLoader().load(path);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = maxAniso;
+      return tex;
+    }
+
+    // THE P — the coin's name-sign, ghosted into the reverse metal: the
+    // ORIGINAL Fortress P logo — the brick-and-battlement emblem from the
+    // coin's own front — isolated as a luminance relief (white on black)
+    // and composited in the shader with a hard floor on its weight, so it
+    // never fully leaves the coin. Until the logo lands, a Cinzel glyph
+    // stands in so the name-sign is never missing from the metal.
+    const pCanvas = document.createElement('canvas');
+    pCanvas.width = 512;
+    pCanvas.height = 512;
+    const pLogo = new Image();
+    let pLogoReady = false;
+    function drawP() {
+      const px = pCanvas.getContext('2d');
+      px.fillStyle = '#000';
+      px.fillRect(0, 0, 512, 512);
+      if (pLogoReady) {
+        px.drawImage(pLogo, 0, 0, 512, 512);
+        return;
+      }
+      px.fillStyle = '#fff';
+      px.font = '600 320px Cinzel, "Times New Roman", serif';
+      px.textAlign = 'center';
+      px.textBaseline = 'middle';
+      px.fillText('P', 256, 274);
+    }
+    drawP();
+    const pTexture = new THREE.CanvasTexture(pCanvas);
+    pTexture.colorSpace = THREE.SRGBColorSpace;
+    pTexture.anisotropy = maxAniso;
+    pLogo.onload = () => { pLogoReady = true; drawP(); pTexture.needsUpdate = true; };
+    pLogo.src = './marks/fortress-p.png';
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => { drawP(); pTexture.needsUpdate = true; });
+    }
+
+    const secretUniforms = {
+      tP: { value: pTexture },
+      tSceptre: { value: loadMark('./marks/sceptre.webp') },
+      tMask: { value: loadMark('./marks/mask.webp') },
+      tBull: { value: loadMark('./marks/bull.webp') },
+      tRing: { value: loadMark('./marks/ring.webp') },
+      uW: { value: new THREE.Vector4(0, 0, 0, 0) },
+      uSheen: { value: 0 },
+      uGold: { value: new THREE.Color(COLORS.gold) },
+      uPale: { value: new THREE.Color(COLORS.paleGold) },
+      uDeep: { value: new THREE.Color(COLORS.deepGold) },
+      uShadow: { value: new THREE.Color(COLORS.shadowGold) }
+    };
+
+    const secretMaterial = new THREE.ShaderMaterial({
+      uniforms: secretUniforms,
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform sampler2D tP;
+        uniform sampler2D tSceptre;
+        uniform sampler2D tMask;
+        uniform sampler2D tBull;
+        uniform sampler2D tRing;
+        uniform vec4 uW;
+        uniform float uSheen;
+        uniform vec3 uGold;
+        uniform vec3 uPale;
+        uniform vec3 uDeep;
+        uniform vec3 uShadow;
+        varying vec2 vUv;
+
+        float lum(vec3 c) { return dot(c, vec3(0.299, 0.587, 0.114)); }
+        float reliefOf(sampler2D t, vec2 uv) {
+          float l = lum(texture2D(t, uv).rgb);
+          return smoothstep(0.03, 0.45, l);
+        }
+        float embossOf(sampler2D t, vec2 uv) {
+          float l0 = lum(texture2D(t, uv).rgb);
+          float l1 = lum(texture2D(t, uv + vec2(-0.0045, 0.0045)).rgb);
+          return clamp((l0 - l1) * 2.4, -0.35, 1.0);
+        }
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+        }
+
+        void main() {
+          // The reverse is viewed from behind the disc: un-mirror x so the
+          // marks read correctly to the viewer of the back face.
+          vec2 uv = vec2(1.0 - vUv.x, vUv.y);
+          vec2 c = uv - 0.5;
+          float r = length(c) * 2.0;
+
+          // Base gold: warm centre, deep edge, fine circular brushing + grain.
+          vec3 col = mix(uGold * 0.92, uDeep, smoothstep(0.05, 1.05, r));
+          col = mix(col, uShadow, smoothstep(0.86, 1.0, r) * 0.55);
+          col *= 1.0 + 0.028 * sin(r * 150.0) + (hash(floor(uv * 900.0)) - 0.5) * 0.03;
+          // A quiet engraved double ring near the rim.
+          float groove = smoothstep(0.012, 0.0, abs(r - 0.865)) + smoothstep(0.010, 0.0, abs(r - 0.905));
+          col *= 1.0 - groove * 0.13;
+
+          float fall = smoothstep(1.03, 0.80, r);
+          float maxW = max(max(uW.x, uW.y), max(uW.z, uW.w));
+
+          float relS = reliefOf(tSceptre, uv);
+          float relM = reliefOf(tMask, uv);
+          float relB = reliefOf(tBull, uv);
+          float relR = reliefOf(tRing, uv);
+          float embS = embossOf(tSceptre, uv);
+          float embM = embossOf(tMask, uv);
+          float embB = embossOf(tBull, uv);
+          float embR = embossOf(tRing, uv);
+
+          vec3 reveal = vec3(0.0);
+          reveal += uW.x * (relS * uPale * 0.92 + embS * uPale * 0.34);
+          reveal += uW.y * (relM * uPale * 0.92 + embM * uPale * 0.34);
+          reveal += uW.z * (relB * uPale * 0.92 + embB * uPale * 0.34);
+          reveal += uW.w * (relR * uPale * 0.92 + embR * uPale * 0.34);
+          col += reveal * fall;
+
+          // The name-sign never leaves the metal: a P relief at the centre
+          // of the reverse. Ghosted (0.36) while the side hides its secrets;
+          // as a mark rises around it the P eases down to a 0.25 floor —
+          // dimmer, never gone, at any angle.
+          // (x flipped vs the marks: a letter must read true, not mirrored.)
+          vec2 uvP = (vec2(1.0 - uv.x, uv.y) - 0.5) * 1.9 + 0.5;
+          float relP = reliefOf(tP, uvP);
+          float embP = embossOf(tP, uvP);
+          float pWeight = mix(0.36, 0.25, maxW);
+          col += (relP * uPale * 0.95 + embP * uPale * 0.38) * pWeight * fall;
+
+          // Travelling sheen, stronger while a secret is showing.
+          float band = pow(max(0.0, 1.0 - abs((uv.x * 0.75 + uv.y * 0.55) - (0.62 + uSheen * 0.55))), 5.0);
+          col += band * (0.045 + 0.15 * maxW) * uPale;
+
+          // Seat the face into the rim.
+          col *= 1.0 - 0.32 * smoothstep(0.93, 1.0, r);
+
+          gl_FragColor = vec4(col, 1.0);
+          #include <tonemapping_fragment>
+          #include <colorspace_fragment>
+        }
+      `
+    });
+
+    const secretFace = new THREE.Mesh(new THREE.CircleGeometry(1.94, 96), secretMaterial);
+    secretFace.rotation.y = Math.PI;
+    secretFace.position.z = -0.186;
+    coin.add(secretFace);
+
+    // The 47-bead ring frames the secret face, as on the front.
+    const back = new THREE.Group();
+    for (let i = 0; i < 47; i++) {
+      const angle = i / 47 * Math.PI * 2;
+      const bead = new THREE.Mesh(beadGeometry, paleGold);
+      bead.position.set(Math.cos(angle) * 1.76, Math.sin(angle) * 1.76, -0.225);
+      back.add(bead);
+    }
+    coin.add(back);
+    scene.add(coin);
+
+    // ---------- TILT-REVEAL LOGIC ----------
+    // As the reverse turns through the light, each mark owns an angle band.
+    // theta = signed angle (deg) between the reverse normal and the camera:
+    //    -42 THE SCEPTRE · -14 THE MASK · +14 THE BULL · +42 THE RING-IDOL
+    // At theta = 0 (straight on) the gate closes: the reverse reads plain.
+    const CENTERS = [-42, -14, 14, 42];
+    const NAMES = ['THE SCEPTRE', 'THE MASK', 'THE BULL', 'THE RING-IDOL'];
+
+    function smooth01(x) {
+      const t = THREE.MathUtils.clamp(x, 0, 1);
+      return t * t * (3 - 2 * t);
+    }
+    function computeWeights(thetaDeg) {
+      const gate = smooth01((Math.abs(thetaDeg) - 4) / 7);
+      return CENTERS.map(center => {
+        const raw = Math.max(0, 1 - Math.abs(thetaDeg - center) / 18);
+        return (raw * raw * (3 - 2 * raw)) * gate;
+      });
+    }
+    function wrapDeg(deg) {
+      let d = deg % 360;
+      if (d > 180) d -= 360;
+      if (d < -180) d += 360;
+      return d;
+    }
+
+    // ---------- POSES / INTERACTION ----------
+    const query = new URLSearchParams(window.location.search);
+    const POSES = {
+      front: 0,
+      plain: Math.PI,
+      sceptre: Math.PI - THREE.MathUtils.degToRad(42),
+      mask: Math.PI - THREE.MathUtils.degToRad(14),
+      bull: Math.PI + THREE.MathUtils.degToRad(14),
+      ring: Math.PI + THREE.MathUtils.degToRad(42)
+    };
+    const poseName = query.get('pose');
+    const hasPose = poseName !== null && Object.prototype.hasOwnProperty.call(POSES, poseName);
+
+    let rotY = hasPose ? POSES[poseName] : 0;
+    let rotX = 0.05;
+    let rotYTarget = rotY;
+    let rotXTarget = rotX;
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
+    let lastInteract = performance.now() / 1000;
+    let rockPhase = 0;
+
+    const el = renderer.domElement;
+    el.addEventListener('pointerdown', event => {
+      event.preventDefault();
+      if (gyroOn) setGyro(false);
+      dragging = true;
+      lastX = event.clientX;
+      lastY = event.clientY;
+      lastInteract = performance.now() / 1000;
+      try { el.setPointerCapture(event.pointerId); } catch (err) { /* capture is a nicety, not a need */ }
+    });
+    el.addEventListener('pointermove', event => {
+      if (!dragging) return;
+      event.preventDefault();
+      const dx = event.clientX - lastX;
+      const dy = event.clientY - lastY;
+      lastX = event.clientX;
+      lastY = event.clientY;
+      rotYTarget += dx * 0.0085;
+      rotXTarget = THREE.MathUtils.clamp(rotXTarget + dy * 0.005, -0.55, 0.55);
+      lastInteract = performance.now() / 1000;
+    });
+    function endDrag() {
+      dragging = false;
+      lastInteract = performance.now() / 1000;
+    }
+    el.addEventListener('pointerup', endDrag);
+    el.addEventListener('pointercancel', endDrag);
+    el.addEventListener('dblclick', () => {
+      rotYTarget = (Math.round(rotYTarget / Math.PI) + 1) * Math.PI;
+      rotXTarget = 0.05;
+      lastInteract = performance.now() / 1000;
+    });
+    // iOS Safari before v18 ignores `touch-action: none` — the only gesture
+    // protection the old build had. Without an explicit claim, Safari takes
+    // the drag for scroll/zoom and kills it with pointercancel. Claim it:
+    el.addEventListener('touchstart', event => { event.preventDefault(); }, { passive: false });
+    el.addEventListener('touchmove', event => { event.preventDefault(); }, { passive: false });
+    document.addEventListener('gesturestart', event => { event.preventDefault(); });
+
+    // ---------- PHONE TILT (GYRO) ----------
+    // The visitor's own phone becomes the tilt: gamma (left-right tilt of
+    // the device) drives the same reveal angle theta the shader reads.
+    const tiltBtn = document.getElementById('tiltBtn');
+    let gyroOn = false;
+    let gyroTheta = 0;
+    let gyroSmooth = 0;
+    let gyroLastEvent = -10;
+    let gyroSawData = false;
+
+    function onOrientation(event) {
+      if (!event || event.gamma === null || event.gamma === undefined) return;
+      gyroSawData = true;
+      gyroLastEvent = performance.now() / 1000;
+      // A gentle gain: the deep bands (±42°) arrive at a comfortable
+      // ~34° of phone tilt; clamped to the ±50° reveal range.
+      gyroTheta = THREE.MathUtils.clamp(event.gamma * 1.25, -50, 50);
+    }
+    function setGyro(on) {
+      gyroOn = on;
+      tiltBtn.classList.toggle('on', on);
+      if (on) {
+        gyroLastEvent = performance.now() / 1000;
+        window.addEventListener('deviceorientation', onOrientation, true);
+      } else {
+        window.removeEventListener('deviceorientation', onOrientation, true);
+      }
+    }
+    function retireGyroButton() {
+      setGyro(false);
+      tiltBtn.classList.add('off');
+      tiltBtn.disabled = true;
+    }
+    tiltBtn.addEventListener('click', async () => {
+      if (tiltBtn.disabled) return;
+      if (gyroOn) {
+        setGyro(false);
+        lastInteract = performance.now() / 1000;
+        return;
+      }
+      if (typeof DeviceOrientationEvent === 'undefined') { retireGyroButton(); return; }
+      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        try {
+          const answer = await DeviceOrientationEvent.requestPermission();
+          if (answer !== 'granted') { retireGyroButton(); return; }
+        } catch (err) { retireGyroButton(); return; }
+      }
+      gyroSawData = false;
+      setGyro(true);
+      // A device with the API but no live sensor stays silent — retire
+      // the button quietly rather than leaving a dead control lit.
+      setTimeout(() => { if (gyroOn && !gyroSawData) retireGyroButton(); }, 4000);
+    });
+
+    function resize() {
+      const width = Math.max(1, container.clientWidth || window.innerWidth);
+      const height = Math.max(1, container.clientHeight || window.innerHeight);
+      camera.aspect = width / height;
+      // Fit the WHOLE coin on narrow portrait screens: widen the vertical
+      // fov until the coin's full width clears the frame edges. (The old
+      // flat 50° left a 390px phone showing only the coin's middle.)
+      const fitTan = 2.18 / 7.35;
+      let fov = 43;
+      if (Math.tan(THREE.MathUtils.degToRad(fov / 2)) * camera.aspect < fitTan) {
+        fov = Math.min(75, THREE.MathUtils.radToDeg(2 * Math.atan(fitTan / camera.aspect)));
+      }
+      camera.fov = fov;
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(width, height);
+    }
+    window.addEventListener('resize', resize, { passive: true });
+    resize();
+
+    let currentCaption = 'THE FORTRESS P';
+    function setCaption(text) {
+      if (text === currentCaption) return;
+      currentCaption = text;
+      markNameEl.style.opacity = '0';
+      setTimeout(() => {
+        markNameEl.textContent = text;
+        markNameEl.style.opacity = '1';
+      }, 180);
+    }
+
+    const startTime = performance.now();
+    let previousTime = startTime;
+
+    function animate(now) {
+      requestAnimationFrame(animate);
+      const elapsed = (now - startTime) / 1000;
+      const delta = Math.min(Math.max((now - previousTime) / 1000, 0), 0.05);
+      previousTime = now;
+      const absoluteTime = now / 1000;
+
+      // Gyro drive: while the phone reports fresh tilt, it steers the
+      // coin on the reverse and the auto-rock stays paused.
+      const gyroFresh = gyroOn && (absoluteTime - gyroLastEvent < 2);
+      if (gyroFresh && !hasPose) {
+        gyroSmooth += (gyroTheta - gyroSmooth) * (1 - Math.exp(-delta * 6));
+        rotYTarget = Math.PI + THREE.MathUtils.degToRad(gyroSmooth);
+        rotXTarget = 0.05;
+        lastInteract = absoluteTime;
+      }
+
+      if (!hasPose && !dragging && !gyroFresh && absoluteTime - lastInteract > 2.5) {
+        // Slow auto-rock with the Fortress P as HOME: the cubed-sine wave
+        // dwells at rotY = 0 (the P), sweeps out through every secret,
+        // and returns to rest on the P. First and last sight is the P.
+        rockPhase += delta * 0.22;
+        const rock = Math.sin(rockPhase);
+        rotYTarget = rock * rock * rock * (Math.PI + 0.78);
+        rotXTarget = 0.05 + Math.sin(rockPhase * 1.6) * 0.12;
+      }
+      const blend = 1 - Math.exp(-delta * 5.5);
+      rotY += (rotYTarget - rotY) * blend;
+      rotX += (rotXTarget - rotX) * blend;
+
+      coin.rotation.y = rotY;
+      coin.rotation.x = rotX;
+      coin.position.y = 0.1 + Math.sin(elapsed * 0.85) * 0.03;
+      ember.intensity = 1.6 + Math.sin(elapsed * 1.7) * 0.25;
+
+      // Where does the reverse stand against the camera?
+      const cosY = Math.cos(rotY);
+      const thetaDeg = wrapDeg(THREE.MathUtils.radToDeg(rotY) - 180);
+      const weights = computeWeights(thetaDeg);
+      if (cosY < -0.2) {
+        secretUniforms.uW.value.set(weights[0], weights[1], weights[2], weights[3]);
+      } else {
+        secretUniforms.uW.value.set(0, 0, 0, 0);
+      }
+      secretUniforms.uSheen.value = THREE.MathUtils.clamp(thetaDeg / 60, -1, 1);
+
+      if (cosY > 0.35) {
+        setCaption('THE FORTRESS P');
+      } else if (cosY < -0.35) {
+        let best = 0;
+        let bestW = 0;
+        for (let i = 0; i < 4; i++) {
+          if (weights[i] > bestW) { bestW = weights[i]; best = i; }
+        }
+        setCaption(bestW > 0.38 ? NAMES[best] : 'THE SECRET SIDE');
+      }
+
+      // Readable state for verification (and any future debugging).
+      window.__secretSide = { rotY, rotX, thetaDeg, dragging, gyroOn, caption: currentCaption };
+
+      camera.lookAt(0, 0.05, 0);
+      renderer.render(scene, camera);
+    }
+    requestAnimationFrame(animate);
