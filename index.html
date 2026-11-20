@@ -1496,7 +1496,13 @@ try{
 <!-- ============ SLICE 1 — THE MONUMENT TURNS: the medallion becomes the coin.
      Counted geometry from the same loops as the SVG above (47 beads · 7 merlons · 5 courses).
      The SVG paints first (LCP) and stays as the fallback; the canvas is pointer-events:none,
-     so no door is ever blocked. Any failure leaves the page exactly as it was. ============ -->
+     so no door is ever blocked. Any failure leaves the page exactly as it was.
+     FIX PASS (v10): relief clipped to the wall span exactly as the SVG's wallclip does (no
+     instance crosses r .93) · the dent field is real displaced geometry, not bump alone ·
+     a raking key light casts true contact shadows under the bricks · the blade sweep runs
+     on a local clock that starts at the rest orientation, so the first visible frame IS
+     the settled state · the loop is the module's own RAF with a watchdog — a frozen canvas
+     is impossible: it either animates or the SVG returns. ============ -->
 <script type="module">
 try{
   var cwrap = document.getElementById("coinwrap");
@@ -1525,16 +1531,46 @@ try{
       var renderer = new THREE1.WebGLRenderer({ canvas:ccvs, alpha:true, antialias:true, powerPreference:"high-performance" });
       renderer.setClearColor(0x000000, 0);
       renderer.toneMapping = THREE1.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.1;
+      renderer.toneMappingExposure = 1.04;
       renderer.outputColorSpace = THREE1.SRGBColorSpace;
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE1.PCFSoftShadowMap;
 
       var scene = new THREE1.Scene();
       var camera = new THREE1.PerspectiveCamera(30, 1, .1, 30);
       camera.position.set(0, 0, 4.05);
       var coin = new THREE1.Group(); scene.add(coin);
+      var coinMobile = Math.min(window.innerWidth, window.innerHeight) < 700;
+      var lowCore = (navigator.hardwareConcurrency || 8) <= 4;
+
+      /* ---------- the counted relief — the SVG's own loops, in metal.
+         The SVG draws its bricks into a group clipped by wallclip (x 150..490);
+         the instances are clipped to the same span, then held inside r .93,
+         so nothing ever crosses the rim. ---------- */
+      var boxes = [], c, bx;
+      for(c = 0; c < 5; c++){ /* 5 courses, running bond — the coinwall loop, verbatim numbers */
+        var off = (c % 2) * 42;
+        for(bx = 150 - off; bx < 490; bx += 84){
+          var bl = Math.max(150, bx), br = Math.min(490, bx + 81);
+          if(br - bl < 2) continue;
+          boxes.push({ x:((bl + br) / 2 - 320) / 300, y:-(398 + c * 27 + 13.5 - 320) / 300, w:(br - bl) / 300, h:24 / 300 });
+        }
+      }
+      var merlonCount = 0, mgap = (340 - 7 * 32) / 8;
+      for(var mi = 0; mi < 7; mi++){ /* exactly 7 merlons, the SVG's gap math */
+        var mx = 150 + mgap + mi * (32 + mgap);
+        boxes.push({ x:(mx - 304) / 300, y:-(382 - 320) / 300, w:32 / 300, h:36 / 300 });
+        merlonCount++;
+      }
+      boxes.forEach(function(bd){ /* the disc guard: farthest corner inside r .93, always */
+        var cr = Math.hypot(Math.abs(bd.x) + bd.w / 2, Math.abs(bd.y) + bd.h / 2);
+        if(cr > .93){ var s = .93 / cr; bd.x *= s; bd.y *= s; bd.w *= s; bd.h *= s; }
+      });
 
       /* ---------- the dent field: 420 discrete hammer dents on a 1024 canvas,
-         bump + correlated roughness, generated at runtime (0 KB of textures) ---------- */
+         bump + correlated roughness, generated at runtime (0 KB of textures).
+         The wall's mortar joints and the contact shadow under every brick are
+         drawn into the same canvases, in face space, from the clipped boxes. ---------- */
       function dentCanvases(){
         var S = 1024;
         var bc = document.createElement("canvas"); bc.width = bc.height = S;
@@ -1551,18 +1587,38 @@ try{
           g.addColorStop(0, up ? "rgba(255,255,255,.05)" : "rgba(0,0,0,.05)"); g.addColorStop(1, "rgba(0,0,0,0)");
           r.fillStyle = g; r.beginPath(); r.arc(x, y, rad, 0, 7); r.fill();
         }
+        /* contact shadow under every brick, on the roughness canvas: rougher
+           scatters the room's light and reads as shadow at rest */
+        boxes.forEach(function(bd){
+          var cx = (bd.x / 1.924 + .5) * S, cy = (1 - (bd.y / 1.924 + .5)) * S;
+          var w = bd.w / 1.924 * S, h = bd.h / 1.924 * S;
+          r.save();
+          try{ r.filter = "blur(6px)"; }catch(e){}
+          r.fillStyle = "rgba(240,240,240,.62)";
+          r.fillRect(cx - w / 2 + 5, cy - h / 2 + 7, w, h);
+          r.restore();
+        });
         for(i = 0; i < 420; i++){
-          x = rnd() * S; y = rnd() * S; rad = 4 + rnd() * 20;
-          var depth = .35 + rnd() * .5, raised = rnd() < .14;
+          x = rnd() * S; y = rnd() * S; rad = 4 + rnd() * 22;
+          var depth = .5 + rnd() * .45, raised = rnd() < .14;
           g = b.createRadialGradient(x, y, 0, x, y, rad);
-          g.addColorStop(0, raised ? "rgba(235,235,235," + depth + ")" : "rgba(18,18,18," + depth + ")");
-          g.addColorStop(.72, "rgba(128,128,128,.18)"); g.addColorStop(1, "rgba(128,128,128,0)");
+          g.addColorStop(0, raised ? "rgba(240,240,240," + depth + ")" : "rgba(10,10,10," + depth + ")");
+          g.addColorStop(.55, raised ? "rgba(190,190,190,.28)" : "rgba(70,70,70,.28)");
+          g.addColorStop(1, "rgba(128,128,128,0)");
           b.fillStyle = g; b.beginPath(); b.arc(x, y, rad, 0, 7); b.fill();
-          g = r.createRadialGradient(x, y, 0, x, y, rad); /* dent floors rougher, raised crests smoother */
-          g.addColorStop(0, raised ? "rgba(40,40,40,.5)" : "rgba(215,215,215,.55)"); g.addColorStop(1, "rgba(128,128,128,0)");
+          g = r.createRadialGradient(x, y, 0, x, y, rad); /* dent floors much rougher, raised crests smoother */
+          g.addColorStop(0, raised ? "rgba(30,30,30,.7)" : "rgba(225,225,225,.85)"); g.addColorStop(1, "rgba(128,128,128,0)");
           r.fillStyle = g; r.beginPath(); r.arc(x, y, rad, 0, 7); r.fill();
         }
-        return { bump: bc, rough: rc };
+        /* mortar joints last on the bump canvas, so they stay crisp: a recessed
+           groove around every brick — and the displacement below carves it for real */
+        boxes.forEach(function(bd){
+          var cx = (bd.x / 1.924 + .5) * S, cy = (1 - (bd.y / 1.924 + .5)) * S;
+          var w = bd.w / 1.924 * S, h = bd.h / 1.924 * S;
+          b.strokeStyle = "rgba(12,12,12,.65)"; b.lineWidth = 3;
+          b.strokeRect(cx - w / 2, cy - h / 2, w, h);
+        });
+        return { bump: bc, rough: rc, bumpCtx: b };
       }
       var maps = dentCanvases();
       var bumpTex = new THREE1.CanvasTexture(maps.bump);
@@ -1574,27 +1630,41 @@ try{
 
       /* ---------- gold: real F0 (1.0, 0.71, 0.29), metalness 1, clearcoat 0 ---------- */
       var GOLD = new THREE1.Color(1.0, .71, .29);
-      var faceMat = new THREE1.MeshPhysicalMaterial({ color:GOLD, metalness:1, roughness:1, roughnessMap:roughTex, bumpMap:bumpTex, bumpScale:.005, clearcoat:0, envMapIntensity:1.3, polygonOffset:true, polygonOffsetFactor:-2, polygonOffsetUnits:-2 });
-      var reliefMat = new THREE1.MeshPhysicalMaterial({ color:GOLD, metalness:1, roughness:1, roughnessMap:reliefRough, bumpMap:reliefBump, bumpScale:.004, clearcoat:0, envMapIntensity:1.25 });
-      var plainMat = new THREE1.MeshPhysicalMaterial({ color:GOLD, metalness:1, roughness:.42, clearcoat:0, envMapIntensity:1.2 });
+      var faceMat = new THREE1.MeshPhysicalMaterial({ color:GOLD, metalness:1, roughness:1, roughnessMap:roughTex, bumpMap:bumpTex, bumpScale:.008, clearcoat:0, envMapIntensity:1.12, polygonOffset:true, polygonOffsetFactor:-2, polygonOffsetUnits:-2 });
+      var reliefMat = new THREE1.MeshPhysicalMaterial({ color:GOLD, metalness:1, roughness:1, roughnessMap:reliefRough, bumpMap:reliefBump, bumpScale:.006, clearcoat:0, envMapIntensity:1.08 });
+      var plainMat = new THREE1.MeshPhysicalMaterial({ color:GOLD, metalness:1, roughness:.42, clearcoat:0, envMapIntensity:1.05 });
 
       /* ---------- the room the gold reflects: near-black, ONE hot card at 45° upper-left,
          one blade strip, one dim firelight fill. Baked once with PMREM. ---------- */
       var pmrem = new THREE1.PMREMGenerator(renderer);
       var envScene = new THREE1.Scene();
       var room = new THREE1.Mesh(new THREE1.SphereGeometry(12, 16, 12), new THREE1.MeshBasicMaterial({ side:THREE1.BackSide }));
-      room.material.color.setRGB(.028, .023, .017); envScene.add(room);
+      room.material.color.setRGB(.02, .016, .012); envScene.add(room);
       function card(w, h, rgb, x, y, z){
         var m = new THREE1.Mesh(new THREE1.PlaneGeometry(w, h), new THREE1.MeshBasicMaterial());
         m.material.color.setRGB(rgb[0], rgb[1], rgb[2]); m.material.toneMapped = false;
         m.position.set(x, y, z); m.lookAt(0, 0, 0); envScene.add(m);
       }
-      card(3.4, 3.4, [13, 10.6, 6.8], -3.6, 3.0, 2.8);  /* the one light */
+      card(2.7, 2.7, [10.5, 8.6, 5.6], -3.6, 3.0, 2.8);  /* the one light — a defined highlight, not a flood */
       card(5.2, .38, [5.2, 4.3, 2.7], .8, 1.1, 3.6);   /* the blade — its sweep is the alive trick */
       card(2.6, 2.6, [.5, .34, .16], 3.6, -2.0, 1.4);  /* firelight hint, low from the right */
       scene.environment = pmrem.fromScene(envScene, .04).texture;
-      scene.environmentRotation = new THREE1.Euler(0, 0, -.1);
+      var ENV_REST_Z = -.1; /* the rest orientation: hidden frames, first loop frames and the settled state all share it */
+      scene.environmentRotation = new THREE1.Euler(0, 0, ENV_REST_Z);
       pmrem.dispose();
+
+      /* ---------- the one key light, raking in from the upper-left (the locked
+         design's single light, made real): it shades the relief's sides and
+         casts true contact shadows under every brick ---------- */
+      var key = new THREE1.DirectionalLight(0xFFEBBE, 2.4);
+      key.position.set(-3.4, 2.0, 2.2);
+      key.castShadow = true;
+      key.shadow.mapSize.set(coinMobile || lowCore ? 1024 : 2048, coinMobile || lowCore ? 1024 : 2048);
+      key.shadow.camera.left = -1.15; key.shadow.camera.right = 1.15;
+      key.shadow.camera.top = 1.15; key.shadow.camera.bottom = -1.15;
+      key.shadow.camera.near = 1; key.shadow.camera.far = 12;
+      key.shadow.bias = -0.0002; key.shadow.normalBias = .012;
+      scene.add(key); scene.add(key.target);
 
       /* ---------- the blank: a lathe profile with a bevelled rim, like a struck planchet ---------- */
       function smooth(t){ return t * t * (3 - 2 * t); }
@@ -1604,12 +1674,41 @@ try{
       for(k = 1; k <= 5; k++){ t = k / 5; prof.push(new THREE1.Vector2(1 - .04 * t, .031 + .015 * smooth(t))); }
       prof.push(new THREE1.Vector2(.96, .046), new THREE1.Vector2(0, .046));
       var blank = new THREE1.Mesh(new THREE1.LatheGeometry(prof, 160), plainMat);
-      blank.geometry.rotateX(Math.PI / 2); coin.add(blank);
+      blank.geometry.rotateX(Math.PI / 2); blank.receiveShadow = true; coin.add(blank);
 
-      /* face plates — planar UVs carry the dent field */
-      var faceGeo = new THREE1.CircleGeometry(.962, 96);
-      var front = new THREE1.Mesh(faceGeo, faceMat); front.position.z = .0472; coin.add(front);
-      var back = new THREE1.Mesh(faceGeo, faceMat); back.position.z = -.0472; back.rotation.y = Math.PI; coin.add(back);
+      /* face plates — a polar grid whose vertices are DISPLACED by the dent
+         field itself (the spec's named escalation, adopted after the kill
+         test): the hammering is real geometry, not only shading */
+      function discGeometry(){
+        var R = .962, RINGS = 48, SEG = 160, pos = [], uv = [], idx = [], j, s, rr, aa, xx, yy;
+        var img = maps.bumpCtx.getImageData(0, 0, 1024, 1024).data;
+        function hAt(u, v){
+          var px = Math.max(0, Math.min(1023, Math.round(u * 1023)));
+          var py = Math.max(0, Math.min(1023, Math.round((1 - v) * 1023)));
+          return (img[(py * 1024 + px) * 4] - 138) / 117;
+        }
+        for(j = 0; j <= RINGS; j++){
+          rr = R * j / RINGS;
+          for(s = 0; s < SEG; s++){
+            aa = s / SEG * Math.PI * 2;
+            xx = rr * Math.cos(aa); yy = rr * Math.sin(aa);
+            var u = xx / (2 * R) + .5, v = yy / (2 * R) + .5;
+            pos.push(xx, yy, hAt(u, v) * .0035); uv.push(u, v);
+          }
+        }
+        for(j = 0; j < RINGS; j++) for(s = 0; s < SEG; s++){
+          var a0 = j * SEG + s, b0 = j * SEG + (s + 1) % SEG, c0 = a0 + SEG, d0 = b0 + SEG;
+          idx.push(a0, c0, b0, b0, c0, d0);
+        }
+        var g = new THREE1.BufferGeometry();
+        g.setAttribute("position", new THREE1.Float32BufferAttribute(pos, 3));
+        g.setAttribute("uv", new THREE1.Float32BufferAttribute(uv, 2));
+        g.setIndex(idx); g.computeVertexNormals();
+        return g;
+      }
+      var faceGeo = discGeometry();
+      var front = new THREE1.Mesh(faceGeo, faceMat); front.position.z = .0472; front.receiveShadow = true; coin.add(front);
+      var back = new THREE1.Mesh(faceGeo, faceMat); back.position.z = -.0472; back.rotation.y = Math.PI; back.receiveShadow = true; coin.add(back);
 
       /* the edge: reeding from a procedural strip — with the one tally flat left smooth */
       function reedingTexture(){
@@ -1624,13 +1723,14 @@ try{
       }
       var rim = new THREE1.Mesh(
         new THREE1.CylinderGeometry(1.0015, 1.0015, .062, 160, 1, true),
-        new THREE1.MeshPhysicalMaterial({ color:GOLD, metalness:1, roughness:.4, bumpMap:reedingTexture(), bumpScale:.0035, clearcoat:0, envMapIntensity:1.2 }));
+        new THREE1.MeshPhysicalMaterial({ color:GOLD, metalness:1, roughness:.4, bumpMap:reedingTexture(), bumpScale:.0035, clearcoat:0, envMapIntensity:1.05 }));
       rim.geometry.rotateX(Math.PI / 2); coin.add(rim);
 
-      /* ---------- the counted relief — the SVG's own loops, in metal ---------- */
+      /* ---------- the relief, placed: beads on the rim ring, the clipped wall
+         standing deeper proud of the field, all of it casting shadow ---------- */
       var dummy = new THREE1.Object3D();
       var beads = new THREE1.InstancedMesh(new THREE1.SphereGeometry(.0187, 12, 8), reliefMat, 47);
-      beads.frustumCulled = false;
+      beads.frustumCulled = false; beads.castShadow = true;
       var beadCount = 0, i, a;
       for(i = 0; i < 47; i++){
         a = (i / 47) * Math.PI * 2 - Math.PI / 2;
@@ -1640,24 +1740,11 @@ try{
       }
       beads.instanceMatrix.needsUpdate = true; coin.add(beads);
 
-      var boxes = [], c, bx;
-      for(c = 0; c < 5; c++){ /* 5 courses, running bond — the coinwall loop, verbatim numbers */
-        var off = (c % 2) * 42;
-        for(bx = 150 - off; bx < 490; bx += 84){
-          boxes.push({ x:(bx - 278) / 300, y:-(398 + c * 27 + 13.5 - 320) / 300, w:81 / 300, h:24 / 300 });
-        }
-      }
-      var merlonCount = 0, mgap = (340 - 7 * 32) / 8;
-      for(i = 0; i < 7; i++){ /* exactly 7 merlons, the SVG's gap math */
-        var mx = 150 + mgap + i * (32 + mgap);
-        boxes.push({ x:(mx - 304) / 300, y:-(382 - 320) / 300, w:32 / 300, h:36 / 300 });
-        merlonCount++;
-      }
       var relief = new THREE1.InstancedMesh(new THREE1.BoxGeometry(1, 1, 1), reliefMat, boxes.length);
-      relief.frustumCulled = false;
+      relief.frustumCulled = false; relief.castShadow = true; relief.receiveShadow = true;
       boxes.forEach(function(bd, idx){
-        dummy.position.set(bd.x, bd.y, .0552);
-        dummy.rotation.set(0, 0, 0); dummy.scale.set(bd.w, bd.h, .024); dummy.updateMatrix();
+        dummy.position.set(bd.x, bd.y, .0602);
+        dummy.rotation.set(0, 0, 0); dummy.scale.set(bd.w, bd.h, .034); dummy.updateMatrix();
         relief.setMatrixAt(idx, dummy.matrix);
       });
       relief.instanceMatrix.needsUpdate = true; coin.add(relief);
@@ -1666,19 +1753,18 @@ try{
          the ray count is the founder's open call, and no number is baked here */
       [.3, .48, .66].forEach(function(rr){
         var ring = new THREE1.Mesh(new THREE1.TorusGeometry(rr, .006, 8, 96), reliefMat);
-        ring.position.z = -.0492; coin.add(ring);
+        ring.position.z = -.0492; ring.castShadow = true; coin.add(ring);
       });
       var sunDisc = new THREE1.Mesh(new THREE1.CylinderGeometry(.1, .1, .016, 48), reliefMat);
-      sunDisc.geometry.rotateX(Math.PI / 2); sunDisc.position.z = -.0512; coin.add(sunDisc);
+      sunDisc.geometry.rotateX(Math.PI / 2); sunDisc.position.z = -.0512; sunDisc.castShadow = true; coin.add(sunDisc);
 
       /* ---------- the receipt, in the console (§5.7): counts from the loops themselves ---------- */
       var wallBricks = 0, chip = document.querySelector(".chip b");
       if(chip){ var parsed = parseInt(chip.textContent, 10); if(!isNaN(parsed)) wallBricks = parsed; }
-      window.PROVADIA = { beads: beadCount, merlons: merlonCount, courses: 5, bricks: wallBricks };
+      window.PROVADIA = { beads: beadCount, merlons: merlonCount, courses: 5, bricks: wallBricks, live: false };
       console.info("PROVADIA hero: " + beadCount + " beads · " + merlonCount + " merlons · 5 courses · wall bricks: " + wallBricks + " (receipted). Counts are generated, not drawn.");
 
       /* ---------- sizing: DPR caps + a fixed buffer ceiling, per §5.6 ---------- */
-      var coinMobile = Math.min(window.innerWidth, window.innerHeight) < 700;
       function sizeCoin(){
         var w = cwrap.clientWidth, h = cwrap.clientHeight; if(!w || !h) return;
         var dpr = Math.min(window.devicePixelRatio || 1, coinMobile ? 1.5 : 1.75);
@@ -1692,13 +1778,16 @@ try{
       window.addEventListener("resize", sizeCoin);
 
       /* ---------- interaction: damped lean (THE interaction), scroll rotation, tap-flip.
-         Drag-orbit is rejected — a monument, not a model viewer. ---------- */
+         Drag-orbit is rejected — a monument, not a model viewer.
+         The loop is this module's OWN requestAnimationFrame — no dependency on
+         any page ticker — and a watchdog stands behind it: if frames stop while
+         the canvas is showing, the SVG returns. A frozen canvas cannot persist. ---------- */
       var hero = document.getElementById("hero");
       var visible = true, swapped = false, dead = false;
       var nx = 0, ny = 0, tiltX = 0, tiltY = 0, scrollRot = 0, parX = 0, parY = 0;
       var lastPointer = -1e5, lastScrollT = -1e5, lastP = -1, flipStart = -1;
-      var lastFrame = 0, lastStepT = 0;
-      var lowCore = (navigator.hardwareConcurrency || 8) <= 4;
+      var lastFrame = 0, lastStepT = 0, sweepT = 0, framesRendered = 0, lastFrameAt = 0;
+      var rafId = 0, watchdogId = 0;
       new IntersectionObserver(function(en){ visible = en[0].isIntersecting; }, { threshold:.01 }).observe(cwrap);
       window.addEventListener("pointermove", function(e){
         nx = (e.clientX / window.innerWidth - .5) * 2;
@@ -1706,19 +1795,27 @@ try{
         lastPointer = performance.now();
       }, { passive:true });
       window.addEventListener("pointerdown", function(e){
-        if(coinReduced || !swapped || flipStart >= 0 || !hero) return;
+        nx = (e.clientX / window.innerWidth - .5) * 2;
+        ny = (e.clientY / window.innerHeight - .5) * 2;
+        lastPointer = performance.now();
+        if(!swapped || flipStart >= 0 || !hero) return;
         if(e.target && e.target.closest && e.target.closest("a,button,input,textarea,select,header,[data-copy]")) return;
         var hr = hero.getBoundingClientRect();
         if(e.clientY < hr.top || e.clientY > hr.bottom) return;
         flipStart = performance.now();
       }, { passive:true });
-      ccvs.addEventListener("webglcontextlost", function(e){
-        e.preventDefault();
+
+      function failToSvg(err){
         if(dead) return; dead = true;
-        console.warn("PROVADIA hero: WebGL context lost — the SVG medallion stands.");
-        ccvs.style.opacity = "0"; csvg.style.visibility = ""; csvg.style.opacity = "";
-        stopLoop();
-      });
+        if(rafId) cancelAnimationFrame(rafId); rafId = 0;
+        if(watchdogId) clearInterval(watchdogId); watchdogId = 0;
+        console.warn("PROVADIA hero: the 3D coin stood down — the SVG medallion stands.", err || "");
+        ccvs.style.opacity = "0";
+        csvg.style.transition = "none"; csvg.style.opacity = ""; csvg.style.visibility = "";
+        cwrap.removeAttribute("data-coin-live"); ccvs.removeAttribute("data-live");
+        if(window.PROVADIA) window.PROVADIA.live = false;
+      }
+      ccvs.addEventListener("webglcontextlost", function(e){ e.preventDefault(); failToSvg("webglcontextlost"); });
 
       function heroProgress(){
         if(!hero) return 0;
@@ -1727,69 +1824,79 @@ try{
       }
       function step(now){
         if(dead || !visible || document.hidden) return;
-        var p = heroProgress();
-        if(p !== lastP){ lastP = p; lastScrollT = now; }
-        var idle = (now - lastPointer > 3000) && (now - lastScrollT > 300) && flipStart < 0;
-        var minGap = lowCore ? 33 : (idle ? 50 : 0); /* idle: the blade sweep alone, throttled */
-        if(now - lastFrame < minGap) return;
-        lastFrame = now;
-        var dt = lastStepT ? Math.min(.05, (now - lastStepT) / 1000) : .016; lastStepT = now;
-        var k = 1 - Math.pow(1 - .1, dt * 60); /* Bruno damping: lerp 0.1, settle under ~200 ms */
-        var flipA = 0;
-        if(flipStart >= 0){
-          var fk = (now - flipStart) / 720;
-          if(fk >= 1) flipStart = -1;
-          else { var fe = fk < .5 ? 4 * fk * fk * fk : 1 - Math.pow(-2 * fk + 2, 3) / 2; flipA = fe * Math.PI * 2; }
-        }
-        tiltY += (nx * .21 - tiltY) * k;
-        tiltX += (ny * .14 - tiltX) * k;
-        scrollRot += (p * 1.85 - scrollRot) * k;
-        parX += (nx * .05 - parX) * k;
-        parY += (-ny * .03 - parY) * k;
-        coin.rotation.y = tiltY + scrollRot + flipA;
-        coin.rotation.x = tiltX;
-        coin.position.x = parX;
-        coin.position.y = parY - p * .38; /* the sink toward the Wall */
-        var sc = 1 - p * .06; coin.scale.set(sc, sc, sc);
-        scene.environmentRotation.z = -.1 + Math.sin(now * .000571) * .16 + p * .3; /* 11 s blade sweep */
-        scene.environmentRotation.y = tiltY * .35;
-        renderer.render(scene, camera);
+        try{
+          var p = heroProgress();
+          if(p !== lastP){ lastP = p; lastScrollT = now; }
+          var idle = (now - lastPointer > 3000) && (now - lastScrollT > 300) && flipStart < 0;
+          var minGap = lowCore || idle ? 33 : 0; /* throttled only when idle or on a small core */
+          if(now - lastFrame < minGap) return;
+          lastFrame = now;
+          var dt = lastStepT ? Math.min(.05, (now - lastStepT) / 1000) : .016; lastStepT = now;
+          if(!coinReduced) sweepT += dt * 1000; /* the sweep's own clock, born at the swap; reduced motion stills it, nothing else */
+          var k = 1 - Math.pow(1 - .1, dt * 60); /* Bruno damping: lerp 0.1, settle under ~200 ms */
+          var flipA = 0;
+          if(flipStart >= 0){
+            var fk = (now - flipStart) / 720;
+            if(fk >= 1) flipStart = -1;
+            else { var fe = fk < .5 ? 4 * fk * fk * fk : 1 - Math.pow(-2 * fk + 2, 3) / 2; flipA = fe * Math.PI * 2; }
+          }
+          tiltY += (nx * .21 - tiltY) * k;
+          tiltX += (ny * .14 - tiltX) * k;
+          scrollRot += (p * 1.85 - scrollRot) * k;
+          parX += (nx * .05 - parX) * k;
+          parY += (-ny * .03 - parY) * k;
+          coin.rotation.y = tiltY + scrollRot + flipA;
+          coin.rotation.x = tiltX;
+          coin.position.x = parX;
+          coin.position.y = parY - p * .38; /* the sink toward the Wall */
+          var sc = 1 - p * .06; coin.scale.set(sc, sc, sc);
+          scene.environmentRotation.z = ENV_REST_Z + Math.sin(sweepT * .000571) * .05; /* 11 s blade sweep, ±.05 rad around the rest orientation */
+          scene.environmentRotation.y = Math.sin(sweepT * .000571 + 1.3) * .06 + tiltY * .35;
+          renderer.render(scene, camera);
+          framesRendered++; lastFrameAt = now;
+        }catch(err){ failToSvg(err); }
       }
-      var rafOn = false;
-      var tickFn = function(){ step(performance.now()); };
-      function startLoop(){
-        if(window.gsap && window.gsap.ticker) window.gsap.ticker.add(tickFn);
-        else { rafOn = true; (function raf(){ if(dead || !rafOn) return; tickFn(); requestAnimationFrame(raf); })(); }
-      }
-      function stopLoop(){
-        if(window.gsap && window.gsap.ticker) window.gsap.ticker.remove(tickFn);
-        rafOn = false;
+      function loop(now){
+        if(dead) return;
+        rafId = requestAnimationFrame(loop);
+        step(now || performance.now());
       }
 
-      /* ---------- the swap (§5.5): compile async, render 2 frames hidden,
-         crossfade only after the intro has had its moment. Any failure → the SVG stays. ---------- */
+      /* ---------- the swap (§5.5): compile async, render hidden frames, start the
+         real loop, and crossfade only once live frames exist at the settled rest
+         state — exposure and environment are final from the first visible frame.
+         The swap carries its proof: data-coin-live on the wrapper. ---------- */
       if(renderer.compileAsync) await renderer.compileAsync(scene, camera);
       else renderer.compile(scene, camera);
       renderer.render(scene, camera);
       renderer.render(scene, camera);
-      var wait = Math.max(0, 1750 - performance.now());
-      setTimeout(function(){
+      rafId = requestAnimationFrame(loop);
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){
         if(dead) return;
         if(window.gsap && window.gsap.killTweensOf){
           window.gsap.killTweensOf(csvg); /* the intro is done or yielding; nobody else writes the SVG now */
           if(window.gsap.set) window.gsap.set(csvg, { clearProps:"transform" });
         }
         if(coinReduced){ csvg.style.transition = "none"; ccvs.style.transition = "none"; }
-        else csvg.style.transition = "opacity .45s ease";
+        else { csvg.style.transition = "opacity .3s ease"; ccvs.style.transition = "opacity .3s ease"; }
         csvg.style.opacity = "0";
         ccvs.style.opacity = "1";
         swapped = true;
-        setTimeout(function(){ csvg.style.visibility = "hidden"; }, coinReduced ? 0 : 500);
-        if(!coinReduced) startLoop();
-      }, wait);
+        lastFrameAt = performance.now();
+        cwrap.setAttribute("data-coin-live", "1");
+        ccvs.setAttribute("data-live", "1");
+        window.PROVADIA.live = true;
+        window.PROVADIA.swapMs = Math.round(performance.now());
+        setTimeout(function(){ if(!dead) csvg.style.visibility = "hidden"; }, coinReduced ? 0 : 350);
+        watchdogId = setInterval(function(){
+          if(dead || !visible || document.hidden) return;
+          if(performance.now() - lastFrameAt > 1500) failToSvg("watchdog: frames stopped");
+        }, 1000);
+      }); });
     }
   }
 }catch(e){ /* no WebGL, no module — the SVG medallion stands, exactly as before */ }
 </script>
+
 </body>
 </html>
