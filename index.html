@@ -321,6 +321,38 @@ footer{border-top:1px solid var(--line-soft); padding:3.4rem 0 3rem; background:
 .dgt-n{color:var(--faint); font-size:.85rem; margin-top:.6rem; line-height:1.55}
 .dgt-foot{margin-top:1.6rem; color:var(--faint); font-size:.92rem}
 </style>
+<style>
+/* ============ v6 — THE BOOKKEEPER · THE SUPPORT DESK · THE ROAD ============ */
+.bk-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1rem}
+@media(max-width:1080px){.bk-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:680px){.bk-grid{grid-template-columns:1fr}}
+.desk-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:1rem}
+@media(max-width:1080px){.desk-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.desk-grid{grid-template-columns:1fr}}
+a.dgt{display:block; text-decoration:none; color:inherit}
+a.dgt:hover{border-color:var(--gold)}
+.door-name{font-family:var(--serif); font-size:1.15rem; letter-spacing:.06em; color:var(--gold-hi)}
+.door-line{color:var(--salt); font-size:.95rem; margin-top:.55rem; line-height:1.5; word-break:break-word}
+.door-status{display:block; margin-top:.9rem; font-size:.58rem; letter-spacing:.3em; text-transform:uppercase; color:var(--gold); font-family:var(--serif)}
+.dgt.ghosted{border-style:dashed; border-color:rgba(201,162,39,.45); background:rgba(0,0,0,.2); opacity:.62}
+.dgt.ghosted::after{display:none}
+.dgt.ghosted .door-name{color:var(--dim)}
+.dgt.ghosted .door-line{color:var(--faint)}
+.dgt.ghosted .door-status{color:var(--faint)}
+.never-dm{margin-top:1.8rem; border:1px dashed rgba(201,162,39,.55); background:rgba(61,42,8,.14); padding:1.4rem 1.6rem; font-family:var(--serif); font-size:1.05rem; line-height:1.65; color:var(--gold-hi)}
+.road-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:1rem}
+@media(max-width:1080px){.road-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.road-grid{grid-template-columns:1fr}}
+.rstep{border:1px solid var(--line-soft); padding:1.7rem 1.5rem 1.9rem; position:relative; overflow:hidden; background:linear-gradient(165deg, rgba(255,239,193,.045), rgba(0,0,0,.25))}
+.rstep .num{font-family:var(--serif); font-size:2.6rem; font-weight:800; line-height:1; color:transparent; -webkit-text-stroke:1.5px var(--gold); opacity:.9}
+.rstep h3{font-size:1.02rem; margin:.85rem 0 .55rem; letter-spacing:.05em}
+.rstep p{color:var(--dim); font-size:.9rem; line-height:1.55}
+.rstep .rstat{display:inline-block; margin-top:1.05rem; font-size:.58rem; letter-spacing:.3em; text-transform:uppercase; font-family:var(--serif); color:var(--faint)}
+.rstep.outline{background:transparent; border:1.5px solid var(--gold); box-shadow:0 0 34px rgba(201,162,39,.08)}
+.rstep.outline .rstat{color:var(--gold-hi)}
+.rstep.ghosted{border-style:dashed; border-color:rgba(201,162,39,.4); background:rgba(0,0,0,.18); opacity:.6}
+.rstep.ghosted .num{-webkit-text-stroke-color:rgba(201,162,39,.65)}
+</style>
 </head>
 <body id="top">
 <div class="frame" aria-hidden="true"></div>
@@ -678,6 +710,88 @@ footer{border-top:1px solid var(--line-soft); padding:3.4rem 0 3rem; background:
 
 <div class="courses" data-courses aria-hidden="true"></div>
 
+<!-- ================= THE BOOKKEEPER — the smart contract, its books open ================= -->
+<section id="bookkeeper" data-tone="#0C0A06">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <p class="eyebrow">THE BOOKKEEPER</p>
+      <h2 class="sec-title">The smart contract is a bookkeeper — <em>and its books are open.</em></h2>
+      <p class="lede" style="margin-top:1.2rem">The town's record is written once, hashed, and chained — each entry locked to the one before it, and anchored on Solana once a day at the Night Brick close. The Bookkeeper holds no money and trades nothing. It cannot promise anything. It can only tell the truth, in public, forever — and anyone can check its arithmetic.</p>
+    </div>
+    <div class="bk-grid">
+      <div class="dgt" data-reveal>
+        <div class="dgt-k">Creator fee, on the curve</div>
+        <div class="dgt-v">0.30%</div>
+        <p class="dgt-n">of every trade, paid by pump.fun to the creator wallet</p>
+      </div>
+      <div class="dgt" data-reveal>
+        <div class="dgt-k">The split</div>
+        <div class="dgt-v">80 / 20</div>
+        <p class="dgt-n">80% the founder's income · 20% the Golden Wall, off the top</p>
+      </div>
+      <div class="dgt" data-reveal>
+        <div class="dgt-k">Fees earned, all time</div>
+        <div class="dgt-v">$0.39</div>
+        <p class="dgt-n">since launch, November 18, 2026</p>
+      </div>
+      <div class="dgt" data-reveal>
+        <div class="dgt-k">Founder's share (80%)</div>
+        <div class="dgt-v">$0.31</div>
+        <p class="dgt-n">the founder's income, disclosed</p>
+      </div>
+      <div class="dgt" data-reveal>
+        <div class="dgt-k">Wall's share (20%)</div>
+        <div class="dgt-v">$0.08</div>
+        <p class="dgt-n">accrued toward Brick #1; no brick bought yet</p>
+      </div>
+      <div class="dgt" data-reveal>
+        <div class="dgt-k">Daily anchor</div>
+        <div class="dgt-v">Not yet</div>
+        <p class="dgt-n">the record opens with the Foundation pour; Brick #1's receipt is entry number one</p>
+      </div>
+    </div>
+    <p class="dgt-foot" data-reveal>Accuracy is the whole design: every figure is recomputed from the public record. If a number here is ever wrong, the receipts outrank the page.</p>
+  </div>
+</section>
+
+<div class="courses" data-courses aria-hidden="true"></div>
+
+<!-- ================= THE SUPPORT DESK — support that never sleeps ================= -->
+<section id="support" data-tone="#0B0906">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <p class="eyebrow">THE SUPPORT DESK</p>
+      <h2 class="sec-title">Support <em>that never sleeps.</em></h2>
+      <p class="lede" style="margin-top:1.2rem">Most coins have no one to write to. This town does. The desk is watched around the clock, every day — a citizen's message is never left unanswered. Questions about the town, the Wall, a brick, a receipt: write, and a person-grade answer comes back.</p>
+    </div>
+    <div class="desk-grid">
+      <a class="dgt" href="mailto:support@provadiacoin.com" data-reveal>
+        <div class="door-name">Email</div>
+        <p class="door-line">support@provadiacoin.com</p>
+        <span class="door-status">Live</span>
+      </a>
+      <a class="dgt" href="https://x.com/ProvadiaCoin" target="_blank" rel="noopener" data-reveal>
+        <div class="door-name">X</div>
+        <p class="door-line">@ProvadiaCoin — the town square</p>
+        <span class="door-status">Live</span>
+      </a>
+      <div class="dgt ghosted" data-reveal>
+        <div class="door-name">Telegram</div>
+        <p class="door-line">The town channel</p>
+        <span class="door-status">Opens with Brick #1</span>
+      </div>
+      <div class="dgt ghosted" data-reveal>
+        <div class="door-name">Discord</div>
+        <p class="door-line">The citizens' hall</p>
+        <span class="door-status">Opens at 100 Bricklayers</span>
+      </div>
+    </div>
+    <p class="never-dm" data-reveal>We never DM first. Anyone who messages you first claiming to be the town is a thief — the real desk only answers, it never approaches.</p>
+  </div>
+</section>
+
+<div class="courses" data-courses aria-hidden="true"></div>
+
 <!-- ================= THE NIGHT BRICK — the town's heartbeat ================= -->
 <section id="nightbrick" data-tone="#0B0906">
   <div class="wrap">
@@ -880,6 +994,69 @@ footer{border-top:1px solid var(--line-soft); padding:3.4rem 0 3rem; background:
     </div>
   </div>
 </section>
+
+<!-- ================= THE ROAD — paved only as far as we've traveled ================= -->
+<section id="road" data-tone="#080706">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <p class="eyebrow">THE ROAD</p>
+      <h2 class="sec-title">The roadmap — <em>paved only as far as we've traveled.</em></h2>
+      <p class="lede" style="margin-top:1.2rem">Finished steps stand solid and link to their receipts. The next step stands in outline. The rest are blueprints — visible, and never counted as built.</p>
+    </div>
+    <div class="road-grid">
+      <div class="rstep outline" data-reveal>
+        <div class="num">1</div>
+        <h3>THE FOUNDATION</h3>
+        <p>Brick #1, bought with the founder's own money and receipted in the open · the Charter · the Day-Book opens</p>
+        <span class="rstat">Next — in outline</span>
+      </div>
+      <div class="rstep ghosted" data-reveal>
+        <div class="num">2</div>
+        <h3>THE PROMISE MACHINE</h3>
+        <p>every promise the town makes, graded in public — kept ones carved, missed ones left as permanent holes</p>
+        <span class="rstat">Blueprint</span>
+      </div>
+      <div class="rstep ghosted" data-reveal>
+        <div class="num">3</div>
+        <h3>THE LIVENESS LAYER</h3>
+        <p>the town proves it is still tended — silence included</p>
+        <span class="rstat">Blueprint</span>
+      </div>
+      <div class="rstep ghosted" data-reveal>
+        <div class="num">4</div>
+        <h3>THE SIGNED CAPTAIN</h3>
+        <p>the captain's instructions frozen and signed before they take effect; every statement checkable</p>
+        <span class="rstat">Blueprint</span>
+      </div>
+      <div class="rstep ghosted" data-reveal>
+        <div class="num">5</div>
+        <h3>THE TOWN BUILDS OUT</h3>
+        <p>street by street, quarter by quarter — only on real events</p>
+        <span class="rstat">Blueprint</span>
+      </div>
+      <div class="rstep ghosted" data-reveal>
+        <div class="num">6</div>
+        <h3>THE BRICK LOCK</h3>
+        <p>proof of no take: the Wall's gold, locked beyond one man's reach</p>
+        <span class="rstat">Blueprint</span>
+      </div>
+      <div class="rstep ghosted" data-reveal>
+        <div class="num">7</div>
+        <h3>THE FEE CARD</h3>
+        <p>any creator's fees, traced in plain words — ours first, then everyone's</p>
+        <span class="rstat">Blueprint</span>
+      </div>
+      <div class="rstep ghosted" data-reveal>
+        <div class="num">8</div>
+        <h3>THE COVENANT KIT</h3>
+        <p>the town's whole standard, packed so any honest project can pour the same foundation</p>
+        <span class="rstat">Blueprint</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="courses" data-courses aria-hidden="true"></div>
 
 <footer>
   <div class="wrap">
