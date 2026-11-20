@@ -72,6 +72,15 @@
   html.town-fallback .fallback-only{display:block}
   html.town-fallback .cap-static{display:block}
   html.town-fallback .coin-controls{display:none}
+  .doors{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 4px;padding:10px 10px 12px;background:linear-gradient(180deg,rgba(10,8,6,.92),rgba(10,8,6,.78) 70%,transparent);border-bottom:1px solid rgba(201,162,39,.18)}
+  .door-link{font-family:Cinzel,serif;letter-spacing:.18em;font-size:.68rem;text-transform:uppercase;color:rgba(244,239,230,.72);text-decoration:none;padding:.5rem .8rem;border:1px solid transparent;transition:color .2s,border-color .2s,background .2s}
+  .door-link:hover{color:var(--pale);border-color:rgba(201,162,39,.4)}
+  .door-link[aria-current="page"]{color:var(--ink);background:var(--gold);border-color:var(--gold);font-weight:700}
+  @media (max-width:760px){.door-link{font-size:.6rem;padding:.44rem .55rem;letter-spacing:.12em}}
+  html.town-fallback .doors{position:static;background:none;border-bottom:none;padding:0 0 14px}
+  .cap-door-img{width:min(220px,60vw);height:auto;display:block;margin:4px 0 10px;border:1px solid rgba(201,162,39,.4)}
+  .doorway-link{display:inline-block;margin:.6rem .4rem 0 0;font-family:Cinzel,serif;letter-spacing:.14em;font-size:.78rem;text-transform:uppercase;color:var(--gold);text-decoration:none;border:1px solid rgba(201,162,39,.55);padding:.6rem 1rem;background:rgba(201,162,39,.08)}
+  .doorway-link:hover{background:rgba(201,162,39,.2);color:var(--pale)}
 </style>
 <noscript><style>
 #fade{display:none!important}
@@ -188,6 +197,14 @@
 </script>
 </head>
 <body>
+<nav class="doors" aria-label="The doors of the town">
+  <a class="door-link" href="./" aria-current="page">The Town</a>
+  <a class="door-link" href="record/">The Record</a>
+  <a class="door-link" href="agora/">The Forum</a>
+  <a class="door-link" href="knock/">The Knock</a>
+  <a class="door-link" href="ecosystem/">The Ecosystem</a>
+  <a class="door-link" href="about/">About Us</a>
+</nav>
 <div id="stage" aria-hidden="true"></div>
 <div id="ss-stage" aria-hidden="true">
   <div id="scene" aria-hidden="true"></div>
@@ -213,7 +230,7 @@
   <div id="fallback-note" class="fallback-only" role="note">
     <p class="fallback-note-line">The living world of this town needs a WebGL-capable browser. This is its still face — every word, record and door below is the town itself.</p>
     <nav class="fallback-nav" aria-label="The town, station by station">
-      <a href="#station-arrival">Arrival</a> · <a href="#station-gate">The Gate</a> · <a href="#station-captain">Solnik</a> · <a href="#station-square">The Coin</a> · <a href="#station-wall">The Golden Wall</a> · <a href="#station-record">The Day-Book</a> · <a href="#station-umbrella">The Umbrella Hall</a> · <a href="#station-door">Support Desk</a>
+      <a href="#station-arrival">Arrival</a> · <a href="#station-gate">The Gate</a> · <a href="#station-captain">Solnik</a> · <a href="#station-square">The Coin</a> · <a href="#station-wall">The Golden Wall</a> · <a href="record/">The Record</a> · <a href="agora/">The Forum</a> · <a href="knock/">The Knock</a> · <a href="ecosystem/">The Ecosystem</a> · <a href="about/">About Us</a>
     </nav>
   </div>
   <div class="stack active" data-stack="arrival"><section class="town-panel" data-station="arrival" id="station-arrival" aria-label="Arrival">
@@ -238,13 +255,15 @@
 </section></div>
   <div class="stack" data-stack="captain">
     <section class="town-panel cap-panel" id="station-captain" aria-label="Solnik at the front door">
-      <div class="panel-inner"><div data-captain-root><div class="cap-static">
+      <div class="panel-inner"><div class="cap-doorway">
         <p class="cap-static-eyebrow">Provadia · The Front Door</p>
         <h2 class="cap-static-title">Solnik</h2>
+        <img class="cap-door-img" src="engines/captain/marks/mask.webp" alt="Solnik's golden mask — the clay mask of the age, gold plates on its eyes">
         <p class="cap-static-greeting">Hail, traveller, and welcome to Provadia — a town that was old when Rome was a pasture. I am Solnik — last of the solniks, the salt-makers who founded this town — keeper of its Wall and its book. Ask me of the gold, of the salt, of the graves by the sea — for what I tell thee, I can show thee. One claim, one Witness, or it never happened.</p>
         <p class="cap-static-honesty">PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall’s fate — and nothing else: no redemption, no yield, no rights, no expected return.</p>
-        <p class="cap-static-line">Solnik’s living voice is being wired to this seat. Until it speaks, his tales are true, and told — and the desk is open: <a href="mailto:support@provadiacoin.com">support@provadiacoin.com</a>.</p>
-      </div></div></div>
+        <p class="cap-static-line">This door shows the way; it does not hold the conversation. Solnik's seat of conversation is his Chamber, at the head of the Record — there his tales are told in full, his journeys begin, and his living voice will wake when the town's host stands. Until then the desk is open: <a href="mailto:support@provadiacoin.com">support@provadiacoin.com</a>.</p>
+        <a class="doorway-link" href="record/">Walk to the Captain's Chamber →</a>
+      </div></div>
     </section>
   </div>
   <div class="stack" data-stack="square"><section class="town-panel" data-station="square" id="station-square" aria-label="The Coin">
@@ -311,182 +330,30 @@
     <p class="panel-eyebrow">The Book of Bricklayers</p>
     <h2 class="panel-title">The Book of Bricklayers</h2>
     <p class="registry-empty">No name is written yet.</p>
-    <p class="panel-body">The first name enters this book when the first brick is laid in the Wall — with its receipt beside it. Names and brick numbers only. Never holdings, never value. The book grows only when the Wall does.</p>
+    <p class="panel-body">The first name enters this book when the first brick is laid in the Wall — with its receipt beside it. Names and brick numbers only. Never holdings, never value. The book grows only when the Wall does, and the book itself now stands with the Record; the family's own registry stands on the Ecosystem page.</p>
     <div class="registry-treasure">
       <p>My brick is in the Wall — that sentence is the whole of the treasure.</p>
     </div>
+    <a class="doorway-link" href="record/">The book, on the Record →</a>
   </div>
 </section></div>
-  <div class="stack" data-stack="record"><section class="rec-panel" id="station-market" data-station="market">
-  <header class="rec-head">
-    <p class="rec-eyebrow">Station · Market</p>
-    <h2 class="rec-title">The Market Face</h2>
-    <p class="rec-lede">The coin trades where the crowd trades it. This face shows only what its source reports, at the moment it reports it — nothing drawn in by hand.</p>
-  </header>
-
-  <div class="rec-card">
-    <div data-price-grid>
-      <p class="rec-note">reaching for its source…</p>
-    </div>
-    <p class="rec-source" data-price-source>Source: Dexscreener · reaching for its source…</p>
-    <p class="rec-note">Figures refresh every 60 seconds. If the source cannot be reached, the last receipted figures stay up, labelled with their time.</p>
-    <div class="rec-links">
-      <a href="https://pump.fun/coin/9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump" target="_blank" rel="noopener">The coin on pump.fun</a>
-      <a href="https://dexscreener.com/solana/2fvtfwcco71j8xepws7yrez3569u2gxu4fyhe2h8oxdy" target="_blank" rel="noopener">The pair on Dexscreener</a>
-    </div>
-    <div class="rec-row"><span class="rec-k">Contract</span><span class="rec-v rec-mono">9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump</span></div>
-    <div class="rec-row"><span class="rec-k">Supply</span><span class="rec-v">1,000,000,000 · fixed</span></div>
-    <div class="rec-row"><span class="rec-k">Launch</span><span class="rec-v">Fair launch on pump.fun — no presale, no team allocation</span></div>
-  </div>
-
-  <blockquote class="rec-honesty">PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall’s fate — and nothing else: no redemption, no yield, no rights, no expected return.</blockquote>
-</section><section class="rec-panel" id="station-record" data-station="record">
-  <header class="rec-head">
-    <p class="rec-eyebrow">Station · Record</p>
-    <h2 class="rec-title">The Day-Book</h2>
-    <p class="rec-lede">The town's public record. Every entry is chained to the one before it by its hash — change a single letter anywhere and the chain breaks, in the open. Your browser recomputes the whole chain below, on your own machine. No custom on-chain program: the record verifies itself.</p>
-  </header>
-
-  <div class="rec-card">
-    <p class="rec-verdict" data-verify-verdict data-state="working">Recomputing every entry in your browser…</p>
-    <p class="rec-note fallback-only">In this still face the chain cannot be recomputed — that proof needs JavaScript. The book itself, and every entry in it, stands in the living town.</p>
-    <ol class="rec-list" data-daybook-list></ol>
-  </div>
-
-  <div class="rec-card">
-    <h3 class="rec-subtitle">The Daily Anchor</h3>
-    <div class="rec-row"><span class="rec-k">Today's root</span><span class="rec-v rec-mono" data-anchor-root>—</span></div>
-    <p class="rec-note">The root is the SHA-256 of the last entry's hash — one fingerprint for the whole book. Written to Solana as a Memo, it would read exactly:</p>
-    <code class="rec-payload" data-anchor-payload>PROVADIA DAYBOOK ROOT · 2026-11-20 · —</code>
-    <p class="rec-note"><strong>Daily anchor:</strong> the root is computed and ready. The anchor transaction is signed by the founder's hand only — awaiting founder signature.</p>
-    <h4 class="rec-subtitle rec-subtitle-sm">Past anchors</h4>
-    <p class="rec-note">No anchor has been written yet.</p>
-  </div>
-</section><section class="rec-panel" id="station-fees" data-station="fees">
-  <header class="rec-head">
-    <p class="rec-eyebrow">Station · Fees</p>
-    <h2 class="rec-title">The Fee Card</h2>
-    <p class="rec-lede">What the coin pays, and to whom — verified against pump.fun's own published fee documentation (fees page, last updated 16 November 2026). Rates are pump.fun's schedule and can change on their word; the split below is the town's covenant and does not change.</p>
-  </header>
-
-  <div class="rec-card">
-    <div class="rec-row"><span class="rec-k">On the bonding curve</span><span class="rec-v">Creator fee 0.300% of every trade, paid in SOL</span></div>
-    <div class="rec-row"><span class="rec-k">After graduation</span><span class="rec-v">Creator fees continue on the canonical PumpSwap pool, tiered by market cap — 0.300% in the lowest band, peaking at 0.950%, stepping down to 0.050% at the largest caps. Only the canonical pool pays a creator fee; other pools pay 0%.</span></div>
-    <div class="rec-row"><span class="rec-k">Liquidity at migration</span><span class="rec-v">The bonding curve's liquidity migrates to PumpSwap and the LP tokens are burnt — not locked, burnt. Nobody can withdraw the migrated liquidity.</span></div>
-    <div class="rec-row"><span class="rec-k">The split</span><span class="rec-v">Creator fees split 80 / 20 — eighty percent is the founder's income, his pay for building and running the project, disclosed in the open. Twenty percent goes to the Golden Wall, off the top, forever.</span></div>
-    <p class="rec-note">The founder's only income from this project is the disclosed creator fees. Nothing else is skimmed, and no return is promised to anybody.</p>
-  </div>
-</section><section class="rec-panel" id="station-charter" data-station="charter">
-  <header class="rec-head">
-    <p class="rec-eyebrow">Station · Charter</p>
-    <h2 class="rec-title">The Charter</h2>
-    <p class="rec-lede">The law of the Golden Wall, published as record. It rides in every launch post, word for word.</p>
-  </header>
-
-  <div class="rec-card">
-    <blockquote class="rec-charter">20% of creator fees buys physical 1g gold bars stored in a named third-party bullion vault. Each brick: receipt, photo, serial posted to public counter /47. The wall belongs to no one. It cannot be sold. It will be buried at Provadia or donated to a museum, by Bricklayer vote. Nothing else can happen to it. Never backing, never redeemable.</blockquote>
-
-    <h3 class="rec-subtitle">The covenant, in brief</h3>
-    <div class="rec-row"><span class="rec-k">The bricks</span><span class="rec-v">Serial-numbered 1g physical gold bars, bought from a named dealer the moment the accumulated 20% share covers 1g spot plus premium, shipping and vault costs.</span></div>
-    <div class="rec-row"><span class="rec-k">Custody</span><span class="rec-v">Allocated storage at a named, licensed third-party bullion vault. The founder never physically holds the bars.</span></div>
-    <div class="rec-row"><span class="rec-k">The one withdrawal</span><span class="rec-v">ONE withdrawal is permitted, ever — the end ceremony — announced 7 days ahead, with dealer confirmation of dispatch.</span></div>
-    <div class="rec-row"><span class="rec-k">Proof</span><span class="rec-v">Per brick: receipt, photo and serial posted publicly to the counter. The counter stands at 0 / 47.</span></div>
-    <div class="rec-row"><span class="rec-k">The end</span><span class="rec-v">At 47 bricks or the coin's first birthday, whichever comes first. The Bricklayer vote chooses only between burial at Provadia or donation to the Varna Regional Museum. The gold is never sold, never backing, never redeemable.</span></div>
-
-    <h3 class="rec-subtitle">The founder statutes, in brief</h3>
-    <div class="rec-row"><span class="rec-k">Giveback</span><span class="rec-v">No airdrops of value to holders — announced or proportional — ever. The project's giving is structural: the Wall, the town, and the public record.</span></div>
-    <div class="rec-row"><span class="rec-k">Surprise Honors</span><span class="rec-v">Rare, unannounced, for deeds done for the town — never for holdings, never promised, never marketed. Standard form: a brick laid into the Wall in the citizen's honor, paid from the founder's own share, the name and the deed recorded in the Day-Book.</span></div>
-    <div class="rec-row"><span class="rec-k">Reinvestment</span><span class="rec-v">The site and the contract earn nothing for anybody. The founder's only income is the disclosed creator fees, split 80 / 20 as the Fee Card states. No trading for anybody. No promises sold to anybody.</span></div>
-  </div>
-</section><!-- ============ STATION · THE THREE VAULTS ============ -->
-<!-- Mounts with the record panels; record.js fills:
-       [data-tithe=...]            — VAULT I (the Smart Contract): its tithe book
-       [data-vault-gold=...]       — VAULT II: the gold book of bars
-       [data-vault-honors=...]     — VAULT III: past honors, read off the Day-Book
-       [data-vault-verdict]        — the vault ledgers' verification verdict
-     No numbers are hard-coded: the ledgers open empty, and every figure on
-     this face is computed from the chained record in the visitor's browser. -->
-<section class="rec-panel" id="station-vaults" data-station="vaults">
-  <header class="rec-head">
-    <p class="rec-eyebrow">Station · Record</p>
-    <h2 class="rec-title">The Three Vaults</h2>
-    <p class="rec-lede">The town keeps three vaults. The first is the contract itself — this hall's own record. The second holds gold that belongs to no one. The third keeps the town's honors, and its future is sealed by design. Every vault is a book before it is a box: what it holds, and everything it has ever done, is written down and chained — and a vault with nothing in it says so.</p>
-  </header>
-
-  <!-- VAULT I · THE SMART CONTRACT — its tithe book: the community tenth -->
-  <div class="rec-card">
-    <h3 class="rec-subtitle">Vault I · The Smart Contract</h3>
-    <p class="rec-note">Vault One is not a box in this hall — it is this hall's machinery: the hash-chained Day-Book, the Verifier that recomputes it in your browser, the market face, the Fee Card, the daily anchor. A record that verifies itself. And like every vault, it keeps a book of what it holds for others: the community tenth of every house born under the Umbrella is accounted here, in the contract's own tithe book.</p>
-    <h4 class="rec-subtitle rec-subtitle-sm">The Tithe Book — the Community Tenth</h4>
-    <div class="rec-row"><span class="rec-k">Balance</span><span class="rec-v" data-tithe="balance">—</span></div>
-    <div class="rec-row"><span class="rec-k">Houses contributing</span><span class="rec-v" data-tithe="houses">—</span></div>
-    <div class="rec-row"><span class="rec-k">Total received</span><span class="rec-v" data-tithe="in">—</span></div>
-    <div class="rec-row"><span class="rec-k">Total spent</span><span class="rec-v" data-tithe="out">—</span></div>
-    <ol class="rec-list" data-tithe="list"></ol>
-    <p class="rec-note">This book fills when the first house trades. Every coin that enters is receipted here; every coin that leaves will be receipted here, under the founder's ruling, when the time comes.</p>
-    <p class="rec-note">What the gathered tenth will one day buy is not promised and not listed here: its use is decided by the founder's ruling when the book holds something worth deciding over, and the ruling — and the spending — enter this book the day they happen. Amounts are kept in SOL, the coin creator fees are paid in.</p>
-    <p class="rec-note fallback-only">In this still face the ledger cannot be recomputed — that proof needs JavaScript. The book itself, and every entry in it, stands in the living town.</p>
-  </div>
-
-  <!-- VAULT II · THE GOLD VAULT — the Golden Wall's book of bars -->
-  <div class="rec-card">
-    <h3 class="rec-subtitle">Vault II · The Gold Vault</h3>
-    <p class="rec-note">The Golden Wall's own book. The counter at the Wall counts the bricks; this ledger is what stands behind the count — every bar the covenant buys, written down with its serial number, its weight, its dealer, and its storage receipt, chained into the same record as everything else in this hall.</p>
-    <div class="rec-row"><span class="rec-k">Bars laid</span><span class="rec-v" data-vault-gold="bars">—</span></div>
-    <div class="rec-row"><span class="rec-k">Gold held</span><span class="rec-v" data-vault-gold="grams">—</span></div>
-    <ol class="rec-list" data-vault-gold="list"></ol>
-    <p class="rec-note" data-vault-gold="empty">The first brick is the founder's own, and it has not been laid yet.</p>
-    <blockquote class="rec-honesty">The gold sits at a named third-party vault. It belongs to no one. It is never backing, and never redeemable.</blockquote>
-    <p class="rec-note fallback-only">In this still face the ledger cannot be recomputed — that proof needs JavaScript. The book itself, and every entry in it, stands in the living town.</p>
-  </div>
-
-  <!-- VAULT III · THE HONORS VAULT — the law, and the honors already landed -->
-  <div class="rec-card">
-    <h3 class="rec-subtitle">Vault III · The Honors Vault</h3>
-    <p class="rec-note">The town's law of surprise honors lives in this vault: rare, unannounced, given for deeds — never for holdings, never promised, never marketed — and paid from the founder's own share. The standard form is a brick laid into the Wall in the honoree's honor, the name and the deed recorded in the Day-Book.</p>
-    <p class="rec-note">This face carries the law and the honors already landed — and no number, for there is no number here that could be receipted: the founder's share is his own, and this vault keeps no balance. What it will hold, and when, is the one sealed thing in the town — sealed by design.</p>
-    <blockquote class="rec-honesty">What sleeps here is not announced. An honor is known when it lands, and receipted in the Day-Book the same day.</blockquote>
-    <h4 class="rec-subtitle rec-subtitle-sm">Honors landed</h4>
-    <ol class="rec-list" data-vault-honors="list"></ol>
-    <p class="rec-note" data-vault-honors="empty">No honor has landed yet.</p>
-  </div>
-
-  <p class="rec-verdict" data-vault-verdict data-state="working">Recomputing the vault ledgers with the book…</p>
-</section>
-<section class="town-panel" data-station="umbrella" id="station-umbrella" aria-label="The Umbrella Hall">
+  <div class="stack" data-stack="record"><section class="town-panel" data-station="record" id="station-record" aria-label="The Record Doorway">
   <div class="panel-inner">
-    <p class="panel-eyebrow">The Umbrella Hall</p>
+    <p class="panel-eyebrow">The Record</p>
+    <h2 class="panel-title">The Record Stands in Its Own Hall</h2>
+    <p class="panel-body">Everything that needs to be known — the Day-Book and its Verifier, the Three Vaults and the tithe book inside the first of them, the market face, the Fee Card, the Charter, the family's law and its money split shown plainly — now stands on the Record page, with the Captain's Chamber at its head. Nothing was lost in the move: the chain still verifies from this very door, in your own browser.</p>
+    <p class="rec-verdict" data-verify-verdict data-state="working">Recomputing every entry in your browser…</p>
+    <p class="panel-small">The same proof the Record Hall renders in full — every entry, every vault ledger, recomputed on your own machine.</p>
+    <a class="doorway-link" href="record/">Walk to the Record →</a>
+  </div>
+</section><section class="town-panel" data-station="umbrella" id="station-umbrella" aria-label="The Umbrella Doorway">
+  <div class="panel-inner">
+    <p class="panel-eyebrow">The Umbrella</p>
     <h2 class="panel-title">A Ground Where Coins Are Born</h2>
-    <p class="panel-lead">Provadia is not one coin. It is a town with an umbrella over it — and under that umbrella, a Bricklayer's own coin can be born.</p>
-    <p class="panel-body">Past the square, the town keeps a street of houses not yet built. This hall is that street's registry: the place where the family will live. Every founder who raises a house here carries the town's name into the world with him — an ecosystem of ecosystems, one covenant over all of it.</p>
-
-    <h3 class="panel-subtitle">The Umbrella Charter</h3>
-    <div class="fact-list">
-      <div class="fact-block">
-        <p><span class="fact-lead">The gate is citizenship —</span> Hold the coin, and sign the town covenant. Holding is the proof of belief. It is never a fee paid to the town.</p>
-      </div>
-      <div class="fact-block">
-        <p><span class="fact-lead">The town builds —</span> The crew builds thy coin and its starter home under the town's roof, and charges thee nothing for the building. Thy creation costs are thine own: the platform's and the chain's charges, paid from thine own wallet, as Provadia's founder paid his. The town never fronts, covers, or touches a founder's money — and thy wallet and thy signature stay thine alone.</p>
-      </div>
-      <div class="fact-block">
-        <p><span class="fact-lead">The tithe —</span> A coin born here shares the creator fees its own trading earns: the founder keeps the great share, and a tenth flows to the town's works — into the tithe book of Vault I, the Smart Contract, whose open face stands in the Record Hall. The builder's share stands under the founder's ruling — the Charter's full text, with every number in it, is being forged now and will be receipted here before the first house is born. Whatever the split, it is written into the covenant before the coin exists, and every payment is receipted in the public record. Holders of any house's coin are promised nothing.</p>
-      </div>
-      <div class="fact-block">
-        <p><span class="fact-lead">The law travels with the mark —</span> Every house signs the same covenant before it is born: the honesty sentence, no promises, no yield-bait, receipts for claims. A coin that will not sign does not get the umbrella.</p>
-      </div>
-      <div class="fact-block">
-        <p><span class="fact-lead">The strike —</span> A house that breaks the covenant is struck from this registry, publicly, with the receipt shown. The umbrella shelters honest houses only.</p>
-      </div>
-    </div>
-
-    <h3 class="panel-subtitle">The Registry of Houses</h3>
-    <p class="registry-empty">No houses yet — the first will be receipted here.</p>
-    <p class="panel-body">The plaques stand ready and blank. Nothing is written on them that has not happened: no sample houses, no borrowed names, no counts of the hopeful. When the first house is born under the umbrella, its name, its founder, and its covenant enter this book — with receipts.</p>
-
-    <h3 class="panel-subtitle">The Founder's Door</h3>
-    <p class="panel-body">This door is a knock, not a signup. The hall opens when the town's charter is forged — the law of the umbrella is being written now, and the town announces nothing before its design survives. There is no form here, no date promised, and no queue to join.</p>
-    <p class="panel-body">When the door opens, the way in is the charter above: hold the coin · sign the covenant · thy wallet, thy costs. Until then, a knock is heard at the Support Desk — support@provadiacoin.com — and answered by a person of the town.</p>
-    <p class="panel-small">The umbrella is not an exchange, not a fund, and not a promise that any house's coin is worth anything. The town lists; it does not bless.</p>
+    <p class="panel-body">Provadia is not one coin. It is a town with an umbrella over it — and under that umbrella, a founder's own coin can be born, under one covenant, receipted at birth. The family's whole law is written on the Record page; the family's street stands on the Ecosystem page; and the door itself is a knock, not a signup.</p>
+    <a class="doorway-link" href="record/">Learn the family →</a>
+    <a class="doorway-link" href="knock/">Knock →</a>
+    <a class="doorway-link" href="ecosystem/">See the family →</a>
   </div>
 </section><section class="town-panel" data-station="road" id="station-road" aria-label="The Road">
   <div class="panel-inner">
@@ -573,33 +440,9 @@
   <div class="panel-inner">
     <p class="panel-eyebrow">The Support Desk</p>
     <h2 class="panel-title">The Support Desk</h2>
-    <p class="panel-body">The only official doors of this town:</p>
-
-    <ul class="door-list">
-      <li class="door-item">
-        <span class="door-name">Email</span>
-        <span class="door-detail"><a href="mailto:support@provadiacoin.com">support@provadiacoin.com</a></span>
-        <span class="door-status">Live</span>
-      </li>
-      <li class="door-item">
-        <span class="door-name">X</span>
-        <span class="door-detail"><a href="https://x.com/ProvadiaCoin" target="_blank" rel="noopener">@ProvadiaCoin</a></span>
-        <span class="door-status">Live</span>
-      </li>
-      <li class="door-item">
-        <span class="door-name">Telegram</span>
-        <span class="door-detail">the town channel</span>
-        <span class="door-status door-status--pending">Opens with Brick #1</span>
-      </li>
-      <li class="door-item">
-        <span class="door-name">Discord</span>
-        <span class="door-detail">the town's hall</span>
-        <span class="door-status door-status--pending">Opens at 100 Bricklayers</span>
-      </li>
-    </ul>
-
-    <p class="armor-line">We never DM first. If a door is not listed here, it is not ours.</p>
-    <p class="panel-body" style="margin-top:1rem">The desk is watched around the clock, every day — a citizen's message is never left unanswered.</p>
+    <p class="panel-body">The town's desk now stands at the Forum — where the people talk, where the support standard is written in full, and where every true door of the town is listed. Two doors stand open there: the email desk, answered on the watch around the clock, and the Captain himself, in his Chamber on the Record page.</p>
+    <p class="armor-line">We never DM first. If a door is not listed at the desk, it is not ours.</p>
+    <a class="doorway-link" href="agora/">Walk to the Forum →</a>
 
     <div class="honesty-block">
       <p>PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall's fate — and nothing else: no redemption, no yield, no rights, no expected return.</p>
@@ -628,7 +471,6 @@
 import * as THREE from './lib/three.module.min.js';
 import { createWorld } from './engines/world/engine.js';
 import { createCoin } from './engines/coin/engine.js';
-import './engines/captain/captain.js';
 import './sections/record/record.js';
 
 // The whole graph has arrived and this body is running — a sign of life
@@ -722,7 +564,7 @@ const LABELS = {
   captain: "Solnik's Door",
   square: 'Coin Square',
   wall: 'The Golden Wall',
-  record: 'The Record Hall',
+  record: 'The Record Doorway',
   door: 'The Door — Story & Support'
 };
 const captionName = document.getElementById('captionName');
