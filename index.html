@@ -11,6 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="sections/panels.css">
 <link rel="stylesheet" href="sections/record/panels.css">
+<link rel="stylesheet" href="engines/secretside/secretside.css">
 <style>
   :root{--field:#141210;--gold:#C9A227;--pale:#FFEFC1;--deep:#6B4A12;--ink:#3D2A08;--salt:#F4EFE6}
   *{box-sizing:border-box}
@@ -74,6 +75,7 @@
 </style>
 <noscript><style>
 #fade{display:none!important}
+#ss-stage{display:none!important}
 #stage,#scroll-space,#caption{display:none!important}
 #stacks{position:relative;z-index:2;max-width:780px;margin:0 auto;padding:28px 16px 72px}
 .stack{position:static!important;opacity:1!important;pointer-events:auto!important;transform:none!important;width:auto!important;max-height:none!important;overflow:visible!important;margin:0 0 16px;padding:0}
@@ -187,6 +189,22 @@
 </head>
 <body>
 <div id="stage" aria-hidden="true"></div>
+<div id="ss-stage" aria-hidden="true">
+  <div id="scene" aria-hidden="true"></div>
+  <div class="vignette"></div>
+  <header class="brand">
+    <h1>PROVADIA</h1>
+    <p>THE SECRET SIDE · REVERSE OF THE COIN</p>
+  </header>
+  <div class="caption-wrap">
+    <h2 id="markName">THE FORTRESS P</h2>
+    <div class="rule"></div>
+    <p class="hint">Tilt the coin — the back keeps secrets.</p>
+    <p class="hint-sub">DRAG TO TILT · DOUBLE-CLICK TO FLIP</p>
+    <button id="tiltBtn" type="button">TILT WITH YOUR PHONE</button>
+  </div>
+  <div id="ssFade"></div>
+</div>
 <div id="scroll-space" aria-hidden="true"></div>
 <div id="fade"><div id="wake" aria-hidden="true">The town is waking</div></div>
 <div id="caption"><span id="captionName">Arrival</span><small>scroll — the street takes thee down to the Wall</small></div>
@@ -716,6 +734,11 @@ function showStation(name){
   document.querySelectorAll('.stack').forEach((s) => s.classList.toggle('active', s.dataset.stack === name));
   captionName.textContent = LABELS[name] || name;
   syncCoinInteractive(name);
+  // The Secret Side lives at the square (Option B): its stage takes the
+  // stop while the square is live, and the world's own coin rests hidden
+  // beneath it. Everywhere else the stage is gone and the coin stands.
+  document.body.classList.toggle('at-square', name === 'square');
+  coin.group.visible = name !== 'square';
 }
 let flightDone = shot !== null;
 world.onStation((name) => { if (flightDone) showStation(name); else captionName.textContent = LABELS[name] || name; });
@@ -764,5 +787,6 @@ if (window.__townBoot) window.__townBoot.markBooted();
   if (window.__townBoot) window.__townBoot.engageFallback('engine', true);
 }
 </script>
+<script type="module" src="./engines/secretside/secretside.js"></script>
 </body>
 </html>
