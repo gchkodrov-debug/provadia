@@ -317,7 +317,62 @@
     <div class="rec-row"><span class="rec-k">Surprise Honors</span><span class="rec-v">Rare, unannounced, for deeds done for the town — never for holdings, never promised, never marketed. Standard form: a brick laid into the Wall in the citizen's honor, paid from the founder's own share, the name and the deed recorded in the Day-Book.</span></div>
     <div class="rec-row"><span class="rec-k">Reinvestment</span><span class="rec-v">The site and the contract earn nothing for anybody. The founder's only income is the disclosed creator fees, split 80 / 20 as the Fee Card states. No trading for anybody. No promises sold to anybody.</span></div>
   </div>
-</section><section class="town-panel" data-station="umbrella" id="station-umbrella" aria-label="The Umbrella Hall">
+</section><!-- ============ STATION · THE THREE VAULTS ============ -->
+<!-- Mounts with the record panels; record.js fills:
+       [data-tithe=...]            — VAULT I (the Smart Contract): its tithe book
+       [data-vault-gold=...]       — VAULT II: the gold book of bars
+       [data-vault-honors=...]     — VAULT III: past honors, read off the Day-Book
+       [data-vault-verdict]        — the vault ledgers' verification verdict
+     No numbers are hard-coded: the ledgers open empty, and every figure on
+     this face is computed from the chained record in the visitor's browser. -->
+<section class="rec-panel" id="station-vaults" data-station="vaults">
+  <header class="rec-head">
+    <p class="rec-eyebrow">Station · Record</p>
+    <h2 class="rec-title">The Three Vaults</h2>
+    <p class="rec-lede">The town keeps three vaults. The first is the contract itself — this hall's own record. The second holds gold that belongs to no one. The third keeps the town's honors, and its future is sealed by design. Every vault is a book before it is a box: what it holds, and everything it has ever done, is written down and chained — and a vault with nothing in it says so.</p>
+  </header>
+
+  <!-- VAULT I · THE SMART CONTRACT — its tithe book: the community tenth -->
+  <div class="rec-card">
+    <h3 class="rec-subtitle">Vault I · The Smart Contract</h3>
+    <p class="rec-note">Vault One is not a box in this hall — it is this hall's machinery: the hash-chained Day-Book, the Verifier that recomputes it in your browser, the market face, the Fee Card, the daily anchor. A record that verifies itself. And like every vault, it keeps a book of what it holds for others: the community tenth of every house born under the Umbrella is accounted here, in the contract's own tithe book.</p>
+    <h4 class="rec-subtitle rec-subtitle-sm">The Tithe Book — the Community Tenth</h4>
+    <div class="rec-row"><span class="rec-k">Balance</span><span class="rec-v" data-tithe="balance">—</span></div>
+    <div class="rec-row"><span class="rec-k">Houses contributing</span><span class="rec-v" data-tithe="houses">—</span></div>
+    <div class="rec-row"><span class="rec-k">Total received</span><span class="rec-v" data-tithe="in">—</span></div>
+    <div class="rec-row"><span class="rec-k">Total spent</span><span class="rec-v" data-tithe="out">—</span></div>
+    <ol class="rec-list" data-tithe="list"></ol>
+    <p class="rec-note">This book fills when the first house trades. Every coin that enters is receipted here; every coin that leaves will be receipted here, under the founder's ruling, when the time comes.</p>
+    <p class="rec-note">What the gathered tenth will one day buy is not promised and not listed here: its use is decided by the founder's ruling when the book holds something worth deciding over, and the ruling — and the spending — enter this book the day they happen. Amounts are kept in SOL, the coin creator fees are paid in.</p>
+    <p class="rec-note fallback-only">In this still face the ledger cannot be recomputed — that proof needs JavaScript. The book itself, and every entry in it, stands in the living town.</p>
+  </div>
+
+  <!-- VAULT II · THE GOLD VAULT — the Golden Wall's book of bars -->
+  <div class="rec-card">
+    <h3 class="rec-subtitle">Vault II · The Gold Vault</h3>
+    <p class="rec-note">The Golden Wall's own book. The counter at the Wall counts the bricks; this ledger is what stands behind the count — every bar the covenant buys, written down with its serial number, its weight, its dealer, and its storage receipt, chained into the same record as everything else in this hall.</p>
+    <div class="rec-row"><span class="rec-k">Bars laid</span><span class="rec-v" data-vault-gold="bars">—</span></div>
+    <div class="rec-row"><span class="rec-k">Gold held</span><span class="rec-v" data-vault-gold="grams">—</span></div>
+    <ol class="rec-list" data-vault-gold="list"></ol>
+    <p class="rec-note" data-vault-gold="empty">The first brick is the founder's own, and it has not been laid yet.</p>
+    <blockquote class="rec-honesty">The gold sits at a named third-party vault. It belongs to no one. It is never backing, and never redeemable.</blockquote>
+    <p class="rec-note fallback-only">In this still face the ledger cannot be recomputed — that proof needs JavaScript. The book itself, and every entry in it, stands in the living town.</p>
+  </div>
+
+  <!-- VAULT III · THE HONORS VAULT — the law, and the honors already landed -->
+  <div class="rec-card">
+    <h3 class="rec-subtitle">Vault III · The Honors Vault</h3>
+    <p class="rec-note">The town's law of surprise honors lives in this vault: rare, unannounced, given for deeds — never for holdings, never promised, never marketed — and paid from the founder's own share. The standard form is a brick laid into the Wall in the honoree's honor, the name and the deed recorded in the Day-Book.</p>
+    <p class="rec-note">This face carries the law and the honors already landed — and no number, for there is no number here that could be receipted: the founder's share is his own, and this vault keeps no balance. What it will hold, and when, is the one sealed thing in the town — sealed by design.</p>
+    <blockquote class="rec-honesty">What sleeps here is not announced. An honor is known when it lands, and receipted in the Day-Book the same day.</blockquote>
+    <h4 class="rec-subtitle rec-subtitle-sm">Honors landed</h4>
+    <ol class="rec-list" data-vault-honors="list"></ol>
+    <p class="rec-note" data-vault-honors="empty">No honor has landed yet.</p>
+  </div>
+
+  <p class="rec-verdict" data-vault-verdict data-state="working">Recomputing the vault ledgers with the book…</p>
+</section>
+<section class="town-panel" data-station="umbrella" id="station-umbrella" aria-label="The Umbrella Hall">
   <div class="panel-inner">
     <p class="panel-eyebrow">The Umbrella Hall</p>
     <h2 class="panel-title">A Ground Where Coins Are Born</h2>
@@ -333,7 +388,7 @@
         <p><span class="fact-lead">The town builds —</span> The crew builds thy coin and its starter home under the town's roof, and charges thee nothing for the building. Thy creation costs are thine own: the platform's and the chain's charges, paid from thine own wallet, as Provadia's founder paid his. The town never fronts, covers, or touches a founder's money — and thy wallet and thy signature stay thine alone.</p>
       </div>
       <div class="fact-block">
-        <p><span class="fact-lead">The tithe —</span> A coin born here shares the creator fees its own trading earns: the founder keeps the great share, and a tenth flows to the town's works. The builder's share stands under the founder's ruling — the Charter's full text, with every number in it, is being forged now and will be receipted here before the first house is born. Whatever the split, it is written into the covenant before the coin exists, and every payment is receipted in the public record. Holders of any house's coin are promised nothing.</p>
+        <p><span class="fact-lead">The tithe —</span> A coin born here shares the creator fees its own trading earns: the founder keeps the great share, and a tenth flows to the town's works — into the tithe book of Vault I, the Smart Contract, whose open face stands in the Record Hall. The builder's share stands under the founder's ruling — the Charter's full text, with every number in it, is being forged now and will be receipted here before the first house is born. Whatever the split, it is written into the covenant before the coin exists, and every payment is receipted in the public record. Holders of any house's coin are promised nothing.</p>
       </div>
       <div class="fact-block">
         <p><span class="fact-lead">The law travels with the mark —</span> Every house signs the same covenant before it is born: the honesty sentence, no promises, no yield-bait, receipts for claims. A coin that will not sign does not get the umbrella.</p>
