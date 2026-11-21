@@ -78,9 +78,10 @@
   text-transform:uppercase;
 }
 .panel-title--xl{
-  font-size:clamp(2.9rem,8vw,4.6rem);
-  letter-spacing:.14em;
+  font-size:clamp(2.1rem,9vw,3.15rem);
+  letter-spacing:.08em;
   margin-bottom:.9rem;
+  max-width:100%;
 }
 .panel-subtitle{
   margin:0 0 1rem;
