@@ -468,7 +468,7 @@ function createFace(canvas, maskUrl) {
 }
 
 /* ------------------------------------------------------------------ */
-/* THE LIVE SEAT — one probe on mount; honest states; no fake chat.    */
+/* THE LIVE SEAT — patient probe on mount; honest states; no fake chat. */
 /* ------------------------------------------------------------------ */
 
 function readApiBase(optionBase) {
@@ -557,14 +557,53 @@ function wireSeat(refs, apiBase) {
     return;
   }
 
-  // Exactly one probe, 2.5s timeout, no retries.
-  stateLine.textContent = 'Waking ' + CAPTAIN_DISPLAY + '\u2026';
-  const ctl = new AbortController();
-  const timer = setTimeout(() => ctl.abort(), 2500);
-  fetch(apiBase + '/health', { method: 'GET', signal: ctl.signal })
-    .then((res) => { if (res.ok) goLive(); else goOffline(); })
-    .catch(() => goOffline())
-    .finally(() => clearTimeout(timer));
+  // Patient probe: up to 3 attempts, 8s apiece, backoff between — a cold
+  // DNS/TLS handshake on a new subdomain must not kill the seat for the
+  // whole page load. After the final failure the state line itself offers
+  // a manual re-try: clicking it runs the probe again.
+  let probing = false;
+  let canRetry = false;
+
+  function attempt() {
+    return new Promise((resolve) => {
+      const ctl = new AbortController();
+      const timer = setTimeout(() => ctl.abort(), 8000);
+      fetch(apiBase + '/health', { method: 'GET', signal: ctl.signal })
+        .then((res) => resolve(res.ok))
+        .catch(() => resolve(false))
+        .finally(() => clearTimeout(timer));
+    });
+  }
+
+  function wait(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async function probe() {
+    if (probing) return;
+    probing = true;
+    canRetry = false;
+    stateLine.style.cursor = '';
+    stateLine.textContent = 'Waking ' + CAPTAIN_DISPLAY + '\u2026';
+    const backoff = [1500, 3000];
+    for (let i = 0; i < 3; i++) {
+      if (i > 0) await wait(backoff[i - 1]);
+      if (await attempt()) {
+        probing = false;
+        goLive();
+        return;
+      }
+    }
+    probing = false;
+    goOffline();
+    canRetry = true;
+    stateLine.textContent = OFFLINE_STATE + ' Tap here to try waking him again.';
+    stateLine.style.cursor = 'pointer';
+  }
+
+  stateLine.addEventListener('click', () => { if (canRetry) probe(); });
+
+  probe();
 }
 
 /* ------------------------------------------------------------------ */
