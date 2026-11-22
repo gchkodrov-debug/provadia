@@ -67,7 +67,7 @@
   var canvas=section.querySelector('.sa-canvas'), ctx=canvas.getContext('2d');
   var beats=Array.prototype.slice.call(section.querySelectorAll('.sa-beat'));
   var cue=section.querySelector('[data-sa-cue]');
-  var TOTAL=150, pad=function(n){return ('00'+n).slice(-3);};
+  var TOTAL=240, pad=function(n){return ('00'+n).slice(-3);};
   var small=window.matchMedia('(max-width: 700px)').matches;
   var saveData=!!(navigator.connection&&navigator.connection.saveData);
   var step=(small||saveData)?2:1;
@@ -130,7 +130,7 @@
   <section class="studio-section wrap" aria-labelledby="demo-how">
     <p class="eyebrow">The Studio · How It Is Made</p>
     <h2 id="demo-how">Two Stills, One Assembly, Your Scroll</h2>
-    <p>The craft begins with two pictures of the piece: one whole, one taken apart. The motion between them is built frame by frame — a hundred and fifty stills on this page — and your scroll is the projector. Scroll down, the work comes together; scroll up, it returns to its pieces. Nothing plays without you.</p>
+    <p>The craft begins with two pictures of the piece: one whole, one taken apart. The motion between them is built frame by frame — two hundred and forty stills on this page — and your scroll is the projector. Scroll down, the work comes together; scroll up, it returns to its pieces. Nothing plays without you.</p>
     <p>The mask on this page is the Keeper's own, the ancient face that stands on the reverse of the town's coin. The subject changes with every product; the standard does not. When the catalogue's presentations open, each one is made this way — for that product, from that product, under the same Completion Contract as everything else the Studio sells.</p>
     <p><a href="/studio/">Back to the Studio</a> · <a href="/catalogue/">Browse the catalogue</a></p>
   </section>
