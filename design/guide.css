@@ -1,0 +1,75 @@
+/* guide.css — the town's guided tour + the Keeper's "show me" highlights.
+   Palette by law: #141210 field, #C9A227 gold, #FFEFC1 pale, #6B4A12 deep,
+   #3D2A08 dark, #F4EFE6 salt. Cinzel for titles, Inter for words. */
+
+.tour-door {
+  appearance: none; cursor: pointer;
+  font-family: 'Cinzel', serif; font-size: 12.5px; letter-spacing: .14em;
+  padding: 10px 16px; border-radius: 999px;
+  border: 1px solid rgba(201,162,39,.55);
+  background: rgba(201,162,39,.08); color: #F4EFE6;
+  transition: background .18s, border-color .18s;
+}
+.tour-door:hover { border-color: #C9A227; background: rgba(201,162,39,.18); }
+.tour-door:focus-visible { outline: 2px solid #FFEFC1; outline-offset: 2px; }
+
+/* driver.js popover, dressed for the town */
+.driver-popover.prov-tour {
+  background: #1d1913; color: #F4EFE6;
+  border: 1px solid rgba(201,162,39,.5); border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(0,0,0,.6);
+  font-family: 'Inter', system-ui, sans-serif;
+  max-width: min(340px, calc(100vw - 32px));
+  padding: 18px 18px 14px;
+}
+.driver-popover.prov-tour .driver-popover-title {
+  font-family: 'Cinzel', serif; font-size: 16px; letter-spacing: .08em;
+  color: #FFEFC1; margin: 0 28px 8px 0; line-height: 1.35;
+}
+.driver-popover.prov-tour .driver-popover-description {
+  font-size: 14.5px; line-height: 1.65; color: rgba(244,239,230,.88); margin: 0 0 6px;
+}
+.driver-popover.prov-tour .driver-popover-footer { margin-top: 12px; }
+.driver-popover.prov-tour .driver-popover-progress-text {
+  font-size: 11px; letter-spacing: .14em; color: rgba(201,162,39,.85);
+}
+.driver-popover.prov-tour button {
+  font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: .1em;
+  padding: 8px 13px; border-radius: 999px; cursor: pointer;
+  border: 1px solid rgba(201,162,39,.5); background: rgba(201,162,39,.08); color: #F4EFE6;
+  text-shadow: none;
+}
+.driver-popover.prov-tour button:hover { background: rgba(201,162,39,.2); }
+.driver-popover.prov-tour .driver-popover-next-btn {
+  background: #C9A227; color: #1c1503; border-color: #C9A227; font-weight: 700;
+}
+.driver-popover.prov-tour .driver-popover-close-btn {
+  color: rgba(244,239,230,.6); font-size: 18px; line-height: 1;
+}
+.driver-popover.prov-tour .driver-popover-arrow { display: none; }
+
+/* the Keeper's pointing ring — used on "show me" arrivals */
+.prov-showme-ring {
+  position: absolute; z-index: 9990; pointer-events: none;
+  border: 2px solid #C9A227; border-radius: 14px;
+  box-shadow: 0 0 0 6px rgba(201,162,39,.18), 0 0 34px rgba(201,162,39,.35);
+  animation: prov-ring-pulse 1.15s ease-in-out 3;
+}
+@keyframes prov-ring-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(201,162,39,.14), 0 0 22px rgba(201,162,39,.25); }
+  50% { box-shadow: 0 0 0 10px rgba(201,162,39,.22), 0 0 44px rgba(201,162,39,.45); }
+}
+html[data-calm="true"] .prov-showme-ring,
+html[data-still="true"] .prov-showme-ring { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .prov-showme-ring { animation: none; }
+}
+
+.tour-door-row { text-align: center; margin: 12px 0 4px; position: relative; z-index: 5; }
+
+/* the tour door inside the town's nav (home) — a door among doors */
+.tour-door-nav {
+  appearance: none; cursor: pointer; background: rgba(201,162,39,.1);
+  border: 1px solid rgba(201,162,39,.6); border-radius: 999px;
+}
+.tour-door-nav:hover { background: rgba(201,162,39,.22); color: #FFEFC1; }
