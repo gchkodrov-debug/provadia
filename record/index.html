@@ -116,6 +116,9 @@
   }, 1000);
 })();
 </script>
+<link rel="stylesheet" href="../design/vendor/driver.css">
+<link rel="stylesheet" href="../design/guide.css">
+<link rel="stylesheet" href="../design/keeper.css">
 </head>
 <body>
 <div id="stage" aria-hidden="true"></div>
@@ -147,6 +150,21 @@
       <p class="panel-body">Conduct in this Chamber carries the One-Warning Rule. Incivility earns one calm warning in his own voice. Continue after it, and the door closes. A second offense ends the conversation, marks the visitor banned from the house, and is reported to the founder the same day.</p>
       <p class="panel-body">When Solnik offers an idea of his own, he marks it out loud, every time, in his own words: "this is just an idea." An idea from the keeper is talk at the table — it is not a ruling, not a promise, and it enters the record only when the record itself says so.</p>
       <p class="panel-body">His house is built, and he is present in the town's tales and in its record. His living voice wakes when the town's host stands and serves his seat. Until then the seat below shows its honest offline line — no counterfeit conversation is held in his name.</p>
+      <div class="keeper-block">
+        <div class="keeper-stage" data-keeper-stage data-keeper-base="../design/keeper/" data-keeper-model-slot aria-label="Solnik standing in his Chamber">
+          <img class="keeper-still" src="../design/keeper/keeper-still.webp" alt="Solnik, Keeper of the Wall — the ancient Mask over his herald's robe">
+        </div>
+        <div class="keeper-side">
+          <h3 class="keeper-side-h">The Keeper, Standing at His Post</h3>
+          <p class="keeper-side-p">Solnik keeps this Chamber in the flesh of the house. Ask him a question at his seat below and he answers thee; ask him the way, and he will point it himself.</p>
+          <div class="keeper-errands">
+            <button type="button" class="tour-door" data-showme="knock" data-href="../knock/">Show me the Knock</button>
+            <button type="button" class="tour-door" data-showme="wall" data-href="../">Show me the Wall</button>
+            <button type="button" class="tour-door" data-showme="catalogue" data-href="../catalogue/">Show me the Catalogue</button>
+          </div>
+          <button type="button" class="tour-door keeper-tour-btn" data-tour-start>Or take the whole town tour</button>
+        </div>
+      </div>
       <div data-captain-root><div class="cap-static">
         <p class="cap-static-eyebrow">Provadia · The Captain's Chamber</p>
         <h3 class="cap-static-title">Solnik</h3>
@@ -418,5 +436,8 @@
 <script type="module" src="../engines/captain/captain.js"></script>
 <script type="module" src="../sections/record/record.js"></script>
 <script type="module" src="../sections/record/registry.js"></script>
+<script src="../design/vendor/driver.js"></script>
+<script src="../design/guide.js"></script>
+<script src="../design/keeper.js"></script>
 </body>
 </html>
