@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1100" viewBox="0 0 1000 1100" role="img" aria-labelledby="title desc">
+<title id="title">A threshold in dark stone</title><desc id="desc">Nonidentity architectural illustration. A deep open doorway, lit from the upper left. No coin or mask is depicted.</desc>
+<defs><linearGradient id="stone" x2="1" y2="1"><stop stop-color="#6B4A12"/><stop offset=".35" stop-color="#3D2A08"/><stop offset="1" stop-color="#141210"/></linearGradient><linearGradient id="seam" x2="1" y2="1"><stop stop-color="#FFEFC1"/><stop offset=".5" stop-color="#C9A227"/><stop offset="1" stop-color="#3D2A08"/></linearGradient><radialGradient id="light" cx=".18" cy=".1" r=".8"><stop stop-color="#C9A227" stop-opacity=".18"/><stop offset="1" stop-color="#141210" stop-opacity="0"/></radialGradient></defs>
+<path fill="#141210" d="M0 0h1000v1100H0z"/><path fill="url(#light)" d="M0 0h1000v1100H0z"/>
+<g fill="url(#stone)" stroke="#141210" stroke-width="4"><path d="M210 850V210l110-70v710z"/><path d="M680 850V140l110 70v640z"/><path d="M210 210l110-70h360l110 70-108 58H318z"/><path d="M240 850h80V268h-80z"/><path d="M680 268h80v582h-80z"/></g>
+<path fill="#141210" d="M320 268h360v582H320z"/><path d="M320 850V268h360" fill="none" stroke="url(#seam)" stroke-width="3"/><path d="M327 843V275h345" fill="none" stroke="#6B4A12"/>
+<g stroke="#141210" stroke-width="4"><path d="M210 325h110m-110 110h110m-110 110h110m-110 110h110m-110 110h110m360-440h110m-110 110h110m-110 110h110m-110 110h110m-110 110h110"/></g>
+<g fill="url(#stone)" stroke="#141210" stroke-width="3"><path d="M320 850h360l80 48H240z"/><path d="M240 898h520l95 64H145z"/><path d="M145 962h710l115 88H30z"/></g><path d="M320 850h360M240 898h520M145 962h710" stroke="url(#seam)" stroke-opacity=".55" fill="none"/>
+</svg>
