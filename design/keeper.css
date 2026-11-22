@@ -1,0 +1,100 @@
+/* keeper.css — the Keeper's stage in the Captain's Chamber.
+   The figure is a layered rig (crew-built body v1): the anchored Mask
+   over a robe drawn in the town palette, animated with the standard
+   parameter names the rig spec carries (breath, gaze, blink, mouth-glow,
+   arm poses). The .moc3 model, when it lands, takes this same slot. */
+
+.keeper-block {
+  display: flex; gap: clamp(18px, 3.5vw, 40px); align-items: center;
+  margin: clamp(22px, 4vw, 38px) 0 6px;
+  padding: clamp(18px, 3vw, 30px);
+  border: 1px solid rgba(201,162,39,.3); border-radius: 16px;
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 30%, #241b0c 0%, #171208 58%, #100d08 100%);
+}
+@media (max-width: 760px) {
+  .keeper-block { flex-direction: column; text-align: center; }
+  .keeper-errands { justify-content: center; }
+}
+
+.keeper-stage {
+  position: relative; flex: 0 0 auto;
+  width: min(320px, 78vw); aspect-ratio: 1600 / 2200;
+  margin: 0 auto;
+}
+.keeper-still { display: block; width: 100%; height: auto; border-radius: 10px; }
+
+.keeper-figure { position: absolute; inset: 0; }
+.keeper-figure .kl {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain; pointer-events: none; user-select: none;
+}
+.keeper-body, .keeper-head {
+  position: absolute; inset: 0;
+  will-change: transform;
+}
+.keeper-body { transform-origin: 50% 100%; }
+.keeper-head { transform-origin: 50% 45.9%; }
+
+/* --- the parameters, as CSS --- */
+@keyframes keeper-breath {
+  0%, 100% { transform: scaleY(1) translateY(0); }
+  50% { transform: scaleY(1.006) translateY(-2px); }
+}
+@keyframes keeper-headbob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2.5px); }
+}
+@keyframes keeper-mouth {
+  0%, 100% { opacity: .25; transform: scale(1); }
+  30% { opacity: .95; transform: scale(1.05); }
+  55% { opacity: .45; transform: scale(1.01); }
+  75% { opacity: .85; transform: scale(1.04); }
+}
+.keeper-figure .kl-mouth { opacity: .18; transform-origin: 50% 33.8%; }
+.keeper-figure .kl-eyes { opacity: .55; transition: opacity .3s; }
+.keeper-figure[data-state="listening"] .kl-eyes { opacity: .95; }
+.keeper-figure.speaking .kl-mouth { animation: keeper-mouth .62s ease-in-out infinite; }
+.keeper-figure.speaking .keeper-head { animation: keeper-headbob 1.9s ease-in-out infinite; }
+.keeper-figure:not([data-calm="true"]) .keeper-body { animation: keeper-breath 4s ease-in-out infinite; }
+.keeper-figure.blink .kl-eyes { opacity: .08; transition: opacity .06s; }
+
+/* poses — exactly one arm group per side (rig spec pose groups) */
+.keeper-figure .kl-arm-l-raise, .keeper-figure .kl-arm-r-point, .keeper-figure .kl-staff { opacity: 0; }
+.keeper-figure[data-pose="raise"] .kl-arm-l-raise,
+.keeper-figure[data-pose="raise"] .kl-staff { opacity: 1; }
+.keeper-figure[data-pose="raise"] .kl-arm-l-rest { opacity: 0; }
+.keeper-figure[data-pose="point"] .kl-arm-r-point { opacity: 1; }
+.keeper-figure[data-pose="point"] .kl-arm-r-rest { opacity: 0; }
+.keeper-figure .kl-arm-l-rest, .keeper-figure .kl-arm-l-raise,
+.keeper-figure .kl-arm-r-rest, .keeper-figure .kl-arm-r-point,
+.keeper-figure .kl-staff { transition: opacity .45s ease; }
+
+/* guard weather — the same cold the chamber itself wears */
+.keeper-figure.guard .kl-head-img { filter: saturate(.42) brightness(.74) contrast(1.14); }
+.keeper-figure.guard .kl-eyes { opacity: .3; filter: grayscale(.6); }
+
+.keeper-side { flex: 1 1 auto; min-width: min(300px, 100%); }
+.keeper-side-h {
+  margin: 0 0 8px; font-family: 'Cinzel', serif; font-size: 19px;
+  letter-spacing: .1em; color: #FFEFC1;
+}
+.keeper-side-p { margin: 0 0 16px; font-size: 14.5px; line-height: 1.65; color: rgba(244,239,230,.72); max-width: 34em; }
+.keeper-errands { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 14px; }
+.keeper-tour-btn { border-style: dashed; }
+
+/* calm / still / reduced motion: the Keeper stands, he does not sway */
+html[data-calm="true"] .keeper-figure .keeper-body,
+html[data-still="true"] .keeper-figure .keeper-body,
+html[data-calm="true"] .keeper-figure.speaking .kl-mouth,
+html[data-still="true"] .keeper-figure.speaking .kl-mouth,
+html[data-calm="true"] .keeper-figure.speaking .keeper-head,
+html[data-still="true"] .keeper-figure.speaking .keeper-head { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .keeper-figure .keeper-body,
+  .keeper-figure.speaking .kl-mouth,
+  .keeper-figure.speaking .keeper-head { animation: none; }
+  .keeper-figure .kl-arm-l-rest, .keeper-figure .kl-arm-l-raise,
+  .keeper-figure .kl-arm-r-rest, .keeper-figure .kl-arm-r-point,
+  .keeper-figure .kl-staff { transition: none; }
+}
