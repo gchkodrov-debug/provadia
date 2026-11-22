@@ -195,6 +195,8 @@
   }, 1000);
 })();
 </script>
+<link rel="stylesheet" href="./design/vendor/driver.css">
+<link rel="stylesheet" href="./design/guide.css">
 </head>
 <body>
 <nav class="doors" aria-label="The doors of the town">
@@ -206,6 +208,7 @@
   <a class="door-link" href="about/">About Us</a>
   <a class="door-link" href="studio/">The Studio</a>
   <a class="door-link" href="catalogue/">The Catalogue</a> <a class="door-link" href="coin/">The Coin</a>
+  <button type="button" class="door-link tour-door-nav" data-tour-start>Take the Tour</button>
 </nav>
 <div id="stage" aria-hidden="true"></div>
 <div id="ss-stage" aria-hidden="true">
@@ -633,5 +636,7 @@ if (window.__townBoot) window.__townBoot.markBooted();
 }
 </script>
 <script type="module" src="./engines/secretside/secretside.js"></script>
+<script src="./design/vendor/driver.js"></script>
+<script src="./design/guide.js"></script>
 </body>
 </html>
