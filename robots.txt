@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /design/tests/
+Disallow: /design/specimens/
+Disallow: /shell-preview.html
+Sitemap: https://provadiacoin.com/sitemap.xml
