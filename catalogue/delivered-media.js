@@ -1,0 +1,2 @@
+/* Author-time manifest. Captain-wired 2026-11-21 for the presentation build: the 5 delivered Batch-1 service videos. All other slots remain pending. */
+window.PROVADIA_DELIVERED_MEDIA = Object.freeze({"project-book-video":"assets/media/project-book-video.mp4","founder-website-video":"assets/media/founder-website-video.mp4","launch-completion-video":"assets/media/launch-completion-video.mp4","keeper-video":"assets/media/keeper-video.mp4","recovery-desk-video":"assets/media/recovery-desk-video.mp4"});
