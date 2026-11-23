@@ -31,6 +31,11 @@
 .gx-noscript-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .gx-vignette{position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,rgba(20,18,16,0) 32%,#141210 78%);pointer-events:none;z-index:1}
 .gx-scrim{position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(to top,#141210 58%,rgba(20,18,16,.82) 78%,rgba(20,18,16,0) 100%);pointer-events:none;z-index:2}
+.gx-arrival-scrim{display:none}
+.gx-closing-scrim{position:absolute;inset:0;background:linear-gradient(to top,#141210 64%,rgba(20,18,16,0) 76%);pointer-events:none}
+@media (max-width:767px){
+  .gx-arrival-scrim{display:block;position:absolute;left:0;right:0;bottom:0;height:62%;background:linear-gradient(to top,#141210 46%,rgba(20,18,16,.88) 66%,rgba(20,18,16,0) 92%);pointer-events:none;z-index:2}
+}
 .gx-leaders{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
 .gx-leader-line{stroke:#c9a227;stroke-width:1;fill:none}
 .gx-leader-tick{stroke:#c9a227;stroke-width:1}
@@ -69,11 +74,15 @@
 .gx-arrival-copy .gx-eyebrow,.gx-arrival-copy .gx-title,.gx-arrival-copy .gx-sub{text-shadow:0 1px 12px rgba(0,0,0,.85),0 0 2px rgba(0,0,0,.9)}
 .gx-closing-inner .gx-eyebrow,.gx-close-title,.gx-row dt,.gx-row dd,.gx-notice{text-shadow:0 1px 10px rgba(0,0,0,.85),0 0 2px rgba(0,0,0,.9)}
 .gx-return{display:flex;width:fit-content;align-items:center;justify-content:center;height:48px;padding:0 24px;border:1px solid #c9a227;background:#141210;color:#e9ddc6;font-family:Inter,sans-serif;font-size:12px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;margin:1.4rem auto 0;pointer-events:none}
+@media (max-width:767px){
+  .gx-chips{gap:6px}
+  .gx-chips li{padding:5px 8px;font-size:10px}
+}
 @media (prefers-reduced-motion:reduce){
   .gx-section{height:auto}
   .gx-stage{position:static;height:auto;overflow:visible}
   .gx-canvas{position:static;height:auto;aspect-ratio:16/9}
-  .gx-vignette,.gx-scrim{display:none}
+  .gx-vignette,.gx-scrim,.gx-arrival-scrim,.gx-closing-scrim{display:none}
   .gx-arrival,.gx-closing{position:static;opacity:1!important;transform:none!important;padding:1.2rem 0 .4rem}
   .gx-arrival-copy,.gx-closing-inner{position:static}
   .gx-coinlink{position:static}
@@ -85,7 +94,7 @@
 .gx-reduced{height:auto}
 .gx-reduced .gx-stage{position:static;height:auto;overflow:visible}
 .gx-reduced .gx-canvas{position:static;height:auto;aspect-ratio:16/9}
-.gx-reduced .gx-vignette,.gx-reduced .gx-scrim{display:none}
+.gx-reduced .gx-vignette,.gx-reduced .gx-scrim,.gx-reduced .gx-arrival-scrim,.gx-reduced .gx-closing-scrim{display:none}
 .gx-reduced .gx-arrival,.gx-reduced .gx-closing{position:static;opacity:1!important;transform:none!important;padding:1.2rem 0 .4rem}
 .gx-reduced .gx-arrival-copy,.gx-reduced .gx-closing-inner{position:static}
 .gx-reduced .gx-coinlink{position:static}
@@ -100,6 +109,7 @@
     <canvas class="gx-canvas" width="960" height="540" role="img" aria-label="The town's coin, filmed from its own two faces: as you scroll it turns in the centre, opens into a stack of gold layers, closes whole again, and rests open — while eight bullets name the stages of the mint: the conversation, the honest question, the rehearsal, the covenant, the mark, the launch, the record, and the handover"></canvas>
     <div class="gx-vignette" aria-hidden="true"></div>
     <div class="gx-scrim" aria-hidden="true"></div>
+    <div class="gx-arrival-scrim" aria-hidden="true"></div>
     <div class="gx-beats">
       <p class="gx-callout" data-gx-from="0.08" data-gx-to="0.18" data-gx-tip="0.495,0.26"><span class="gx-tag">01 / 08 · THE CONVERSATION</span><span class="gx-name">The Conversation</span><span class="gx-body">An unhurried intake dialogue where the founder tells the Keeper his idea. It strips away noise and defines what the coin must actually do.</span></p>
       <p class="gx-callout" data-gx-from="0.18" data-gx-to="0.28" data-gx-tip="0.505,0.31" data-gx-ticks="5"><span class="gx-tag">02 / 08 · THE HONEST QUESTION</span><span class="gx-name">The Honest Question</span><span class="gx-body">Five written viability checks before any work begins. It tests whether the premise holds — and explains any refusal in writing.</span></p>
@@ -123,6 +133,7 @@
       <button type="button" class="gx-tick" data-gx-target="0.83" aria-label="Layer 8 — The Handover"><span class="gx-tick-num">08</span><span class="gx-tick-mark"></span></button>
     </nav>
     <div class="gx-closing" data-gx-closing>
+      <div class="gx-closing-scrim" aria-hidden="true"></div>
       <div class="gx-closing-inner">
         <p class="gx-eyebrow">THE MINT · TERMS &amp; STATUS</p>
         <h2 class="gx-close-title">Completion Means Unaided Operation.</h2>
@@ -158,6 +169,7 @@
   var arrival=section.querySelector('[data-gx-arrival]');
   var coinlink=section.querySelector('[data-gx-coinlink]');
   var closing=section.querySelector('[data-gx-closing]');
+  var arrivalScrim=section.querySelector('.gx-arrival-scrim');
   var ret=section.querySelector('[data-gx-return]');
   var rail=section.querySelector('[data-gx-rail]');
   var railfill=section.querySelector('[data-gx-railfill]');
@@ -165,6 +177,7 @@
   ticks.forEach(function(t,i){ t.style.top=((i*(220/7))-14)+'px'; });
   var TOTAL=235, pad=function(n){return ('00'+n).slice(-3);};
   var small=window.matchMedia('(max-width: 700px)').matches;
+  var narrow=window.matchMedia('(max-width: 767px)').matches;
   var saveData=!!(navigator.connection&&navigator.connection.saveData);
   var step=(small||saveData)?2:1;
   var order=[]; for(var i=1;i<=TOTAL;i+=step){order.push(i);} if(order[order.length-1]!==TOTAL){order.push(TOTAL);}
@@ -172,10 +185,15 @@
   var targetP=0, dispP=0, chasing=false;
   var frameDir=small?'mint-frames/m/':'mint-frames/';
   function src(n){return frameDir+'f'+pad(n)+'.webp';}
-  // Scroll -> film frame, piecewise: Gemini's layer windows sit on the film's
-  // real beats (turn f1-100, separation f100-154, converge f155-207, whole
-  // f207, rest-open f208-235), verified frame by frame in the v2 record.
-  var ANCH=[[0,1],[0.08,18],[0.18,70],[0.28,100],[0.38,119],[0.48,136],[0.58,154],[0.68,171],[0.78,189],[0.88,207],[0.94,222],[1,235]];
+  // Scroll -> film frame, piecewise. FIX PASS (Gemini judgment F3, captain's
+  // adjudication): the film was re-measured frame by frame — closed turn
+  // f1-~105 (edge-on ~f85), unseal onset ~f106 (relief shears at f110),
+  // distinctly separated f115-154 (peak f154), converge f155-~170 (last
+  // discs landing), whole ~f171-207, rest-open tilt f208-235. The eight
+  // lock moments (window midpoints 0.13...0.83) now land on f112, f120,
+  // f128, f135, f143, f151, f158, f166 — every one on a separating or
+  // separated frame; the closed turn is compressed into the arrival fade.
+  var ANCH=[[0,1],[0.06,55],[0.08,104],[0.13,112],[0.23,120],[0.33,128],[0.43,135],[0.53,143],[0.63,151],[0.73,158],[0.83,166],[0.88,176],[0.94,214],[1,235]];
   function frameFloat(p){
     if(p<=0) return 1; if(p>=1) return TOTAL;
     for(var i=1;i<ANCH.length;i++){
@@ -214,8 +232,21 @@
       var cw=canvas.width, ch=canvas.height, iw=img.naturalWidth, ih=img.naturalHeight;
       if(iw&&ih){
         var s=Math.max(cw/iw,ch/ih), dw=iw*s, dh=ih*s;
+        var dx=(cw-dw)/2, dy=(ch-dh)/2;
+        if(narrow && p<0.08){
+          // Mobile arrival framing (Gemini judgment F1): the cover draw crops
+          // the coin's disc inside the backing store, so the arrival instead
+          // draws the frame at medallion size — the disc (43.75% of frame
+          // width, measured on f001) lands at ~72vw with its centre at ~34%
+          // of the stage — and blends back to the cover draw by p=0.08,
+          // before the first leader can show. Leader math is cover-only and
+          // never disturbed; desktop arrival is untouched.
+          var ft2=Math.max(0,Math.min(1,p/0.08)), e2=ft2*ft2*(3-2*ft2);
+          var mw=cw*1.646, mh=mw*(ih/iw), mdy=0.34*ch-mh/2;
+          dw=mw+(dw-mw)*e2; dh=mh+(dh-mh)*e2; dx=(cw-dw)/2; dy=mdy+(dy-mdy)*e2;
+        }
         ctx.fillStyle='#141210'; ctx.fillRect(0,0,cw,ch);
-        ctx.drawImage(img,(cw-dw)/2,(ch-dh)/2,dw,dh);
+        ctx.drawImage(img,dx,dy,dw,dh);
         if(frames[n]) current=n;
       }
     }
@@ -234,6 +265,7 @@
     // Arrival: full to 0.06, gone by 0.09 (Gemini's fade window).
     var ao=p<=0.06?1:Math.max(0,1-(p-0.06)/0.03);
     arrival.style.opacity=ao.toFixed(3);
+    if(arrivalScrim) arrivalScrim.style.opacity=ao.toFixed(3);
     coinlink.style.pointerEvents=ao>0.4?'auto':'none'; coinlink.tabIndex=ao>0.4?0:-1;
     // Closing ledger: fades up 0.93 -> 0.99 over the held final frame.
     var co=Math.max(0,Math.min(1,(p-0.93)/0.06));
