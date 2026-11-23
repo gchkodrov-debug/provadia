@@ -5,3 +5,26 @@
 @media(max-width:850px){.hall{grid-template-columns:1fr 1fr;min-height:650px}.hall h1{font-size:62px}#workshop{height:450px}.index-grid{grid-template-columns:1fr 1fr}.hall-art figcaption{margin-left:5%;font-size:10px}.terms-band{grid-template-columns:.6fr 1.4fr}.service{gap:5%}}
 @media(max-width:620px){.product-card-body{grid-template-columns:1fr;gap:20px}.product-card-top h3{font-size:27px}.store-product{padding-block:30px}.product-card-body .media-pair{margin-bottom:8px}}
 @media(max-width:620px){.hall{display:flex;flex-direction:column;gap:0;padding-top:45px;padding-bottom:30px;align-items:stretch}.hall h1{font-size:58px;margin:20px 0 25px}.hall-lede{font-size:25px}.hall .intro{font-size:14px;max-width:36ch}.hall-art{margin-top:12px}#workshop{height:360px}.hall-art figcaption{margin:0 0 0 10px;font-size:10px}.terms-band{display:block;padding-block:28px}.terms-band p+p{margin-top:16px}.terms-band>p:nth-child(n+3){font-size:13px}.browse{grid-template-columns:1fr;padding-top:52px;gap:24px}.filters{gap:7px}.filters button{padding:10px 12px;font-size:12px}.complete-index>summary{font-size:18px}.index-grid{grid-template-columns:1fr;gap:15px}.index-group summary{padding-block:9px}.catalogue-room{padding-top:45px}.section-heading{margin-bottom:30px}.service{display:flex;flex-direction:column;align-items:stretch;padding-block:35px;gap:28px}.service:nth-child(odd) .offer-copy,.service:nth-child(odd) .media-pair{order:initial}.offer-copy h3{font-size:30px}.media-pair{gap:10px}.media-slot{aspect-ratio:4/3}.product>details>summary{gap:12px;padding-block:25px;align-items:flex-start}.product h3{font-size:23px}.open-label{font-size:0}.open-label>span{font-size:26px;margin-left:0}.product-interior{grid-template-columns:1fr;gap:25px}.closing{padding-block:65px}.complete-index>summary>span{font-size:10px}.scope-notes{font-size:13px}}
+
+/* Flagship Bridge — the sister-house doorway. Town palette governs; the store's deep green appears only inside this section's own framing, as the other-house signal. */
+.flagship-bridge{padding-block:64px 6px;scroll-margin-top:24px}
+.bridge-frame{border:1px solid var(--bronze);padding:clamp(26px,4.5vw,52px);position:relative;background:linear-gradient(160deg,color-mix(in srgb,var(--brown) 16%,transparent),transparent 62%)}
+.bridge-frame::before{content:'';position:absolute;inset:9px;border:1px solid var(--quiet-line);pointer-events:none}
+.bridge-frame h2{margin-block:16px 18px;max-width:24ch}
+.bridge-lede{font-size:14px;max-width:58ch}
+.bridge-card{margin-top:34px;border:1px solid var(--bronze);border-top:4px solid #004C3F;background-color:color-mix(in srgb,var(--field) 55%,transparent);background-image:linear-gradient(#95BF47,#95BF47);background-size:100% 1px;background-position:0 0;background-repeat:no-repeat;background-clip:padding-box;padding:clamp(22px,3.5vw,38px);max-width:760px}
+.bridge-house{color:var(--pale)}
+.bridge-card h3{font-size:clamp(24px,2.6vw,36px);margin:12px 0 10px;max-width:26ch;line-height:1.25}
+.bridge-sub{font-family:var(--display);font-size:16px;line-height:1.55;color:var(--pale);max-width:56ch}
+.bridge-card>p:not(.eyebrow):not(.bridge-sub):not(.bridge-badge):not(.bridge-note){font-size:14px;max-width:56ch;margin-top:14px}
+.bridge-prices{list-style:none;padding:0;margin:24px 0 6px;display:flex;flex-wrap:wrap;gap:12px 34px}
+.bridge-prices li{display:flex;flex-direction:column;gap:3px;border-left:2px solid var(--gold);padding-left:13px;flex:1 1 150px;min-width:0}
+.bridge-prices span{font-size:12px;color:var(--salt)}
+.bridge-prices strong{font-weight:400;color:var(--pale);font-size:21px}
+.bridge-badge{margin-top:20px;font-size:13px;max-width:56ch}
+.bridge-badge-mark{display:inline-block;border:1px solid var(--gold);color:var(--pale);padding:5px 10px;font-size:11px;letter-spacing:.08em;margin-right:10px}
+.bridge-link{display:inline-flex;align-items:center;gap:35px;min-height:44px;margin-top:24px;color:var(--pale);padding-bottom:8px;border-bottom:1px solid var(--gold);text-decoration:none;font-size:14px;transition:color .2s ease,border-color .2s ease}
+.bridge-link:hover{color:var(--gold);border-bottom-color:var(--pale);text-decoration:underline;text-underline-offset:.25em}
+.bridge-note{margin-top:18px;font-size:12px;color:var(--salt)}
+@media(max-width:620px){.flagship-bridge{padding-top:46px}.bridge-frame{padding:24px 18px}.bridge-frame::before{inset:6px}.bridge-card{padding:22px 18px}.bridge-prices{gap:12px 22px}.bridge-badge-mark{display:block;width:fit-content;max-width:100%;margin:0 0 8px}.bridge-link{gap:18px}}
+@media (prefers-reduced-motion:reduce){.bridge-link{transition:none}}
