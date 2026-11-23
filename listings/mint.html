@@ -65,6 +65,12 @@
 }
 @media (prefers-reduced-motion:reduce){.sa-section{height:auto}.sa-stage{position:static;height:auto;aspect-ratio:16/9}.sa-beats{position:static;padding:.8rem 0}.sa-callout{position:static;transform:none;opacity:1!important;width:auto;padding:.6rem 1rem;text-align:left}.sa-callout.center{text-align:left}.sa-cue,.sa-depth{display:none}}
 .sa-reduced{height:auto}.sa-reduced .sa-stage{position:static;height:auto;aspect-ratio:16/9}.sa-reduced .sa-beats{position:static;padding:.8rem 0}.sa-reduced .sa-callout{position:static;transform:none;opacity:1!important;width:auto;padding:.6rem 1rem;text-align:left}.sa-reduced .sa-cue,.sa-reduced .sa-depth{display:none}
+.sa-leaders{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.sa-leader-line{stroke:rgba(201,162,39,.75);stroke-width:1.5}
+.sa-leader-halo{fill:rgba(201,162,39,.20)}
+.sa-leader-dot{fill:#c9a227;stroke:#ffefc1;stroke-width:1.5}
+@media (prefers-reduced-motion:reduce){.sa-leaders{display:none}}
+.sa-reduced .sa-leaders{display:none}
 </style>
 <section class="sa-section" id="scroll-assembly" aria-label="The Mint — presented in motion as you scroll: the coin turns, opens into the eight named layers of its making, closes whole, and rests open">
   <div class="sa-stage">
@@ -75,14 +81,14 @@
     <p class="sa-cue" data-sa-cue>Scroll — watch a coin get made</p>
     <div class="sa-beats">
       <p class="sa-callout center" data-sa-from="0.00" data-sa-to="0.13"><span class="sa-eyebrow">The Mint · How a coin is made here</span><span class="sa-title">The Coin, Whole</span><span class="sa-line">One coin, launched by its own founder — and written into the town's public record. Scroll, and watch it open.</span></p>
-      <p class="sa-callout left" data-sa-from="0.30" data-sa-to="0.40"><span class="sa-chip" aria-hidden="true">1</span><span class="sa-eyebrow">Stage 1 · What it is</span><span class="sa-title">The Conversation</span><span class="sa-line">What it does: your idea, in your own words — what the coin is, why it should exist, who it is for.</span></p>
-      <p class="sa-callout right" data-sa-from="0.385" data-sa-to="0.475"><span class="sa-chip" aria-hidden="true">2</span><span class="sa-eyebrow">Stage 2 · What it is</span><span class="sa-title">The Honest Question</span><span class="sa-line">What it does: asks, before anything is built — should this be a coin? A no is the service working.</span></p>
-      <p class="sa-callout left" data-sa-from="0.46" data-sa-to="0.55"><span class="sa-chip" aria-hidden="true">3</span><span class="sa-eyebrow">Stage 3 · What it is</span><span class="sa-title">The Rehearsal</span><span class="sa-line">What it does: a guided practice run first — name, image, permissions, costs, custody. No seed phrase is ever collected.</span></p>
-      <p class="sa-callout right" data-sa-from="0.535" data-sa-to="0.625"><span class="sa-chip" aria-hidden="true">4</span><span class="sa-eyebrow">Stage 4 · What it is</span><span class="sa-title">The Covenant</span><span class="sa-line">What it does: your house's commitments, read in full and signed. A signature qualifies — not a purchase.</span></p>
-      <p class="sa-callout left" data-sa-from="0.61" data-sa-to="0.70"><span class="sa-chip" aria-hidden="true">5</span><span class="sa-eyebrow">Stage 5 · What it is</span><span class="sa-title">The Mark</span><span class="sa-line">What it does: prepares your coin's image and places the family mint mark on it.</span></p>
-      <p class="sa-callout right" data-sa-from="0.685" data-sa-to="0.775"><span class="sa-chip" aria-hidden="true">6</span><span class="sa-eyebrow">Stage 6 · What it is</span><span class="sa-title">The Launch</span><span class="sa-line">What it does: your own wallet creates, signs and pays at every step. We never hold keys or funds.</span></p>
-      <p class="sa-callout left" data-sa-from="0.76" data-sa-to="0.85"><span class="sa-chip" aria-hidden="true">7</span><span class="sa-eyebrow">Stage 7 · What it is</span><span class="sa-title">The Record</span><span class="sa-line">What it does: enters your house in the town registry with its birth facts, receipted in the Day-Book.</span></p>
-      <p class="sa-callout right" data-sa-from="0.835" data-sa-to="0.925"><span class="sa-chip" aria-hidden="true">8</span><span class="sa-eyebrow">Stage 8 · What it is</span><span class="sa-title">The Handover</span><span class="sa-line">What it does: issues your House Passport, with thirty days of support — then you run your house unaided.</span></p>
+      <p class="sa-callout left" data-sa-from="0.30" data-sa-to="0.40" data-sa-tip="0.375,0.185"><span class="sa-chip" aria-hidden="true">1</span><span class="sa-eyebrow">Stage 1 · What it is</span><span class="sa-title">The Conversation</span><span class="sa-line">What it does: your idea, in your own words — what the coin is, why it should exist, who it is for.</span></p>
+      <p class="sa-callout right" data-sa-from="0.385" data-sa-to="0.475" data-sa-tip="0.620,0.260"><span class="sa-chip" aria-hidden="true">2</span><span class="sa-eyebrow">Stage 2 · What it is</span><span class="sa-title">The Honest Question</span><span class="sa-line">What it does: asks, before anything is built — should this be a coin? A no is the service working.</span></p>
+      <p class="sa-callout left" data-sa-from="0.46" data-sa-to="0.55" data-sa-tip="0.330,0.314"><span class="sa-chip" aria-hidden="true">3</span><span class="sa-eyebrow">Stage 3 · What it is</span><span class="sa-title">The Rehearsal</span><span class="sa-line">What it does: a guided practice run first — name, image, permissions, costs, custody. No seed phrase is ever collected.</span></p>
+      <p class="sa-callout right" data-sa-from="0.535" data-sa-to="0.625" data-sa-tip="0.653,0.379"><span class="sa-chip" aria-hidden="true">4</span><span class="sa-eyebrow">Stage 4 · What it is</span><span class="sa-title">The Covenant</span><span class="sa-line">What it does: your house's commitments, read in full and signed. A signature qualifies — not a purchase.</span></p>
+      <p class="sa-callout left" data-sa-from="0.61" data-sa-to="0.70" data-sa-tip="0.321,0.434"><span class="sa-chip" aria-hidden="true">5</span><span class="sa-eyebrow">Stage 5 · What it is</span><span class="sa-title">The Mark</span><span class="sa-line">What it does: prepares your coin's image and places the family mint mark on it.</span></p>
+      <p class="sa-callout right" data-sa-from="0.685" data-sa-to="0.775" data-sa-tip="0.630,0.532"><span class="sa-chip" aria-hidden="true">6</span><span class="sa-eyebrow">Stage 6 · What it is</span><span class="sa-title">The Launch</span><span class="sa-line">What it does: your own wallet creates, signs and pays at every step. We never hold keys or funds.</span></p>
+      <p class="sa-callout left" data-sa-from="0.76" data-sa-to="0.85" data-sa-tip="0.300,0.604"><span class="sa-chip" aria-hidden="true">7</span><span class="sa-eyebrow">Stage 7 · What it is</span><span class="sa-title">The Record</span><span class="sa-line">What it does: enters your house in the town registry with its birth facts, receipted in the Day-Book.</span></p>
+      <p class="sa-callout right" data-sa-from="0.835" data-sa-to="0.925" data-sa-tip="0.533,0.785"><span class="sa-chip" aria-hidden="true">8</span><span class="sa-eyebrow">Stage 8 · What it is</span><span class="sa-title">The Handover</span><span class="sa-line">What it does: issues your House Passport, with thirty days of support — then you run your house unaided.</span></p>
       <p class="sa-callout center" data-sa-from="0.915" data-sa-to="1.01"><span class="sa-eyebrow">The Mint</span><span class="sa-title">Every Layer, Named</span><span class="sa-line">That is the whole mechanism: one coin, one founder, one record — nothing hidden between the layers.</span></p>
     </div>
   </div>
@@ -95,6 +101,7 @@
   var callouts=Array.prototype.slice.call(section.querySelectorAll('.sa-callout'));
   var depth=section.querySelector('[data-sa-depth]');
   var cue=section.querySelector('[data-sa-cue]');
+  var beats=section.querySelector('.sa-beats');
   var TOTAL=235, pad=function(n){return ('00'+n).slice(-3);};
   var small=window.matchMedia('(max-width: 700px)').matches;
   var saveData=!!(navigator.connection&&navigator.connection.saveData);
@@ -102,12 +109,13 @@
   var order=[]; for(var i=1;i<=TOTAL;i+=step){order.push(i);} if(order[order.length-1]!==TOTAL){order.push(TOTAL);}
   var frames={}, started=false, current=-1;
   var targetP=0, dispP=0, chasing=false;
-  function src(n){return 'mint-frames/f'+pad(n)+'.webp';}
+  var frameDir=small?'mint-frames/m/':'mint-frames/';
+  function src(n){return frameDir+'f'+pad(n)+'.webp';}
   function sizeCanvas(){
     var w=stage.clientWidth, h=stage.clientHeight;
     var dpr=Math.min(window.devicePixelRatio||1,1.5);
     canvas.width=Math.round(w*dpr); canvas.height=Math.round(h*dpr);
-    current=-1; targetP=progress(); dispP=targetP; draw(dispP);
+    current=-1; targetP=progress(); dispP=targetP; draw(dispP); layoutLeaders();
   }
   function progress(){
     var total=section.offsetHeight-window.innerHeight; if(total<=0) return 0;
@@ -133,10 +141,54 @@
       var from=parseFloat(c.getAttribute('data-sa-from')), to=parseFloat(c.getAttribute('data-sa-to'));
       var o=0;
       if(p>=from&&p<=to){ var span=to-from, f=Math.min(1,Math.min((p-from)/span,(to-p)/span)/0.16); o=Math.max(0,f); }
-      c.style.opacity=o.toFixed(3);
+      c.style.opacity=o.toFixed(3); if(c._leader) c._leader.g.setAttribute('opacity',o.toFixed(3));
     }
     if(cue) cue.style.opacity=(p>0.04?0:1);
     if(depth) depth.style.transform='translate3d(0,'+(-46*p).toFixed(1)+'px,0)';
+  }
+
+  // Leader lines (Craft Rule 8): a callout that names a layer carries
+  // data-sa-tip="x,y" — the layer's measured position in the frame, taken
+  // from the film's settled stack. One SVG line + tip dot is built per such
+  // callout; the line runs from the card's nearest edge to the tip, mapped
+  // through the same cover-fit transform draw() uses, and its opacity is
+  // the callout's own — so a leader is fully visible only at its stage's
+  // settled beat, pointing at the layer's home in the stack. The tip does
+  // not track mid-motion frames. Any .sa-callout with data-sa-tip gets one.
+  var leaderItems=[];
+  (function buildLeaders(){
+    var NS='http://www.w3.org/2000/svg';
+    var svg=document.createElementNS(NS,'svg');
+    svg.setAttribute('class','sa-leaders'); svg.setAttribute('aria-hidden','true');
+    callouts.forEach(function(c){
+      var tip=c.getAttribute('data-sa-tip'); if(!tip) return;
+      var xy=tip.split(',');
+      var g=document.createElementNS(NS,'g'); g.setAttribute('opacity','0');
+      var line=document.createElementNS(NS,'line'); line.setAttribute('class','sa-leader-line');
+      var halo=document.createElementNS(NS,'circle'); halo.setAttribute('class','sa-leader-halo'); halo.setAttribute('r','11');
+      var dot=document.createElementNS(NS,'circle'); dot.setAttribute('class','sa-leader-dot'); dot.setAttribute('r','4.5');
+      g.appendChild(line); g.appendChild(halo); g.appendChild(dot); svg.appendChild(g);
+      var item={c:c,g:g,line:line,halo:halo,dot:dot,tx:parseFloat(xy[0]),ty:parseFloat(xy[1])};
+      c._leader=item; leaderItems.push(item);
+    });
+    if(leaderItems.length) stage.insertBefore(svg, beats);
+  })();
+  function layoutLeaders(){
+    if(!leaderItems.length) return;
+    var sr=stage.getBoundingClientRect(); if(!sr.width) return;
+    var dpr=canvas.width/stage.clientWidth; if(!isFinite(dpr)||!dpr) dpr=1;
+    var iw=960, ih=540; // both frame sets are 16:9; cover-fit output is identical
+    var s=Math.max(canvas.width/iw,canvas.height/ih), dw=iw*s, dh=ih*s;
+    leaderItems.forEach(function(it){
+      var tx=((canvas.width-dw)/2 + it.tx*dw)/dpr, ty=((canvas.height-dh)/2 + it.ty*dh)/dpr;
+      var r=it.c.getBoundingClientRect();
+      var sx=Math.min(Math.max(tx, r.left-sr.left), r.right-sr.left);
+      var sy=Math.min(Math.max(ty, r.top-sr.top), r.bottom-sr.top);
+      it.line.setAttribute('x1',sx.toFixed(1)); it.line.setAttribute('y1',sy.toFixed(1));
+      it.line.setAttribute('x2',tx.toFixed(1)); it.line.setAttribute('y2',ty.toFixed(1));
+      it.halo.setAttribute('cx',tx.toFixed(1)); it.halo.setAttribute('cy',ty.toFixed(1));
+      it.dot.setAttribute('cx',tx.toFixed(1)); it.dot.setAttribute('cy',ty.toFixed(1));
+    });
   }
   // Craft study Rule 3: never map raw scroll straight to a frame — the shown
   // frame CHASES the scroll target with a lerp. That chase is the butter.
@@ -179,6 +231,8 @@
   } else { preload(); }
   window.addEventListener('scroll',onScroll,{passive:true});
   window.addEventListener('resize',sizeCanvas);
+  window.addEventListener('load',layoutLeaders);
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(layoutLeaders);
   sizeCanvas();
 })();
 </script>
@@ -191,4 +245,4 @@
     <p class="house-line" style="margin-top:16px;font-size:11px">Also from our house — <a href="https://onejobkits.com" style="color:#C9A227">OneJobKits: practical kits for every job →</a></p>
   </div>
 </footer>
-<script src="../design/shared.js"></script><script src="../catalogue/delivered-media.js"></script><script src="../catalogue/media.js"></script><script src="../design/vendor/gsap.min.js"></script><script src="../design/vendor/ScrollTrigger.min.js"></script><script src="../design/vendor/three.min.js"></script><script src="../design/space.js"></script></body></html>
+<script src="../design/shared.js"></script><script src="../catalogue/delivered-media.js"></script><script src="../catalogue/media.js"></script><script src="../design/vendor/gsap.min.js"></script><script src="../design/vendor/ScrollTrigger.min.js"></script><script src="../design/space.js"></script></body></html>
