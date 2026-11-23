@@ -9,12 +9,23 @@
 <link rel="preload" as="image" fetchpriority="high" media="(min-width: 701px)" href="/listings/mint-frames/f001.webp">
 <link rel="preload" as="image" fetchpriority="high" href="/next/assets/coin-poster.webp">
 <script>
-/* MODE GATE (v2): the living path is the DEFAULT for every normal browser.
+/* MODE GATE (v3.1): the living path is the DEFAULT for every normal browser.
    The static stack may engage ONLY on: prefers-reduced-motion, save-data,
    or no/broken JS (the noscript sheet covers that case). No device-class,
    width, pointer, core-count or memory heuristic may gate the cinema —
-   that class of guess is what stilled v1 on a normal desktop laptop. */
-(function(){var r=document.documentElement;var rm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;var sd=!!(navigator.connection&&navigator.connection.saveData);if(rm){r.classList.add('rm','static','noanim');}else if(sd){r.classList.add('static');}else{r.classList.add('cine');}})();
+   that class of guess is what stilled v1 on a normal desktop laptop.
+   V3.1 — THE LAPTOP GATE (founder's report, 2026-11-23 16:06 CT): a normal
+   Windows laptop whose OS asks for less animation (Chrome then reports
+   prefers-reduced-motion) was silently sentenced to the still page. The
+   machine's guess no longer has the last word: the still page carries a
+   living door, and the visitor's own tap on the coin sets the pv-enter
+   flag — an explicit gesture outranks the guess, for this session, and
+   the gate honours the flag before every other signal. */
+(function(){var r=document.documentElement;var entered=false;
+  try{entered=!!(window.sessionStorage&&sessionStorage.getItem('pv-enter')==='1');}catch(e){}
+  if(!entered){try{if(/[?&]enter=1(?:&|$)/.test(window.location.search)){entered=true;if(window.sessionStorage)sessionStorage.setItem('pv-enter','1');}}catch(e){}}
+  if(entered){window.__pvEntered=true;r.classList.add('cine');return;}
+  var rm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;var sd=!!(navigator.connection&&navigator.connection.saveData);if(rm){r.classList.add('rm','static','noanim');}else if(sd){r.classList.add('static');}else{r.classList.add('cine');}})();
 </script>
 <noscript><style>
   /* No-JS: the complete static experience — the stack stands in for the
@@ -454,18 +465,46 @@ html.cine .coin-film{animation:coinBreath 9s ease-in-out infinite alternate;
 .sdp-close{margin-top:1rem;font:inherit;font-size:.85rem;color:var(--cream-dim);background:none;border:1px solid var(--gold-a25);border-radius:12px;padding:.55rem 1rem;cursor:pointer}
 .sdp-close:hover,.sdp-close:focus-visible{color:var(--gold);border-color:var(--door-line)}
 
+/* ---------- V3.1: THE LIVING DOOR (the still page is never a sentence) ----
+   Shown ONLY on the still page a visitor was routed to by the gate
+   (html.static — reduced-motion or save-data, JS on). The coin itself is
+   the door: one real button laid over the coin stage, its invitation
+   riding a gold pill at the coin's foot, and one plain sentence under
+   the stage saying why the page stands still. The tap sets the pv-enter
+   flag and reloads; the head gate honours the flag before every signal,
+   so the full cinematic path boots exactly as approved — arrival film,
+   breath, opening, portals. No-JS never sees the door (nothing can run
+   without JS); the cinematic path never sees it (nothing to rescue). */
+.coin-enter{display:none}
+html.static .coin-enter{display:block;position:absolute;inset:0;z-index:6;background:transparent;border:0;margin:0;padding:0;cursor:pointer}
+.coin-enter .ce-pill{position:absolute;left:50%;bottom:7%;transform:translateX(-50%);display:inline-flex;align-items:center;gap:.55rem;
+  font-family:Cinzel,Georgia,serif;font-size:clamp(.92rem,2.4vw,1.05rem);letter-spacing:.04em;color:var(--cream);white-space:nowrap;
+  background:var(--surface-strong);border:1px solid var(--gold);border-radius:999px;padding:.68rem 1.25rem;
+  box-shadow:0 0 26px var(--gold-bright-a16),0 14px 34px var(--black-a55),inset 0 1px 0 var(--gold-pale-a14);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.coin-enter .ce-pill::before{content:"";width:.55rem;height:.55rem;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold-a70);flex:none}
+.coin-enter:hover .ce-pill,.coin-enter:focus-visible .ce-pill{border-color:var(--cream)}
+.coin-enter:focus-visible{outline:2px solid var(--gold);outline-offset:-6px}
+.enter-note{display:none}
+html.static .enter-note{display:block;max-width:38rem;margin:1.1rem auto 0;text-align:center;color:var(--cream-dim);line-height:1.6;font-size:.95rem}
+.enter-note strong{color:var(--cream);font-weight:600}
+
 /* ---------- REDUCED MOTION / STATIC MODES ---------- */
+/* V3.1: every rule in this sheet is scoped to html:not(.cine). A visitor
+   who tapped the living door reloads with the pv-enter flag and the gate
+   sets html.cine — their OS still reports reduced motion, and this sheet
+   must not reach into the cinema they explicitly chose and flatten it. */
 @media (prefers-reduced-motion:reduce){
-  .coin-film{display:none}
-  .coin-still{display:block}
-  .scroll-cue .arr{animation:none}
-  .sa-section{height:auto}
-  .sa-stage{position:static;height:auto;aspect-ratio:16/9}
-  .sa-beats{position:static;padding:.8rem 0}
-  .sa-callout{position:static;transform:none;opacity:1!important;width:auto;text-align:left}
-  .sa-callout.center{text-align:left}
-  .sa-callout .sa-door{pointer-events:auto}
-  .sa-cue,.sa-depth,.sa-skip,.sa-leaders{display:none}
+  html:not(.cine) .coin-film{display:none}
+  html:not(.cine) .coin-still{display:block}
+  html:not(.cine) .scroll-cue .arr{animation:none}
+  html:not(.cine) .sa-section{height:auto}
+  html:not(.cine) .sa-stage{position:static;height:auto;aspect-ratio:16/9}
+  html:not(.cine) .sa-beats{position:static;padding:.8rem 0}
+  html:not(.cine) .sa-callout{position:static;transform:none;opacity:1!important;width:auto;text-align:left}
+  html:not(.cine) .sa-callout.center{text-align:left}
+  html:not(.cine) .sa-callout .sa-door{pointer-events:auto}
+  html:not(.cine) .sa-cue,html:not(.cine) .sa-depth,html:not(.cine) .sa-skip,html:not(.cine) .sa-leaders{display:none}
 }
 .sa-reduced{height:auto}
 .sa-reduced .sa-stage{position:static;height:auto;aspect-ratio:16/9}
@@ -512,12 +551,14 @@ html.rm .scroll-cue .arr{animation:none}
       <img class="coin-still" src="/listings/mint-frames/f001.webp" width="960" height="540" alt="The PROVADIA coin, whole — a brick P on gold">
       <div class="coin-shade" aria-hidden="true"></div>
       <button type="button" class="coin-open" id="coinOpen" aria-label="Open the coin — the whole town is inside it"></button>
+      <button type="button" class="coin-enter" id="coinEnter" aria-label="Touch the coin — enter the living town"><span class="ce-pill" aria-hidden="true">Touch the coin — enter the living town</span></button>
       <div class="breath" aria-hidden="true"><span class="breath-glow"></span><span class="breath-ring"></span><span class="breath-crack"></span></div>
       <div class="orbit" id="orbit" role="group" aria-label="The portals in orbit around the coin — the inner ring: Mint, Marketplace, Coin, Golden Wall, Record; the outer ring: Forum, Keeper, Town, and two concept portals">
         <div class="orbit-ring inner" aria-hidden="true"></div>
         <div class="orbit-ring outer" aria-hidden="true"></div>
       </div>
     </div>
+    <p class="enter-note" id="enterNote">You are seeing the town <strong>standing still</strong> — your device asked for less motion, or for less data, and the town honours that. But the town is alive: its film, its breath and the worlds inside the coin are one touch away, whenever you choose.</p>
     <p class="lede">Explore its services, marketplace, coin, and public record.</p>
     <nav class="room-rail" aria-label="The doors inside the coin">
       <span class="rail-k" aria-hidden="true">The coin is the house · Choose a door</span>
@@ -762,7 +803,7 @@ html.rm .scroll-cue .arr{animation:none}
 <script>
 (function(){
   var root=document.documentElement;
-  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches&&!window.__pvEntered;
 
   /* Static modes (reduced motion / save-data — set in the head gate): stop
      the arrival film from fetching or playing; the approved still stands
@@ -773,6 +814,17 @@ html.rm .scroll-cue .arr{animation:none}
     if(v){ v.removeAttribute('autoplay'); v.removeAttribute('poster'); try{ v.pause(); }catch(e){}
       var ss=v.querySelectorAll('source'); for(var i=0;i<ss.length;i++){ ss[i].remove(); }
       try{ v.load(); }catch(e){} }
+    /* V3.1 — the living door: the visitor's own tap outranks the gate's
+       guess. Record the choice for this session and reload; the head
+       gate honours the pv-enter flag before every other signal, so the
+       cinema boots whole, exactly as approved. If session storage is
+       unavailable, the choice rides the URL instead. */
+    var eb=document.getElementById('coinEnter');
+    if(eb){ eb.addEventListener('click',function(){
+      var ok=false; try{ sessionStorage.setItem('pv-enter','1'); ok=sessionStorage.getItem('pv-enter')==='1'; }catch(e){}
+      if(ok){ window.location.reload(); }
+      else{ var u=new URL(window.location.href); u.searchParams.set('enter','1'); window.location.replace(u.toString()); }
+    }); }
   }
 
   /* ---- Static stack: lightweight text transitions (IntersectionObserver fade-in) ---- */
@@ -972,7 +1024,7 @@ html.rm .scroll-cue .arr{animation:none}
     if(started) return; started=true;
     prioritySeq(order).forEach(function(n){ var im=new Image(); im.onload=function(){ kick(); }; im.src=src(n); frames[n]=im; });
   }
-  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches&&!window.__pvEntered){
     section.classList.add('sa-reduced');
     var im=new Image(); im.onload=function(){ frames[order[0]]=im; sizeCanvas(); draw(0); }; im.src=src(1); frames[1]=im;
     sizeCanvas(); return;
@@ -995,7 +1047,7 @@ html.rm .scroll-cue .arr{animation:none}
 <script>
 (function(){
   var root=document.documentElement;
-  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches&&!window.__pvEntered;
   var cinematic=!root.classList.contains('static');
 
   /* ================= THE CINEMATIC DIRECTOR (kinetic type) ==============
