@@ -1,642 +1,1356 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="captain-api" content="https://api.provadiacoin.com">
-<title>PROVADIA — Europe's First Town of Record</title>
-<meta name="description" content="Provadia — the living digital reconstruction of Europe's oldest salt town. The Fortress P coin, the Golden Wall at 0/47, Solnik at the gate, and a public record your own browser can verify.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="sections/panels.css">
-<link rel="stylesheet" href="sections/record/panels.css">
-<link rel="stylesheet" href="engines/secretside/secretside.css">
+<title>PROVADIA — The Living Town</title>
+<meta name="description" content="A living digital town. Explore its services, marketplace, coin, and public record.">
+<link rel="preload" as="image" fetchpriority="high" media="(max-width: 700px)" href="/listings/mint-frames/m/f001.webp">
+<link rel="preload" as="image" fetchpriority="high" media="(min-width: 701px)" href="/listings/mint-frames/f001.webp">
+<link rel="preload" as="image" fetchpriority="high" href="/next/assets/coin-poster.webp">
+<script>
+/* MODE GATE (v2): the living path is the DEFAULT for every normal browser.
+   The static stack may engage ONLY on: prefers-reduced-motion, save-data,
+   or no/broken JS (the noscript sheet covers that case). No device-class,
+   width, pointer, core-count or memory heuristic may gate the cinema —
+   that class of guess is what stilled v1 on a normal desktop laptop. */
+(function(){var r=document.documentElement;var rm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;var sd=!!(navigator.connection&&navigator.connection.saveData);if(rm){r.classList.add('rm','static','noanim');}else if(sd){r.classList.add('static');}else{r.classList.add('cine');}})();
+</script>
+<noscript><style>
+  /* No-JS: the complete static experience — the stack stands in for the
+     journey, with every layer's full text and door (Listing Standard §3.7). */
+  .stack{display:block!important}
+  .sa-section{display:none!important}
+  .layer-card{opacity:1!important;transform:none!important}
+  #motes{display:none!important}
+  .coin-film{display:none!important}
+  .coin-still{display:block!important}
+  .orbit{display:none!important}
+  .scroll-cue .arr{animation:none!important}
+</style></noscript>
 <style>
-  :root{--field:#141210;--gold:#C9A227;--pale:#FFEFC1;--deep:#6B4A12;--ink:#3D2A08;--salt:#F4EFE6}
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--field);color:var(--salt);font-family:Inter,system-ui,sans-serif}
-  body{overflow-x:hidden}
-  #stage{position:fixed;inset:0;z-index:0}
-  #stage canvas{display:block}
-  #scroll-space{height:700vh;position:relative;z-index:1;pointer-events:none}
-  #fade{position:fixed;inset:0;background:#000;z-index:40;pointer-events:none;transition:opacity 2.4s ease}
-  #fade.gone{opacity:0}
-  #caption{position:fixed;left:22px;bottom:20px;z-index:6;pointer-events:none;font-family:Cinzel,serif;letter-spacing:.26em;color:var(--pale);font-size:13px;text-transform:uppercase;text-shadow:0 2px 14px rgba(0,0,0,.8)}
-  #caption small{display:block;margin-top:7px;font-family:Inter,sans-serif;letter-spacing:.12em;font-size:10.5px;color:rgba(244,239,230,.6);text-transform:none}
-  .stack{position:fixed;z-index:5;right:20px;top:50%;width:min(434px,calc(100vw - 24px));max-height:88vh;overflow-y:auto;padding:2px;opacity:0;pointer-events:none;transform:translateY(-50%) translateX(14px);transition:opacity .55s ease,transform .55s ease;scrollbar-width:thin;scrollbar-color:var(--deep) transparent}
-  .stack.active{opacity:1;pointer-events:auto;transform:translateY(-50%) translateX(0)}
-  .stack .town-panel{margin:0 0 14px}
-  .stack .town-panel:last-child{margin-bottom:2px}
-  .coin-btns{display:flex;flex-wrap:wrap;gap:8px;margin:.4rem 0 .6rem}
-  .coin-btns button{flex:1 1 auto;background:rgba(201,162,39,.08);border:1px solid rgba(201,162,39,.55);color:var(--pale);font-family:Cinzel,serif;letter-spacing:.12em;font-size:.72rem;padding:.62rem .5rem;cursor:pointer;text-transform:uppercase;transition:background .2s,border-color .2s}
-  .coin-btns button:hover{background:rgba(201,162,39,.2);border-color:var(--gold)}
-  .coin-state{font-family:Cinzel,serif;letter-spacing:.22em;color:var(--gold);font-size:.8rem;margin:.2rem 0}
-  .coin-hint{font-size:.78rem;color:rgba(244,239,230,.55);margin:.1rem 0 0}
-  @media (max-width:760px){
-    .stack{right:12px;left:12px;width:auto;top:auto;bottom:12px;max-height:54vh;transform:translateY(14px)}
-    .stack.active{transform:none}
-    #caption{left:14px;bottom:auto;top:12px;font-size:11px}
+@font-face{font-family:Cinzel;src:url(/design/assets/fonts/cinzel-latin-500.ttf) format("truetype");font-weight:500;font-display:swap}
+@font-face{font-family:Inter;src:url(/design/assets/fonts/inter-latin-400.ttf) format("truetype");font-weight:400;font-display:swap}
+/* PALETTE — RULED BY THE FOUNDER (2026-11-23 13:43 CT): DARK + GOLD, EVOLVED
+   (the partner's recommendation, founder-adopted). This is the town's palette
+   law. Every color on this page is a token below; roles per the ruling:
+   vault (ground) · gold (primary accent) · cream (text) · brown (ink) ·
+   gold-bright RESERVED for the two main doors · gold-pale for illumination
+   washes only. Lighting rules: soft golden illumination around the coin,
+   subtle bronze depth in the ground, cream text with accessible contrast,
+   darkness never fights navigation; the 10-second clarity test governs. */
+:root{
+  --vault:#141210;
+  --vault-deep:#0a0c0a;
+  --vault-mid:#101410;
+  --vault-nav:rgba(10,10,8,.72);
+  --surface:rgba(24,16,8,.44);
+  --surface-strong:rgba(18,14,8,.66);
+  --surface-ledger:rgba(14,11,6,.6);
+  --surface-footer:rgba(8,8,6,.55);
+  --surface-chip:rgba(10,8,5,.4);
+  --gold:#c9a227;
+  --gold-bright:#e4c65b;
+  --gold-pale:#ffefc1;
+  --brown:#30251b;
+  --cream:#e9ddc6;
+  --cream-dim:rgba(233,221,198,.78);
+  --cream-faint:rgba(233,221,198,.55);
+  --cream-a25:rgba(233,221,198,.25);
+  --cream-a40:rgba(233,221,198,.4);
+  --cream-a62:rgba(233,221,198,.62);
+  --cream-a85:rgba(233,221,198,.85);
+  --cream-a92:rgba(233,221,198,.92);
+  --door-line:rgba(201,162,39,.38);
+  --gold-a07:rgba(201,162,39,.07);
+  --gold-a08:rgba(201,162,39,.08);
+  --gold-a09:rgba(201,162,39,.09);
+  --gold-a10:rgba(201,162,39,.10);
+  --gold-a12:rgba(201,162,39,.12);
+  --gold-a13:rgba(201,162,39,.13);
+  --gold-a14:rgba(201,162,39,.14);
+  --gold-a15:rgba(201,162,39,.15);
+  --gold-a16:rgba(201,162,39,.16);
+  --gold-a20:rgba(201,162,39,.20);
+  --gold-a22:rgba(201,162,39,.22);
+  --gold-a25:rgba(201,162,39,.25);
+  --gold-a28:rgba(201,162,39,.28);
+  --gold-a35:rgba(201,162,39,.35);
+  --gold-a38:rgba(201,162,39,.38);
+  --gold-a50:rgba(201,162,39,.5);
+  --gold-a70:rgba(201,162,39,.7);
+  --gold-a75:rgba(201,162,39,.75);
+  --gold-bright-a16:rgba(228,198,91,.16);
+  --gold-pale-a12:rgba(255,239,193,.12);
+  --gold-pale-a14:rgba(255,239,193,.14);
+  --bronze-a14:rgba(122,86,44,.14);
+  --moss-a10:rgba(64,90,60,.10);
+  --offline:#8a8a7a;
+  --black-a35:rgba(10,6,3,.35);
+  --black-a45:rgba(0,0,0,.45);
+  --black-a50:rgba(0,0,0,.5);
+  --black-a55:rgba(10,6,3,.55);
+  --black-a65:rgba(0,0,0,.65);
+  --black-a80:rgba(0,0,0,.8);
+  --black-a90:rgba(0,0,0,.9);
+  --black-a95:rgba(0,0,0,.95);
+  --tag-rec-text:#b7e3a8; --tag-rec-line:rgba(150,220,130,.45); --tag-rec-bg:rgba(90,160,70,.12);
+  --tag-unv-text:#e8b4a0; --tag-unv-line:rgba(220,140,110,.45); --tag-unv-bg:rgba(180,90,60,.12);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html.rm{scroll-behavior:auto}
+body{margin:0;background:var(--vault-deep);color:var(--cream);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,.serif{font-family:Cinzel,Georgia,"Times New Roman",serif;font-weight:500}
+a{color:var(--gold)}
+a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+html.static #motes,html.rm #motes{display:none}
+img{max-width:100%}
+::selection{background:var(--gold-a35)}
+
+/* ---------- THE WORLD (fixed atmosphere layers, behind everything) ---------- */
+.world{position:fixed;inset:0;z-index:0;pointer-events:none;background:
+  radial-gradient(1100px 620px at 50% -8%,var(--gold-a13),transparent 62%),
+  radial-gradient(900px 700px at 88% 108%,var(--gold-a07),transparent 60%),
+  radial-gradient(700px 500px at 6% 88%,var(--moss-a10),transparent 60%),
+  radial-gradient(900px 540px at 50% 112%,var(--bronze-a14),transparent 62%),
+  linear-gradient(to bottom,var(--vault-deep) 0%,var(--vault-mid) 34%,var(--vault) 58%,var(--vault-deep) 100%)}
+#motes{position:fixed;inset:0;z-index:1;pointer-events:none}
+.vignette{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(120% 90% at 50% 42%,transparent 55%,var(--black-a50) 100%)}
+main,footer{position:relative;z-index:3}
+
+/* ---------- NAVIGATION (never blocked, always usable) ---------- */
+.site-nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:1rem;
+  padding:.55rem clamp(.8rem,3vw,1.6rem);
+  background:var(--vault-nav);-webkit-backdrop-filter:blur(12px) saturate(1.2);backdrop-filter:blur(12px) saturate(1.2);
+  border-bottom:1px solid var(--gold-a22)}
+.wordmark{font-family:Cinzel,Georgia,serif;font-size:1.02rem;letter-spacing:.24em;color:var(--cream);text-decoration:none;white-space:nowrap}
+.wordmark small{display:block;font-family:Inter,system-ui,sans-serif;font-size:.56rem;letter-spacing:.34em;color:var(--gold);text-transform:uppercase;margin-top:.12rem}
+.doors{display:flex;gap:.2rem;margin-left:auto;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.doors::-webkit-scrollbar{display:none}
+.doors a{color:var(--cream-dim);text-decoration:none;font-size:.8rem;letter-spacing:.06em;padding:.42rem .6rem;border-radius:999px;white-space:nowrap}
+.doors a:hover,.doors a:focus-visible{color:var(--gold);background:var(--gold-a12)}
+.keeper-chip{border:1px solid var(--door-line);border-radius:999px;color:var(--gold)!important;background:var(--gold-a08)}
+.keeper-chip .dot{display:inline-block;width:.44rem;height:.44rem;border-radius:50%;background:var(--offline);margin-right:.4rem;vertical-align:1px}
+.skip-link{position:fixed;left:.6rem;top:-4rem;z-index:60;background:var(--brown);color:var(--cream);padding:.5rem .9rem;border:1px solid var(--door-line);border-radius:10px;transition:top .2s}
+.skip-link:focus{top:.6rem}
+
+/* ---------- ARRIVAL (the first screen is already the town) ---------- */
+.arrival{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  padding:6.2rem 1.2rem 3.2rem;position:relative}
+.arrival .halo{position:absolute;left:50%;top:44%;width:min(88vw,620px);aspect-ratio:1;transform:translate(-50%,-50%);
+  background:radial-gradient(circle,var(--gold-pale-a12) 0%,var(--gold-a13) 45%,transparent 68%);pointer-events:none}
+.arrival-coin{width:min(46vw,218px);height:auto;filter:drop-shadow(0 24px 44px var(--black-a65));animation:floaty 7.5s ease-in-out infinite alternate;position:relative;
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 52%,transparent 70%);mask-image:radial-gradient(circle at 50% 50%,#000 52%,transparent 70%)}
+@keyframes floaty{from{transform:translateY(-7px) rotate(-.6deg)}to{transform:translateY(9px) rotate(.6deg)}}
+.eyebrow{font-size:.68rem;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);margin:1.35rem 0 .55rem}
+.arrival h1{font-size:clamp(2rem,6.4vw,3.6rem);line-height:1.08;margin:.1rem 0 .7rem;text-shadow:0 4px 30px var(--black-a80)}
+.arrival .lede{font-size:clamp(1rem,2.6vw,1.22rem);color:var(--cream-dim);max-width:34rem;margin:0 auto;line-height:1.55}
+.door-pair{display:flex;gap:.9rem;flex-wrap:wrap;justify-content:center;margin-top:2rem;width:min(94vw,44rem)}
+.door-card{flex:1 1 15.5rem;text-align:left;text-decoration:none;color:var(--cream);background:var(--surface);
+  border:1px solid var(--gold-bright);border-radius:18px;padding:1.05rem 1.2rem;
+  box-shadow:0 18px 50px var(--black-a45),0 0 26px var(--gold-bright-a16),inset 0 1px 0 var(--gold-pale-a14);
+  -webkit-backdrop-filter:blur(10px) saturate(1.25);backdrop-filter:blur(10px) saturate(1.25);transition:transform .25s,border-color .25s}
+.door-card:hover,.door-card:focus-visible{transform:translateY(-3px);border-color:var(--gold-bright);box-shadow:0 22px 54px var(--black-a45),0 0 38px var(--gold-bright-a16),inset 0 1px 0 var(--gold-pale-a14)}
+.door-card .dk{display:block;font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem}
+.door-card .dt{display:block;font-family:Cinzel,Georgia,serif;font-size:1.32rem;margin-bottom:.3rem;color:var(--gold-bright)}
+.door-card .ds{display:block;font-size:.9rem;color:var(--cream-dim);line-height:1.45}
+.arrival-note{margin:1.15rem 0 0;font-size:.85rem;color:var(--cream-faint)}
+.keeper-door{margin-top:1.05rem;display:inline-flex;align-items:center;gap:.55rem;color:var(--cream-dim);text-decoration:none;
+  font-size:.85rem;border:1px solid var(--gold-a25);border-radius:999px;padding:.5rem 1rem;background:var(--surface)}
+.keeper-door:hover,.keeper-door:focus-visible{color:var(--gold);border-color:var(--door-line)}
+.keeper-door .dot{width:.48rem;height:.48rem;border-radius:50%;background:var(--offline);flex:none}
+.scroll-cue{margin-top:2.6rem;color:var(--cream-faint);font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;text-decoration:none}
+.scroll-cue .arr{display:block;font-size:1.05rem;letter-spacing:0;margin-top:.45rem;animation:cuebob 2.6s ease-in-out infinite alternate}
+@keyframes cuebob{from{transform:translateY(0)}to{transform:translateY(6px)}}
+
+/* ---------- SCROLL JOURNEY (the Surfer mechanism, specimen engine) ---------- */
+.sa-section{position:relative;height:780vh;background:var(--vault);border-top:1px solid var(--gold-a25);border-bottom:1px solid var(--gold-a25)}
+.sa-stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.sa-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.sa-scrim{position:absolute;inset:0;background:linear-gradient(to top,var(--black-a55),transparent 40%,transparent 70%,var(--black-a35));pointer-events:none}
+.sa-depth{position:absolute;inset:-80px 0;pointer-events:none;will-change:transform;background:radial-gradient(600px 340px at 18% 8%,var(--gold-a15),transparent 60%),radial-gradient(520px 300px at 85% 92%,var(--gold-a09),transparent 60%)}
+.sa-beats{position:absolute;inset:0;pointer-events:none}
+.sa-callout{position:absolute;top:50%;width:min(29%,23rem);margin:0;color:var(--cream);opacity:0;transform:translateY(-50%);background:var(--surface);-webkit-backdrop-filter:blur(10px) saturate(1.25);backdrop-filter:blur(10px) saturate(1.25);border:1px solid var(--door-line);border-radius:16px;padding:1rem 1.15rem;box-shadow:0 18px 50px var(--black-a45),inset 0 1px 0 var(--gold-pale-a14)}
+.sa-callout .sa-eyebrow{display:block;font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem}
+.sa-callout .sa-title{display:block;font-family:Cinzel,Georgia,serif;font-size:clamp(1.15rem,2.2vw,1.6rem);line-height:1.25;margin-bottom:.45rem;text-shadow:0 2px 18px var(--black-a90)}
+.sa-callout .sa-line{display:block;font-size:clamp(.85rem,1.3vw,.98rem);line-height:1.5;color:var(--cream-a92);text-shadow:0 1px 10px var(--black-a95),0 1px 3px var(--brown)}
+.sa-callout .sa-chip{display:inline-flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:50%;border:1px solid var(--gold-a75);background:var(--gold-a16);color:var(--cream);font-family:Cinzel,Georgia,serif;font-size:.95rem;margin-bottom:.55rem;box-shadow:0 0 14px var(--gold-a35)}
+.sa-callout .sa-door{display:inline-block;margin-top:.65rem;font-size:.82rem;letter-spacing:.05em;color:var(--gold);text-decoration:none;border-bottom:1px solid var(--gold-a50);padding-bottom:.1rem;pointer-events:none}
+.sa-callout .sa-door:hover,.sa-callout .sa-door:focus-visible{border-color:var(--gold)}
+.sa-callout.left{left:3.5%;text-align:left}
+.sa-callout.right{right:3.5%;text-align:right}
+.sa-callout.center{left:50%;transform:translate(-50%,0);top:auto;bottom:9%;width:min(88%,42rem);text-align:center}
+.sa-callout.center .sa-title{font-size:clamp(1.35rem,3.2vw,2.2rem)}
+.sa-cue{position:absolute;left:50%;top:4.6rem;transform:translateX(-50%);margin:0;font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;color:var(--cream-a85);text-shadow:0 1px 8px var(--black-a90);z-index:3;white-space:nowrap}
+.sa-skip{position:absolute;right:1rem;top:4.6rem;z-index:4;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--cream-faint);text-decoration:none;border:1px solid var(--gold-a25);padding:.4rem .7rem;border-radius:999px;background:var(--surface-chip)}
+.sa-skip:hover{color:var(--gold)}
+.sa-leaders{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.sa-leader-line{stroke:var(--gold-a75);stroke-width:1.5}
+.sa-leader-halo{fill:var(--gold-a20)}
+.sa-leader-dot{fill:var(--gold);stroke:var(--cream);stroke-width:1.5}
+.sa-callout.wall,.layer-card.wall{border-color:var(--gold-a70);box-shadow:0 18px 50px var(--black-a45),0 0 34px var(--gold-a20),inset 0 1px 0 var(--gold-pale-a14)}
+.sa-callout.services,.layer-card.services{background:var(--surface-strong);border-color:var(--cream-a25)}
+@media (max-width:760px){
+  .sa-callout.left,.sa-callout.right{left:50%;right:auto;transform:translate(-50%,0);top:auto;bottom:7%;width:min(90%,30rem);text-align:center}
+  .sa-cue{top:4.2rem}
+  .sa-skip{top:4.2rem}
+}
+
+/* ---------- STATIC STACK (weak-phone / reduced-motion / no-JS experience) ---------- */
+.stack{display:none;padding:4.5rem 1.2rem 1rem;max-width:72rem;margin:0 auto}
+html.static .stack{display:block}
+html.static .sa-section{display:none}
+.stack h2{font-size:clamp(1.5rem,4vw,2.2rem);text-align:center;margin:.2rem 0 .4rem}
+.stack .sub{text-align:center;color:var(--cream-dim);max-width:36rem;margin:0 auto 2.2rem;line-height:1.55}
+.layer-card{display:grid;grid-template-columns:1fr;gap:0;margin:0 auto 1.4rem;max-width:56rem;background:var(--surface-strong);
+  border:1px solid var(--gold-a28);border-radius:18px;overflow:hidden;
+  opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+.layer-card.in{opacity:1;transform:none}
+html.rm .layer-card,html.noanim .layer-card{opacity:1;transform:none;transition:none}
+@media (min-width:760px){.layer-card{grid-template-columns:1.05fr 1fr}}
+.layer-card img{width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:16/9}
+.layer-card .lc-body{padding:1.2rem 1.3rem}
+.layer-card .lc-eyebrow{font-size:.64rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin:0 0 .45rem}
+.layer-card h3{font-size:1.35rem;margin:.1rem 0 .5rem}
+.layer-card p{color:var(--cream-dim);line-height:1.55;margin:.3rem 0;font-size:.95rem}
+.layer-card .lc-door{display:inline-block;margin-top:.6rem;color:var(--gold);text-decoration:none;border-bottom:1px solid var(--gold-a50);padding-bottom:.1rem;font-size:.88rem}
+
+/* ---------- SECTIONS BELOW THE JOURNEY ---------- */
+.below{max-width:72rem;margin:0 auto;padding:3.6rem 1.2rem 0}
+.below h2{font-size:clamp(1.5rem,4vw,2.2rem);margin:.2rem 0 .6rem}
+.below .eyebrow{margin-top:0}
+.below p{color:var(--cream-dim);line-height:1.6;max-width:44rem}
+.ledger{border:1px solid var(--gold-a28);border-radius:16px;overflow:hidden;margin:1.2rem 0;background:var(--surface-ledger)}
+.ledger .row{display:flex;gap:.9rem;align-items:flex-start;padding:.85rem 1.05rem;border-top:1px solid var(--gold-a14)}
+.ledger .row:first-child{border-top:none}
+.tag{flex:none;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;border-radius:999px;padding:.28rem .6rem;margin-top:.15rem;border:1px solid}
+.tag.rec{color:var(--tag-rec-text);border-color:var(--tag-rec-line);background:var(--tag-rec-bg)}
+.tag.claim{color:var(--gold);border-color:var(--gold-a50);background:var(--gold-a10)}
+.tag.unv{color:var(--tag-unv-text);border-color:var(--tag-unv-line);background:var(--tag-unv-bg)}
+.ledger .row p{margin:0;color:var(--cream);font-size:.94rem;line-height:1.5;max-width:none}
+.ledger .row p small{display:block;color:var(--cream-faint);margin-top:.2rem;font-size:.8rem}
+.status-strip{border:1px solid var(--gold-a28);border-left:3px solid var(--gold);border-radius:12px;padding:1rem 1.15rem;background:var(--surface-strong);margin:1.4rem 0;max-width:56rem}
+.status-strip p{margin:0;color:var(--cream);font-size:.95rem;line-height:1.55;max-width:none}
+.cards{display:grid;grid-template-columns:1fr;gap:1rem;margin:1.2rem 0}
+@media (min-width:760px){.cards{grid-template-columns:1fr 1fr}}
+.mini-card{display:block;text-decoration:none;color:var(--cream);background:var(--surface-strong);border:1px solid var(--gold-a28);border-radius:16px;padding:1.15rem 1.25rem;transition:transform .25s,border-color .25s}
+.mini-card:hover,.mini-card:focus-visible{transform:translateY(-3px);border-color:var(--gold-a70)}
+.mini-card .dk{display:block;font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem}
+.mini-card .dt{display:block;font-family:Cinzel,Georgia,serif;font-size:1.25rem;margin-bottom:.35rem}
+.mini-card .ds{display:block;color:var(--cream-dim);font-size:.92rem;line-height:1.5}
+
+/* ---------- FOOTER ---------- */
+footer{border-top:1px solid var(--gold-a22);margin-top:4rem;padding:2.6rem 1.2rem 3rem;background:var(--surface-footer)}
+.foot-in{max-width:72rem;margin:0 auto}
+.foundation-law{font-size:.98rem;line-height:1.6;color:var(--cream);max-width:46rem}
+.foot-row{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:center;margin-top:1.4rem;font-size:.88rem;color:var(--cream-dim)}
+.foot-row a{color:var(--cream-dim);text-decoration:none}
+.foot-row a:hover{color:var(--gold)}
+.house-line{margin-top:1.2rem;font-size:.82rem;color:var(--cream-dim)}
+.house-line a{color:var(--gold)}
+.preview-note{margin-top:1.6rem;font-size:.74rem;letter-spacing:.08em;color:var(--cream-a62);text-transform:uppercase}
+
+
+/* ---------- V2: THE COIN IS THE HOUSE (living arrival · rooms · entry) ---------- */
+/* The arrival coin stage: the real Mint film, playing. In static modes the
+   film is swapped for the approved still (f001) — see the mode rules below. */
+.coin-stage{position:relative;width:min(94vw,680px);aspect-ratio:16/9;margin:1.5rem auto .4rem;border-radius:20px;overflow:hidden;
+  border:1px solid var(--gold-a28);background:#000;
+  box-shadow:0 30px 80px var(--black-a65),0 0 64px var(--gold-a12),inset 0 1px 0 var(--gold-pale-a14)}
+.coin-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.coin-still{display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+html.static .coin-film,html.rm .coin-film{display:none}
+html.static .coin-still,html.rm .coin-still{display:block}
+.coin-shade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(125% 105% at 50% 45%,transparent 58%,var(--black-a45) 100%)}
+.arrival{padding-top:4.9rem}
+@media (max-width:760px){.arrival{padding-top:4.4rem}.coin-stage{margin-top:1.1rem}}
+
+/* The room rail: the coin's pop-out menus, on the first screen. A clear,
+   immediately accessible room menu (partner safeguard) — in cinematic mode
+   choosing a room starts the entry journey; in static modes these are
+   ordinary links to the rooms' doors. */
+.room-rail{margin-top:1.5rem;width:min(94vw,44rem)}
+.rail-k{display:block;font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem}
+.rail-chips{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+.room-chip{display:inline-flex;align-items:center;gap:.45rem;color:var(--cream);text-decoration:none;font-size:.86rem;letter-spacing:.04em;
+  border:1px solid var(--door-line);border-radius:999px;padding:.52rem 1rem;background:var(--surface);
+  transition:border-color .3s,color .3s,box-shadow .3s}
+.room-chip::before{content:"";width:.42rem;height:.42rem;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold-a70);flex:none}
+.room-chip:hover,.room-chip:focus-visible{color:var(--cream);border-color:var(--gold);box-shadow:0 0 18px var(--gold-bright-a16)}
+.room-chip[aria-current="true"]{color:var(--cream);border-color:var(--gold);box-shadow:0 0 22px var(--gold-bright-a16)}
+
+/* The journey dolly: the camera. Choosing is OUT (the film opens, parts
+   presented); entering is IN — the dolly pushes toward the chosen part. */
+.sa-dolly{position:absolute;inset:0;will-change:transform;transition:transform 1.35s cubic-bezier(.25,.6,.2,1)}
+.sa-dolly.pushing{transform:scale(1.14)}
+
+/* Room hotspots: the coin's revealed components, clickable. Positioned by
+   the engine at each part's leader tip; visible only while its room's
+   callout is present. */
+.sa-hotspot{position:absolute;width:42px;height:42px;margin:-21px 0 0 -21px;border-radius:50%;z-index:6;cursor:pointer;
+  border:1.5px solid var(--gold);background:radial-gradient(circle,var(--gold-bright-a16) 0%,transparent 72%);
+  opacity:0;pointer-events:none;transition:opacity .5s ease;padding:0}
+.sa-hotspot::before{content:"";position:absolute;inset:0;border-radius:50%;border:1px solid var(--gold-a50);animation:hotPulse 2.8s ease-in-out infinite}
+.sa-hotspot::after{content:"";position:absolute;left:50%;top:50%;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold-a70)}
+@keyframes hotPulse{0%{transform:scale(.72);opacity:.9}100%{transform:scale(1.28);opacity:0}}
+.sa-hotspot:hover,.sa-hotspot:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* The portal: golden light swelling at the chosen part as the camera enters. */
+.portal{position:absolute;width:340px;height:340px;margin:-170px 0 0 -170px;border-radius:50%;pointer-events:none;opacity:0;z-index:5;
+  background:radial-gradient(circle,var(--gold-pale-a14) 0%,var(--gold-a20) 38%,transparent 68%)}
+.portal.on{opacity:1;transition:opacity .9s ease;animation:portalPulse 2.6s ease-in-out infinite alternate}
+@keyframes portalPulse{from{transform:scale(.93)}to{transform:scale(1.07)}}
+
+/* The entry card: the room's threshold — its own small environment, with
+   its real door. Shown after the camera has flown in. */
+.entry-card{position:absolute;left:50%;bottom:5.5%;transform:translate(-50%,18px);width:min(92%,34rem);z-index:8;
+  background:var(--surface-strong);border:1px solid var(--gold-a50);border-radius:18px;padding:1.3rem 1.5rem 1.4rem;text-align:left;
+  opacity:0;pointer-events:none;transition:opacity .7s ease,transform .7s ease;
+  box-shadow:0 30px 80px var(--black-a80),inset 0 1px 0 var(--gold-pale-a14);
+  -webkit-backdrop-filter:blur(12px) saturate(1.25);backdrop-filter:blur(12px) saturate(1.25)}
+.entry-card.in{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.entry-card[data-room="wall"]{border-color:var(--gold-a70);box-shadow:0 30px 80px var(--black-a80),0 0 44px var(--gold-a20),inset 0 1px 0 var(--gold-pale-a14)}
+.entry-card[data-room="services"]{border-color:var(--cream-a25)}
+.entry-card[data-room="keeper"]{border-color:var(--gold-a28)}
+.ec-eyebrow{font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin:0 0 .5rem}
+.ec-title{font-family:Cinzel,Georgia,serif;font-size:clamp(1.4rem,3vw,1.8rem);margin:0 0 .5rem;line-height:1.2}
+.ec-line{color:var(--cream-a92);line-height:1.55;margin:.2rem 0;font-size:.96rem}
+.ec-fact{color:var(--cream-dim);line-height:1.55;margin:.35rem 0 0;font-size:.9rem}
+.ec-actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.05rem;align-items:center}
+.ec-enter{display:inline-block;font-family:Cinzel,Georgia,serif;font-size:1.02rem;color:var(--cream);text-decoration:none;
+  border:1px solid var(--gold);border-radius:12px;padding:.62rem 1.1rem;background:var(--gold-bright-a16);
+  box-shadow:0 0 22px var(--gold-bright-a16);transition:transform .25s}
+.ec-enter:hover,.ec-enter:focus-visible{transform:translateY(-2px)}
+.ec-back{font:inherit;font-size:.85rem;color:var(--cream-dim);background:none;border:1px solid var(--gold-a25);border-radius:12px;padding:.6rem 1rem;cursor:pointer}
+.ec-back:hover,.ec-back:focus-visible{color:var(--gold);border-color:var(--door-line)}
+
+/* Kinetic type: letters are spans only when JS+GSAP arm them (.kt on html);
+   without that, every heading is plain, complete, instantly readable. */
+.kt .kt-letter{display:inline-block;will-change:transform,opacity}
+.kt .kt-word{display:inline-block;white-space:nowrap}
+
+/* ---------- V2 behavior laws: return · move-aside · per-portal air ---------- */
+.sa-callout{transition:transform .8s ease}
+.sa-return{position:absolute;left:1rem;top:4.6rem;z-index:9;font:inherit;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--cream);background:var(--surface-strong);border:1px solid var(--gold);border-radius:999px;
+  padding:.55rem 1rem;cursor:pointer;box-shadow:0 0 18px var(--gold-bright-a16)}
+.sa-return:hover,.sa-return:focus-visible{color:var(--cream);border-color:var(--cream)}
+.ec-alt{display:inline-block;margin-top:.75rem;font-size:.86rem;color:var(--gold);text-decoration:none;border-bottom:1px solid var(--gold-a50);padding-bottom:.08rem}
+.ec-alt:hover{color:var(--gold)}
+/* Each portal's threshold carries its own air (the full worlds' atmospheres
+   arrive with the per-portal films; the proof differentiates the doors). */
+.entry-card[data-room="mint"]{background:linear-gradient(180deg,var(--bronze-a14),transparent 55%),var(--surface-strong)}
+.entry-card[data-room="marketplace"]{background:var(--surface-strong);border-color:var(--cream-a25)}
+.entry-card[data-room="coin"]{border-color:var(--gold-a70);box-shadow:0 30px 80px var(--black-a80),0 0 30px var(--gold-a12),inset 0 1px 0 var(--gold-pale-a14)}
+.entry-card[data-room="record"]{background:var(--surface-ledger)}
+.entry-card[data-room="forum"]{background:linear-gradient(180deg,var(--moss-a10),transparent 60%),var(--surface-strong)}
+.entry-card[data-room="keeper"]{border-color:var(--gold-a28)}
+.entry-card[data-room="town"]{background:linear-gradient(180deg,var(--gold-a08),transparent 60%),var(--surface-strong)}
+@media (max-width:760px){
+  .room-chip{padding:.68rem 1.05rem}
+  .sa-return{top:.85rem}
+}
+
+/* The orbit: two concentric rings around the living coin (desktop only).
+   Nodes are generated from the World Registry by the Portal Engine —
+   live portals are buttons; concept portals are dimmed, dashed, inert. */
+.orbit{position:absolute;inset:0;z-index:2;pointer-events:none}
+.orbit-ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:1px dashed var(--gold-a20);border-radius:50%}
+.orbit-ring.inner{width:66%;aspect-ratio:2.3}
+.orbit-ring.outer{width:86%;aspect-ratio:2.3}
+.orbit-node{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;font:inherit;font-size:.64rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--cream);background:var(--surface-strong);border:1px solid var(--door-line);border-radius:999px;
+  padding:.34rem .62rem;white-space:nowrap;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.orbit-node:hover,.orbit-node:focus-visible{color:var(--cream);border-color:var(--gold);outline:none}
+.orbit-node.concept{opacity:.45;cursor:default;border-style:dashed;color:var(--cream-dim)}
+@media (max-width:1023px){.orbit{display:none}}
+
+/* Through-portal window + inter-world (onward) golden portals */
+.ec-window{margin-top:1rem;border:1px solid var(--door-line);border-radius:12px;overflow:hidden;background:#000}
+.ec-window video{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+.ec-window-cap{margin:0;padding:.45rem .7rem;font-size:.78rem;color:var(--cream-dim);letter-spacing:.04em}
+.ec-onward{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.05rem}
+.ec-onward[hidden]{display:none}
+.ec-portal{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem .85rem;border-radius:999px;border:1px solid var(--gold);
+  color:var(--cream);text-decoration:none;font-size:.85rem;letter-spacing:.03em;
+  background:radial-gradient(circle at 50% 50%,rgba(228,198,91,.12),transparent 75%)}
+.ec-portal:hover,.ec-portal:focus-visible{border-color:var(--gold);color:var(--cream);outline:none}
+.ec-portal-ring{width:.62rem;height:.62rem;border-radius:50%;border:2px solid var(--gold-bright);box-shadow:0 0 8px var(--gold-a55);flex:none}
+
+/* ---------- V3: THE COIN ALONE (founder's ruling, 2026-11-23 14:41 CT) ----
+   On the cinematic path (html.cine — set by the head gate only when the
+   living path is live) the first screen is THE COIN ALONE: no headline,
+   no statement, no doors, no chips, no orbital rings, no nav bar around
+   or below it. Everything lives INSIDE the coin: the portals are found
+   in its opened space (the journey), and the plain all-doors menu is one
+   of the things inside the opened coin. The accessible layer survives
+   in full: the H1 and the statement stand visually hidden for screen
+   readers and search; the real navigation returns the moment a keyboard
+   reaches it (focus-within); and every static mode (reduced-motion /
+   save-data / no-JS — where html.cine is never set) keeps the complete
+   v2 page: headline, doors, chips, full nav, untouched. */
+html.cine .arrival{min-height:100svh;padding:0;justify-content:center}
+html.cine .arrival .halo{top:50%}
+html.cine .arrival .eyebrow,
+html.cine .arrival .room-rail,
+html.cine .arrival .door-pair,
+html.cine .arrival .arrival-note,
+html.cine .arrival .keeper-door,
+html.cine .arrival .scroll-cue{display:none}
+html.cine .arrival h1,
+html.cine .arrival .lede{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+html.cine .coin-stage{width:min(100vw,1280px);margin:0 auto;border:0;border-radius:0;box-shadow:none;background:transparent;overflow:visible}
+html.cine .orbit{display:none}
+html.cine .site-nav{opacity:0;transform:translateY(-100%);pointer-events:none;transition:opacity .4s ease,transform .4s ease}
+html.cine .site-nav:focus-within{opacity:1;transform:none;pointer-events:auto}
+/* The breath: the coin stirs before any touch — rim light that catches
+   and moves, a glow that swells, a controlled crack of golden light,
+   and the film's own micro-rotation. Touch begins the transformation. */
+.breath{position:absolute;inset:0;pointer-events:none;z-index:4}
+html:not(.cine) .breath,html:not(.cine) .coin-open{display:none}
+.breath-glow{position:absolute;left:50%;top:50%;width:120%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle,var(--gold-pale-a14) 0%,var(--gold-a13) 42%,transparent 68%);opacity:.3;animation:breathGlow 7s ease-in-out infinite alternate}
+@keyframes breathGlow{from{opacity:.2;transform:translate(-50%,-50%) scale(.96)}to{opacity:.55;transform:translate(-50%,-50%) scale(1.05)}}
+.breath-ring{position:absolute;left:50%;top:50%;width:49.5%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
+  border:1px solid var(--gold-a35);box-shadow:0 0 24px var(--gold-a20),inset 0 0 24px var(--gold-a12);animation:breathRing 7s ease-in-out infinite alternate}
+.breath-ring::before{content:"";position:absolute;inset:-1px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0deg,transparent 130deg,var(--gold-pale) 180deg,transparent 230deg,transparent 360deg);
+  -webkit-mask-image:radial-gradient(circle,transparent 61%,#000 62%,#000 72%,transparent 73%);mask-image:radial-gradient(circle,transparent 61%,#000 62%,#000 72%,transparent 73%);
+  opacity:.5;animation:rimCatch 46s linear infinite}
+@keyframes breathRing{from{opacity:.35}to{opacity:.8}}
+@keyframes rimCatch{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.breath-crack{position:absolute;left:50%;top:50%;width:52%;height:2px;transform:translate(-50%,-50%) rotate(-4deg);
+  background:linear-gradient(to right,transparent,var(--gold-pale) 50%,transparent);filter:blur(1px);opacity:0;animation:crack 11s ease-in-out infinite}
+@keyframes crack{0%,100%{opacity:0}8%{opacity:.8}14%{opacity:.15}20%{opacity:.55}30%{opacity:0}}
+html.cine .coin-film{animation:coinBreath 9s ease-in-out infinite alternate;
+  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 14%,#000 86%,transparent 100%),linear-gradient(to bottom,transparent 0,#000 5%,#000 95%,transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to right,transparent 0,#000 14%,#000 86%,transparent 100%),linear-gradient(to bottom,transparent 0,#000 5%,#000 95%,transparent 100%);
+  mask-composite:intersect}
+@keyframes coinBreath{from{transform:scale(1.005) rotate(-.35deg)}to{transform:scale(1.03) rotate(.35deg)}}
+.coin-open{position:absolute;inset:0;z-index:6;background:transparent;border:0;margin:0;padding:0;cursor:pointer}
+.coin-open:focus-visible{outline:2px solid var(--gold);outline-offset:-6px}
+/* The money portals glow first inside the opened coin (palette law:
+   bright gold belongs to the two money doors and the portal-ring light). */
+.sa-callout.money{border-color:var(--gold-bright);box-shadow:0 18px 50px var(--black-a45),0 0 34px var(--gold-bright-a16),inset 0 1px 0 var(--gold-pale-a14)}
+.sa-callout.money .sa-chip{border-color:var(--gold-bright);box-shadow:0 0 16px var(--gold-bright-a16)}
+/* The plain all-doors menu — one of the things inside the opened coin. */
+.sa-alldoors{position:absolute;right:1rem;bottom:1rem;z-index:9;font:inherit;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--cream);background:var(--surface-strong);border:1px solid var(--gold);border-radius:999px;
+  padding:.55rem 1rem;cursor:pointer;box-shadow:0 0 18px var(--gold-bright-a16)}
+.sa-alldoors:hover,.sa-alldoors:focus-visible{color:var(--cream);border-color:var(--cream)}
+.sa-doors-panel{position:absolute;inset:0;z-index:11;display:flex;align-items:center;justify-content:center;background:var(--black-a65);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.sa-doors-panel[hidden]{display:none}
+.sdp-card{width:min(92%,30rem);max-height:86%;overflow:auto;background:var(--surface-strong);border:1px solid var(--gold-a50);
+  border-radius:18px;padding:1.4rem 1.5rem;box-shadow:0 30px 80px var(--black-a80)}
+.sdp-k{font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin:0 0 .8rem}
+.sdp-card nav{display:flex;flex-direction:column}
+.sdp-card nav a{color:var(--cream);text-decoration:none;font-family:Cinzel,Georgia,serif;font-size:1.08rem;padding:.5rem .2rem;border-top:1px solid var(--gold-a14)}
+.sdp-card nav a:first-child{border-top:none}
+.sdp-card nav a:hover,.sdp-card nav a:focus-visible{color:var(--gold)}
+.sdp-card nav a small{display:block;font-family:Inter,system-ui,sans-serif;font-size:.78rem;color:var(--cream-dim);margin-top:.15rem;letter-spacing:.02em}
+.sdp-close{margin-top:1rem;font:inherit;font-size:.85rem;color:var(--cream-dim);background:none;border:1px solid var(--gold-a25);border-radius:12px;padding:.55rem 1rem;cursor:pointer}
+.sdp-close:hover,.sdp-close:focus-visible{color:var(--gold);border-color:var(--door-line)}
+
+/* ---------- REDUCED MOTION / STATIC MODES ---------- */
+@media (prefers-reduced-motion:reduce){
+  .coin-film{display:none}
+  .coin-still{display:block}
+  .scroll-cue .arr{animation:none}
+  .sa-section{height:auto}
+  .sa-stage{position:static;height:auto;aspect-ratio:16/9}
+  .sa-beats{position:static;padding:.8rem 0}
+  .sa-callout{position:static;transform:none;opacity:1!important;width:auto;text-align:left}
+  .sa-callout.center{text-align:left}
+  .sa-callout .sa-door{pointer-events:auto}
+  .sa-cue,.sa-depth,.sa-skip,.sa-leaders{display:none}
+}
+.sa-reduced{height:auto}
+.sa-reduced .sa-stage{position:static;height:auto;aspect-ratio:16/9}
+.sa-reduced .sa-beats{position:static;padding:.8rem 0}
+.sa-reduced .sa-callout{position:static;transform:none;opacity:1!important;width:auto;text-align:left}
+.sa-reduced .sa-cue,.sa-reduced .sa-depth,.sa-reduced .sa-skip,.sa-reduced .sa-leaders{display:none}
+html.rm .scroll-cue .arr{animation:none}
+</style>
+</head>
+<body id="top">
+<a class="skip-link" href="#arrival">Skip to the town</a>
+
+<div class="world" aria-hidden="true"></div>
+<canvas id="motes" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+
+<header class="site-nav">
+  <a class="wordmark" href="/" aria-label="PROVADIA — home">PROVADIA<small>The Living Town</small></a>
+  <nav class="doors" aria-label="The town doors">
+    <a href="/listings/mint.html">The Mint</a>
+    <a href="/catalogue/">Marketplace</a>
+    <a href="/coin/">The Coin</a>
+    <a href="/record/">The Record</a>
+    <a href="/agora/">The Forum</a>
+    <a href="/knock/">The Knock</a>
+    <a href="/ecosystem/">Ecosystem</a>
+    <a href="/about/">About</a>
+    <a href="/studio/">Studio</a>
+    <a class="keeper-chip" href="/agora/" aria-label="The Keeper — offline today; the Agora carries the working support door"><span class="dot" aria-hidden="true"></span>Keeper — Offline</a>
+  </nav>
+</header>
+
+<main>
+  <!-- ================= ARRIVAL — THE COIN IS THE HOUSE ================= -->
+  <section class="arrival" id="arrival" tabindex="-1" aria-label="Welcome to Provadia — the coin is the house">
+    <div class="halo" aria-hidden="true"></div>
+    <p class="eyebrow">Provadia · The Living Town</p>
+    <h1 class="kt-h1" aria-label="Provadia — a living digital town.">Provadia — a living digital town.</h1>
+    <div class="coin-stage">
+      <video class="coin-film" autoplay muted loop playsinline preload="auto" poster="/next/assets/coin-poster.webp" role="img" aria-label="The PROVADIA coin, alive — filmed from its own anchored faces: it turns slowly in golden light, opens into its layers, the rooms of the town, and closes whole again, breathing in a slow loop.">
+        <source src="/next/assets/coin-film-desktop.mp4" type="video/mp4" media="(min-width: 701px)">
+        <source src="/next/assets/coin-film-mobile.mp4" type="video/mp4">
+      </video>
+      <img class="coin-still" src="/listings/mint-frames/f001.webp" width="960" height="540" alt="The PROVADIA coin, whole — a brick P on gold">
+      <div class="coin-shade" aria-hidden="true"></div>
+      <button type="button" class="coin-open" id="coinOpen" aria-label="Open the coin — the whole town is inside it"></button>
+      <div class="breath" aria-hidden="true"><span class="breath-glow"></span><span class="breath-ring"></span><span class="breath-crack"></span></div>
+      <div class="orbit" id="orbit" role="group" aria-label="The portals in orbit around the coin — the inner ring: Mint, Marketplace, Coin, Golden Wall, Record; the outer ring: Forum, Keeper, Town, and two concept portals">
+        <div class="orbit-ring inner" aria-hidden="true"></div>
+        <div class="orbit-ring outer" aria-hidden="true"></div>
+      </div>
+    </div>
+    <p class="lede">Explore its services, marketplace, coin, and public record.</p>
+    <nav class="room-rail" aria-label="The doors inside the coin">
+      <span class="rail-k" aria-hidden="true">The coin is the house · Choose a door</span>
+      <div class="rail-chips">
+        <a class="room-chip" data-room="mint" href="/listings/mint.html">The Mint</a>
+        <a class="room-chip" data-room="marketplace" href="/catalogue/">The Marketplace</a>
+        <a class="room-chip" data-room="coin" href="/coin/">The Coin</a>
+        <a class="room-chip" data-room="wall" href="/record/">The Golden Wall</a>
+        <a class="room-chip" data-room="record" href="/record/">The Record</a>
+        <a class="room-chip" data-room="forum" href="/agora/">The Forum</a>
+        <a class="room-chip" data-room="keeper" href="/knock/">The Keeper · Offline</a>
+        <a class="room-chip" data-room="town" href="/ecosystem/">The Town</a>
+      </div>
+    </nav>
+    <div class="door-pair" id="doors">
+      <a class="door-card" href="/catalogue/">
+        <span class="dk">Door 1 · The Marketplace</span>
+        <span class="dt">Explore Services</span>
+        <span class="ds">Find what the town offers — the catalogue of services, the Mint first.</span>
+      </a>
+      <a class="door-card" href="/coin/">
+        <span class="dk">Door 2 · The Coin &amp; The Town</span>
+        <span class="dt">Explore the Town</span>
+        <span class="ds">Coin, Wall and records — the coin's live page and the town's public book.</span>
+      </a>
+    </div>
+    <p class="arrival-note">Checkout is not connected — no purchase is possible today.</p>
+    <a class="keeper-door" href="/agora/"><span class="dot" aria-hidden="true"></span><span style="white-space:nowrap">Keeper — Offline</span><span style="color:var(--cream-faint)">· Solnik is offline; the Agora carries the working support door</span></a>
+    <a class="scroll-cue" href="#journey">Discover the town as you scroll<span class="arr" aria-hidden="true">↓</span></a>
+  </section>
+
+  <!-- ================= SCROLL JOURNEY — THE COIN OPENS INTO ITS EIGHT PORTALS ================= -->
+  <section class="sa-section" id="journey" aria-label="The town, presented in motion as you scroll: the coin turns, opens into the eight portals of the town, closes whole, opens as an aligned stack, and comes home whole">
+    <div class="sa-stage">
+      <noscript><img src="/listings/mint-frames/f001.webp" alt="The PROVADIA coin, whole — a brick P on gold" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></noscript>
+      <div class="sa-dolly" id="dolly">
+        <canvas class="sa-canvas" width="960" height="540" role="img" aria-label="The town's coin, filmed from its own anchored faces: as you scroll it turns in the centre and opens into the eight portals of the town — the Mint, the Marketplace, the Coin, the Golden Wall, the Record, the Forum, the Keeper at the Knock, and the Town — then closes whole and comes home. Bullets beside each portal name what it is and what it does; the ring on each opened part is a portal you can enter."></canvas>
+        <div class="sa-scrim" aria-hidden="true"></div>
+        <div class="sa-depth" data-sa-depth aria-hidden="true"></div>
+        <p class="sa-cue" data-sa-cue>Discover the town as you scroll</p>
+        <a class="sa-skip" href="#after-journey">Skip the journey</a>
+        <div class="portal" id="portal" aria-hidden="true"></div>
+        <div class="sa-hotspots">
+          <button type="button" class="sa-hotspot" data-room="mint" tabindex="-1" aria-label="The Mint — enter this portal"></button>
+          <button type="button" class="sa-hotspot" data-room="marketplace" tabindex="-1" aria-label="The Marketplace — enter this portal"></button>
+          <button type="button" class="sa-hotspot" data-room="coin" tabindex="-1" aria-label="The Coin — enter this portal"></button>
+          <button type="button" class="sa-hotspot" data-room="wall" tabindex="-1" aria-label="The Golden Wall — enter this portal"></button>
+          <button type="button" class="sa-hotspot" data-room="record" tabindex="-1" aria-label="The Record — enter this portal"></button>
+          <button type="button" class="sa-hotspot" data-room="forum" tabindex="-1" aria-label="The Forum — enter this portal"></button>
+          <button type="button" class="sa-hotspot" data-room="keeper" tabindex="-1" aria-label="The Keeper, at the Knock — enter this portal"></button>
+          <button type="button" class="sa-hotspot" data-room="town" tabindex="-1" aria-label="The Town — enter this portal"></button>
+        </div>
+        <div class="sa-beats">
+          <p class="sa-callout center" data-sa-from="0.00" data-sa-to="0.055"><span class="sa-eyebrow">Provadia · The Living Town</span><span class="sa-title">The Coin, Whole</span><span class="sa-line">One coin at the centre of a town — and the coin is the house. Scroll, and watch it open into its eight portals.</span></p>
+          <p class="sa-callout left money" data-room="mint" data-sa-from="0.05" data-sa-to="0.15" data-sa-tip="0.50,0.32"><span class="sa-chip" aria-hidden="true">1</span><span class="sa-eyebrow">Inside the coin · What it is</span><span class="sa-title">The Mint</span><span class="sa-line">Where we create coins for people: the town's minting service, run end to end — conversation, the Honest Question, rehearsal, covenant, mark, launch, record, handover. What it does: it turns a founder's idea into a launched coin, with every step receipted.</span><a class="sa-door" href="/listings/mint.html" tabindex="-1">Enter the Mint →</a></p>
+          <p class="sa-callout right money" data-room="marketplace" data-sa-from="0.15" data-sa-to="0.25" data-sa-tip="0.60,0.40"><span class="sa-chip" aria-hidden="true">2</span><span class="sa-eyebrow">Inside the coin · What it is</span><span class="sa-title">The Marketplace</span><span class="sa-line">The store with all the products: 34 services and a custom-build door — the Studio rides inside it — every price printed in page text. What it does: it is how the town earns its keep, and no holding of the coin is ever required to buy a service.</span><a class="sa-door" href="/catalogue/" tabindex="-1">Enter the Marketplace →</a></p>
+          <p class="sa-callout left" data-room="coin" data-sa-from="0.25" data-sa-to="0.35" data-sa-tip="0.52,0.47"><span class="sa-chip" aria-hidden="true">3</span><span class="sa-eyebrow">Inside the coin · What it is</span><span class="sa-title">The Coin</span><span class="sa-line">PROVADIA itself: one billion coins, fixed forever, launched on pump.fun on 18 November 2026 — this portal carries its live chart and trade. What it does: holding it names you a Bricklayer in the town registry — and nothing else is promised.</span><a class="sa-door" href="/coin/" tabindex="-1">See the coin live →</a></p>
+          <p class="sa-callout right wall" data-room="wall" data-sa-from="0.35" data-sa-to="0.45" data-sa-tip="0.44,0.36"><span class="sa-chip" aria-hidden="true">4</span><span class="sa-eyebrow">Inside the coin · What it is</span><span class="sa-title">The Golden Wall</span><span class="sa-line">Twenty percent of the coin's creator fees, forever, buys real 1-gram gold bars into a licensed vault the founder never holds. What it does: it turns fees into a public monument — never backing, never redeemable. Today the Wall stands at 0 of 47 bricks.</span><a class="sa-door" href="/record/" tabindex="-1">The Wall, on the Record →</a></p>
+          <p class="sa-callout left" data-room="record" data-sa-from="0.45" data-sa-to="0.55" data-sa-tip="0.56,0.55"><span class="sa-chip" aria-hidden="true">5</span><span class="sa-eyebrow">Inside the coin · What it is</span><span class="sa-title">The Record</span><span class="sa-line">The town's signed, hash-chained public book. What it does: every act of the town is written where anyone can check it. Sample, recorded as fact: the Wall stands at 0 of 47 bricks — Brick #1 is not yet bought.</span><a class="sa-door" href="/record/" tabindex="-1">Read the Record →</a></p>
+          <p class="sa-callout right" data-room="forum" data-sa-from="0.55" data-sa-to="0.65" data-sa-tip="0.45,0.62"><span class="sa-chip" aria-hidden="true">6</span><span class="sa-eyebrow">Inside the coin · What it is</span><span class="sa-title">The Forum</span><span class="sa-line">The Agora — the town square, where members gather, ask, and are answered. What it does: it is the town's living room and its working support door today — the support email there is live, and the town's Discord stands open.</span><a class="sa-door" href="/agora/" tabindex="-1">Enter the Forum →</a></p>
+          <p class="sa-callout left" data-room="keeper" data-sa-from="0.65" data-sa-to="0.75" data-sa-tip="0.50,0.80"><span class="sa-chip" aria-hidden="true">7</span><span class="sa-eyebrow">Inside the coin · What it is</span><span class="sa-title">The Keeper — The Knock</span><span class="sa-line">Solnik, Keeper of the Wall — the town's host and shopkeeper — and the Knock, the town's door for asking to enter its work. His status today: OFFLINE. The counter is being built; until he truly serves, the support email on the Agora page is the working door.</span><a class="sa-door" href="/knock/" tabindex="-1">Knock — ask to enter →</a></p>
+          <p class="sa-callout right" data-room="town" data-sa-from="0.75" data-sa-to="0.87" data-sa-tip="0.58,0.72"><span class="sa-chip" aria-hidden="true">8</span><span class="sa-eyebrow">Inside the coin · What it is</span><span class="sa-title">The Town</span><span class="sa-line">Provadia itself, and everything connected to it: the story of the oldest salt, the houses around the town, and every destination in its world. What it does: it is the map and the memory of the place — where a visitor learns what this town is.</span><a class="sa-door" href="/ecosystem/" tabindex="-1">Enter the Town →</a></p>
+          <p class="sa-callout center" data-sa-from="0.90" data-sa-to="1.01"><span class="sa-eyebrow">Provadia</span><span class="sa-title">One Coin. One Town.</span><span class="sa-line">Every portal, named. Both main doors stand open below — the services, and the town.</span></p>
+        </div>
+      </div>
+      <button type="button" class="sa-return" id="returnCoin" hidden>Return to the Coin ↑</button>
+      <div class="entry-card" id="entryCard" hidden role="dialog" aria-labelledby="entryTitle" aria-describedby="entryLine">
+        <p class="ec-eyebrow">Inside the coin · You are entering</p>
+        <h3 class="ec-title" id="entryTitle"></h3>
+        <p class="ec-line" id="entryLine"></p>
+        <p class="ec-fact"></p>
+        <div class="ec-window" hidden>
+          <video muted loop playsinline preload="none" data-src="/listings/mint-assets/mint-assembly-film.mp4" poster="/listings/mint-frames/f120.webp" aria-label="Seen through the portal: the Mint's own film — the coin opening into its layers"></video>
+          <p class="ec-window-cap">Seen through the portal — the Mint, living</p>
+        </div>
+        <div class="ec-onward" hidden></div>
+        <div class="ec-actions"><a class="ec-enter" href="#">Enter →</a><button type="button" class="ec-back">Step back</button></div>
+        <a class="ec-alt" href="#" hidden></a>
+      </div>
+      <button type="button" class="sa-alldoors" id="allDoorsBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="allDoorsPanel">All doors</button>
+      <div class="sa-doors-panel" id="allDoorsPanel" hidden>
+        <div class="sdp-card" role="dialog" aria-label="All the town's doors — the plain menu, inside the coin">
+          <p class="sdp-k">Inside the coin · Every door</p>
+          <nav aria-label="All the town's doors">
+            <a href="/listings/mint.html">The Mint<small>Where we create coins for people</small></a>
+            <a href="/catalogue/">The Marketplace<small>The store with all the products</small></a>
+            <a href="/coin/">The Coin<small>Its live chart and trade</small></a>
+            <a href="/record/">The Record<small>The town's signed public book — the Golden Wall's home</small></a>
+            <a href="/agora/">The Forum<small>The Agora — the town square and its working support door</small></a>
+            <a href="/knock/">The Knock<small>Ask to enter the town's work</small></a>
+            <a href="/ecosystem/">Ecosystem<small>The houses around the town</small></a>
+            <a href="/about/">About<small>The town's story, told under its discipline</small></a>
+            <a href="/studio/">Studio<small>The workshop door — not yet open</small></a>
+            <a href="/agora/">Keeper — Offline<small>Solnik is offline; the Agora carries the working support door</small></a>
+          </nav>
+          <button type="button" class="sdp-close" id="allDoorsClose">Close — back to the coin</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= STATIC STACK (reduced motion / save-data / no-JS experience) ================= -->
+  <section class="stack" id="stack" aria-label="The town's portals, in full — the same information without the scroll journey">
+    <p class="eyebrow" style="text-align:center">Inside the coin</p>
+    <h2>The town, portal by portal</h2>
+    <p class="sub">The same journey, standing still: the coin opens into the eight portals of the town, each named for what it is and what it does.</p>
+
+    <article class="layer-card">
+      <picture><source media="(max-width: 700px)" srcset="/listings/mint-frames/m/f001.webp"><img src="/listings/mint-frames/f001.webp" alt="The PROVADIA coin, whole" loading="lazy" decoding="async"></picture>
+      <div class="lc-body"><p class="lc-eyebrow">Portal 1 · What it is</p><h3>The Mint</h3>
+      <p>Where we create coins for people: the town's minting service, run end to end — conversation, the Honest Question, rehearsal, covenant, mark, launch, record, handover.</p>
+      <p>What it does: it turns a founder's idea into a launched coin, with every step receipted.</p>
+      <a class="lc-door" href="/listings/mint.html">Enter the Mint →</a></div>
+    </article>
+
+    <article class="layer-card services">
+      <picture><source media="(max-width: 700px)" srcset="/listings/mint-frames/m/f160.webp"><img src="/listings/mint-frames/f160.webp" alt="The coin opened, its layers spread wide" loading="lazy" decoding="async"></picture>
+      <div class="lc-body"><p class="lc-eyebrow">Portal 2 · What it is</p><h3>The Marketplace</h3>
+      <p>The store with all the products: 34 services and a custom-build door — the Studio rides inside it — every price printed in page text.</p>
+      <p>What it does: it is how the town earns its keep, and no holding of the coin is ever required to buy a service.</p>
+      <a class="lc-door" href="/catalogue/">Enter the Marketplace →</a></div>
+    </article>
+
+    <article class="layer-card">
+      <picture><source media="(max-width: 700px)" srcset="/listings/mint-frames/m/f001.webp"><img src="/listings/mint-frames/f001.webp" alt="The PROVADIA coin, whole — a brick P on gold" loading="lazy" decoding="async"></picture>
+      <div class="lc-body"><p class="lc-eyebrow">Portal 3 · What it is</p><h3>The Coin</h3>
+      <p>PROVADIA itself: one billion coins, fixed forever, launched on pump.fun on 18 November 2026 — this portal carries its live chart and trade.</p>
+      <p>What it does: holding it names you a Bricklayer in the town registry — and nothing else is promised.</p>
+      <a class="lc-door" href="/coin/">See the coin live →</a></div>
+    </article>
+
+    <article class="layer-card wall">
+      <picture><source media="(max-width: 700px)" srcset="/listings/mint-frames/m/f110.webp"><img src="/listings/mint-frames/f110.webp" alt="The coin turning edge-on, its gold layers beginning to part" loading="lazy" decoding="async"></picture>
+      <div class="lc-body"><p class="lc-eyebrow">Portal 4 · What it is</p><h3>The Golden Wall</h3>
+      <p>Twenty percent of the coin's creator fees, forever, buys real 1-gram gold bars into a licensed vault the founder never holds.</p>
+      <p>What it does: it turns fees into a public monument — never backing, never redeemable. Today the Wall stands at 0 of 47 bricks.</p>
+      <a class="lc-door" href="/record/">The Wall, on the Record →</a></div>
+    </article>
+
+    <article class="layer-card">
+      <picture><source media="(max-width: 700px)" srcset="/listings/mint-frames/m/f200.webp"><img src="/listings/mint-frames/f200.webp" alt="The coin closed whole again" loading="lazy" decoding="async"></picture>
+      <div class="lc-body"><p class="lc-eyebrow">Portal 5 · What it is</p><h3>The Record</h3>
+      <p>The town's signed, hash-chained public book.</p>
+      <p>What it does: every act of the town is written where anyone can check it. Sample, recorded as fact: the Wall stands at 0 of 47 bricks — Brick #1 is not yet bought.</p>
+      <a class="lc-door" href="/record/">Read the Record →</a></div>
+    </article>
+
+    <article class="layer-card">
+      <picture><source media="(max-width: 700px)" srcset="/listings/mint-frames/m/f235.webp"><img src="/listings/mint-frames/f235.webp" alt="The coin resting open as an aligned stack of its layers" loading="lazy" decoding="async"></picture>
+      <div class="lc-body"><p class="lc-eyebrow">Portal 6 · What it is</p><h3>The Forum</h3>
+      <p>The Agora — the town square, where members gather, ask, and are answered.</p>
+      <p>What it does: it is the town's living room and its working support door today — the support email there is live, and the town's Discord stands open.</p>
+      <a class="lc-door" href="/agora/">Enter the Forum →</a></div>
+    </article>
+
+    <article class="layer-card">
+      <picture><source media="(max-width: 700px)" srcset="/listings/mint-frames/m/f110.webp"><img src="/listings/mint-frames/f110.webp" alt="The coin turning, a door within it beginning to open" loading="lazy" decoding="async"></picture>
+      <div class="lc-body"><p class="lc-eyebrow">Portal 7 · What it is</p><h3>The Keeper — The Knock</h3>
+      <p>Solnik, Keeper of the Wall — the town's host and shopkeeper — and the Knock, the town's door for asking to enter its work.</p>
+      <p>His status today: OFFLINE. The counter is being built; until he truly serves, the support email on the Agora page is the working door.</p>
+      <a class="lc-door" href="/knock/">Knock — ask to enter →</a></div>
+    </article>
+
+    <article class="layer-card">
+      <picture><source media="(max-width: 700px)" srcset="/listings/mint-frames/m/f160.webp"><img src="/listings/mint-frames/f160.webp" alt="The coin opened wide, the whole town inside it" loading="lazy" decoding="async"></picture>
+      <div class="lc-body"><p class="lc-eyebrow">Portal 8 · What it is</p><h3>The Town</h3>
+      <p>Provadia itself, and everything connected to it: the story of the oldest salt, the houses around the town, and every destination in its world.</p>
+      <p>What it does: it is the map and the memory of the place — where a visitor learns what this town is.</p>
+      <a class="lc-door" href="/ecosystem/">Enter the Town →</a></div>
+    </article>
+  </section>
+
+  <!-- ================= AFTER THE JOURNEY ================= -->
+  <div id="after-journey"></div>
+
+  <section class="below" aria-label="The two doors">
+    <p class="eyebrow">Both doors stand open</p>
+    <h2>Where to go from the threshold</h2>
+    <div class="door-pair" style="margin-top:1.2rem;justify-content:flex-start">
+      <a class="door-card" href="/catalogue/">
+        <span class="dk">Door 1 · The Marketplace</span>
+        <span class="dt">Explore Services</span>
+        <span class="ds">Find what the town offers — every listing opens directly, with its price in plain text.</span>
+      </a>
+      <a class="door-card" href="/coin/">
+        <span class="dk">Door 2 · The Coin &amp; The Town</span>
+        <span class="dt">Explore the Town</span>
+        <span class="ds">Coin, Wall and records — the live coin page, and the town behind it.</span>
+      </a>
+    </div>
+    <div class="status-strip" role="note">
+      <p><strong>Checkout is not connected.</strong> No listing on this town takes payment today — every purchase button is disabled by design until the payment arrangements are legally cleared and the purchase-to-delivery journey has been proven in testing. Nothing on this page books, purchases, or reserves anything.</p>
+    </div>
+    <div class="cards">
+      <a class="mini-card" href="/agora/">
+        <span class="dk">Belonging</span>
+        <span class="dt">Join the Town</span>
+        <span class="ds">A member account is how a name enters the Bricklayer registry — the town's roll of its people — with a vote on the Wall's fate at its end. The join system is built and the roll stands at zero today; the social sign-ins are still being wired.</span>
+      </a>
+      <a class="mini-card" href="/studio/">
+        <span class="dk">The Workshop</span>
+        <span class="dt">The Studio</span>
+        <span class="ds">The town's workshop door, where the catalogue is made. It stands as the record states it: not yet open.</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="below" aria-label="The living record — a sample">
+    <p class="eyebrow">The Living Record · A sample</p>
+    <h2>What the town can prove, and what it cannot — yet</h2>
+    <p>The Record is the town's accountability system: facts are receipted, claims are labeled, and what is not yet verified is stated as such. A sample of its manner:</p>
+    <div class="ledger">
+      <div class="row"><span class="tag rec">Recorded</span><p>PROVADIA launched on pump.fun on 18 November 2026. Supply: one billion, fixed; mint and freeze authorities: none.<small>On the Record, with the contract address printed there in full.</small></p></div>
+      <div class="row"><span class="tag rec">Recorded</span><p>The Golden Wall stands at 0 of 47 bricks. Brick #1 — the founder's own money, by design — is not yet bought.<small>The Wall's counter runs in grams and bricks only.</small></p></div>
+      <div class="row"><span class="tag claim">Claim</span><p>The catalogue offers 34 services and a custom-build door, each with its price printed in page text.<small>An offer is a claim about what the town will do — it becomes a fact only when delivered and receipted.</small></p></div>
+      <div class="row"><span class="tag unv">Not yet verified</span><p>Service checkout: not connected, not legally cleared, not tested. No service sale has ever occurred, in either house.<small>The purchase-to-delivery journey will be proven in a test environment before the till opens.</small></p></div>
+    </div>
+    <p><a href="/record/">Read the whole Record →</a></p>
+  </section>
+
+  <section class="below" aria-label="The town's story">
+    <p class="eyebrow">The deeper story</p>
+    <h2>Salt, older than Rome</h2>
+    <p>The town is named for Provadia–Solnitsata in Bulgaria, among the oldest salt works in Europe — a place that was rich on salt five thousand years before coinage had a name. That salt itself served as money there is Professor Nikolov's <em>interpretation</em> of the evidence, and the town labels it as interpretation wherever it is told — proven, interpreted, and never-told are kept in separate columns here.</p>
+    <p><a href="/about/">The town's story, told under that discipline →</a> · <a href="/ecosystem/">The houses around the town →</a> · <a href="/knock/">Knock — ask to enter the town's work →</a></p>
+  </section>
+</main>
+
+<footer>
+  <div class="foot-in">
+    <p class="foundation-law">PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall's fate — and nothing else: no redemption, no yield, no rights, no expected return.</p>
+    <div class="foot-row">
+      <span>Support: <a href="mailto:support@provadiacoin.com">support@provadiacoin.com</a> — we never DM first.</span>
+      <nav aria-label="Legal"><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></nav>
+      <a href="#top">Back to the threshold ↑</a>
+    </div>
+    <p class="house-line">Also from our house — <a href="https://onejobkits.com">OneJobKits: practical kits for every job →</a></p>
+    <p class="preview-note">Preview build · This homepage is a prototype under the founder's review — the town's standing home remains at the root.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Static modes (reduced motion / save-data — set in the head gate): stop
+     the arrival film from fetching or playing; the approved still stands
+     in its place via CSS. The living path needs no JS at all — the film is
+     native HTML autoplay, so no script error can ever still the coin. */
+  if(root.classList.contains('static')){
+    var v=document.querySelector('.coin-film');
+    if(v){ v.removeAttribute('autoplay'); v.removeAttribute('poster'); try{ v.pause(); }catch(e){}
+      var ss=v.querySelectorAll('source'); for(var i=0;i<ss.length;i++){ ss[i].remove(); }
+      try{ v.load(); }catch(e){} }
   }
 
-  /* ---- BOOT HARDENING: content is never hostage to the engine ---- */
-  #fade.quick{transition-duration:.9s}
-  #wake{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;letter-spacing:.34em;font-size:13px;color:var(--gold);text-transform:uppercase;text-align:center;padding:0 20px;animation:wakePulse 2.4s ease-in-out infinite}
-  @keyframes wakePulse{0%,100%{opacity:.45}50%{opacity:1}}
-  #fade.gone #wake{animation:none}
-  .fallback-wake{margin:12px 0 0}
-  .fallback-wake button{background:rgba(201,162,39,.08);border:1px solid rgba(201,162,39,.55);color:var(--pale);font-family:Cinzel,serif;letter-spacing:.12em;font-size:.72rem;padding:.62rem 1rem;cursor:pointer;text-transform:uppercase;transition:background .2s,border-color .2s}
-  .fallback-wake button:hover{background:rgba(201,162,39,.2);border-color:var(--gold)}
-  .fallback-only{display:none}
-  .cap-static{display:none}
-  .hero-figure{margin:16px 0 6px}
-  .hero-figure img{width:min(300px,78vw);height:auto;display:block;background:#000}
-  .hero-figure figcaption{margin-top:8px;font-size:.78rem;color:rgba(244,239,230,.55)}
-  .hero-honesty{font-size:.86rem;line-height:1.55;color:var(--pale);border-left:2px solid var(--gold);padding-left:.8rem}
-  #fallback-note{border:1px solid rgba(201,162,39,.55);background:rgba(20,18,16,.92);padding:16px 18px;margin:0 0 18px}
-  .fallback-note-line{margin:0 0 10px;font-size:.92rem;line-height:1.55;color:var(--pale)}
-  .fallback-nav{font-family:Cinzel,serif;letter-spacing:.08em;font-size:.78rem;line-height:2}
-  .fallback-nav a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(201,162,39,.4)}
-  .cap-static-eyebrow{font-family:Cinzel,serif;letter-spacing:.26em;font-size:.68rem;color:var(--gold);text-transform:uppercase;margin:0 0 .4rem}
-  .cap-static-title{font-family:Cinzel,serif;font-size:2rem;color:var(--pale);margin:.1rem 0 .6rem}
-  .cap-static-greeting{font-size:.94rem;line-height:1.6}
-  .cap-static-honesty{font-size:.86rem;line-height:1.55;color:var(--pale);border-left:2px solid var(--gold);padding-left:.8rem}
-  .cap-static-line{font-size:.86rem;color:rgba(244,239,230,.75)}
-  .cap-static-line a{color:var(--gold)}
-  [data-captain-root]:has(> .cap-chamber) > .cap-static{display:none!important}
-  html.town-fallback{scroll-behavior:smooth}
-  html.town-fallback #stage,html.town-fallback #scroll-space,html.town-fallback #caption{display:none}
-  html.town-fallback #fade{display:none}
-  html.town-fallback #stacks{position:relative;z-index:2;max-width:780px;margin:0 auto;padding:28px 16px 72px}
-  html.town-fallback .stack{position:static;opacity:1;pointer-events:auto;transform:none;width:auto;max-height:none;overflow:visible;margin:0 0 16px;padding:0}
-  html.town-fallback .fallback-only{display:block}
-  html.town-fallback .cap-static{display:block}
-  html.town-fallback .coin-controls{display:none}
-  .doors{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 4px;padding:10px 10px 12px;background:linear-gradient(180deg,rgba(10,8,6,.92),rgba(10,8,6,.78) 70%,transparent);border-bottom:1px solid rgba(201,162,39,.18)}
-  .door-link{font-family:Cinzel,serif;letter-spacing:.18em;font-size:.68rem;text-transform:uppercase;color:rgba(244,239,230,.72);text-decoration:none;padding:.5rem .8rem;border:1px solid transparent;transition:color .2s,border-color .2s,background .2s}
-  .door-link:hover{color:var(--pale);border-color:rgba(201,162,39,.4)}
-  .door-link[aria-current="page"]{color:var(--ink);background:var(--gold);border-color:var(--gold);font-weight:700}
-  @media (max-width:760px){.door-link{font-size:.6rem;padding:.44rem .55rem;letter-spacing:.12em}}
-  html.town-fallback .doors{position:static;background:none;border-bottom:none;padding:0 0 14px}
-  .cap-door-img{width:min(220px,60vw);height:auto;display:block;margin:4px 0 10px;border:1px solid rgba(201,162,39,.4)}
-  .doorway-link{display:inline-block;margin:.6rem .4rem 0 0;font-family:Cinzel,serif;letter-spacing:.14em;font-size:.78rem;text-transform:uppercase;color:var(--gold);text-decoration:none;border:1px solid rgba(201,162,39,.55);padding:.6rem 1rem;background:rgba(201,162,39,.08)}
-  .doorway-link:hover{background:rgba(201,162,39,.2);color:var(--pale)}
-</style>
-<noscript><style>
-#fade{display:none!important}
-#ss-stage{display:none!important}
-#stage,#scroll-space,#caption{display:none!important}
-#stacks{position:relative;z-index:2;max-width:780px;margin:0 auto;padding:28px 16px 72px}
-.stack{position:static!important;opacity:1!important;pointer-events:auto!important;transform:none!important;width:auto!important;max-height:none!important;overflow:visible!important;margin:0 0 16px;padding:0}
-.fallback-only{display:block!important}
-.cap-static{display:block!important}
-.coin-controls{display:none!important}
-</style></noscript>
+  /* ---- Static stack: lightweight text transitions (IntersectionObserver fade-in) ---- */
+  if(root.classList.contains('static')&&!reduced&&'IntersectionObserver' in window){
+    root.classList.remove('noanim');
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });},{rootMargin:'0px 0px -8% 0px'});
+    document.querySelectorAll('.layer-card').forEach(function(c){ io.observe(c); });
+  } else {
+    document.querySelectorAll('.layer-card').forEach(function(c){ c.classList.add('in'); });
+  }
+
+  /* ---- Atmosphere: gold dust motes (cinematic mode only) ---- */
+  if(!root.classList.contains('static')&&!reduced){
+    var mc=document.getElementById('motes'), mx=mc.getContext('2d'), W=0,H=0, parts=[], rafId=null;
+    var MOTE='rgba(201,162,39,'; // gold dust — the primary gold (--gold) at dust alpha
+    function sizeMotes(){
+      var dpr=Math.min(window.devicePixelRatio||1,1.5);
+      W=window.innerWidth; H=window.innerHeight;
+      mc.width=Math.round(W*dpr); mc.height=Math.round(H*dpr); mx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    function seed(){
+      parts=[]; var n=Math.min(90,Math.round(W*H/26000));
+      for(var i=0;i<n;i++) parts.push({x:Math.random()*W,y:Math.random()*H,r:.6+Math.random()*1.7,s:.06+Math.random()*.22,ph:Math.random()*6.283,a:.25+Math.random()*.5});
+    }
+    function tick(t){
+      mx.clearRect(0,0,W,H);
+      for(var i=0;i<parts.length;i++){ var p=parts[i];
+        p.y-=p.s; p.x+=Math.sin(t/2400+p.ph)*.12;
+        if(p.y<-4){ p.y=H+4; p.x=Math.random()*W; }
+        var tw=.55+.45*Math.sin(t/900+p.ph*3);
+        mx.beginPath(); mx.arc(p.x,p.y,p.r,0,6.283);
+        mx.fillStyle=MOTE+(p.a*tw).toFixed(3)+')'; mx.fill();
+      }
+      rafId=requestAnimationFrame(tick);
+    }
+    sizeMotes(); seed(); rafId=requestAnimationFrame(tick);
+    window.addEventListener('resize',function(){ sizeMotes(); seed(); });
+    document.addEventListener('visibilitychange',function(){
+      if(document.hidden){ if(rafId) cancelAnimationFrame(rafId); rafId=null; }
+      else if(!rafId){ rafId=requestAnimationFrame(tick); }
+    });
+  }
+})();
+
+</script>
+
 <script>
-/* BOOT — the living world IS the site; the still town is its emergency net,
-   never the show. This classic script runs before every module: it owns
-   the veil and the fallback. The veil (with its waking line) stays up
-   while the world loads. The fallback engages ONLY on a hard failure —
-   no WebGL, a dead module graph, or the engine's own exception — never
-   merely because a phone is slow: the watchdog reads load progress, not
-   a stopwatch. Every soft path stays unlocked, so whenever the engine
-   does arrive, it takes the town. */
-(function () {
-  var booted = false, fb = false, fbLock = false;
-  var startedAt = Date.now(), lastProgress = startedAt, errorAt = 0;
-  function liftFade() {
-    var f = document.getElementById('fade');
-    if (f) { f.classList.add('quick'); f.classList.add('gone'); }
+/* ---- Scroll journey engine: adapted from the town's graded Mint specimen ----
+   Canvas + drawImage only · lerp-chase smoothing (k=0.1, time-corrected) ·
+   priority-tier preload (frame 1 → last → midpoint → quartiles → fill) ·
+   nearest-loaded fallback · DPR capped at 1.5 · passive scroll + rAF ·
+   leader lines + tip dots per callout (Craft Rule 8) ·
+   Frame map: the film runs whole → open → whole → open stack over p 0–0.86,
+   holds the stack to 0.88, then plays in reverse (stack → whole) to p 1,
+   so the journey ends as the founder ordered: the coin whole again. */
+(function(){
+  var section=document.getElementById('journey'); if(!section) return;
+  if(document.documentElement.classList.contains('static')) return; // static modes never run the engine
+  var tour=null; // {p, onArrive, _arrived} — a scripted portal tour holds the film
+  var PV=window.PV={tips:{},aside:null};
+  PV.tourTo=function(p,onArrive){ tour={p:p,onArrive:onArrive,_arrived:false}; kick(); };
+  PV.release=function(){ tour=null; kick(); };
+  var stage=section.querySelector('.sa-stage');
+  var canvas=section.querySelector('.sa-canvas'), ctx=canvas.getContext('2d');
+  var callouts=Array.prototype.slice.call(section.querySelectorAll('.sa-callout'));
+  var depth=section.querySelector('[data-sa-depth]');
+  var cue=section.querySelector('[data-sa-cue]');
+  var beats=section.querySelector('.sa-beats');
+  var TOTAL=235, pad=function(n){return ('00'+n).slice(-3);};
+  var small=window.matchMedia('(max-width: 700px)').matches;
+  var step=small?2:1; // frame density follows the frame SET (screen size), never a capability guess
+  var order=[]; for(var i=1;i<=TOTAL;i+=step){order.push(i);} if(order[order.length-1]!==TOTAL){order.push(TOTAL);}
+  var frames={}, started=false, current=-1;
+  var targetP=0, dispP=0, chasing=false;
+  var frameDir=small?'/listings/mint-frames/m/':'/listings/mint-frames/';
+  var GROUND=(window.getComputedStyle(document.documentElement).getPropertyValue('--vault')||'#141210').trim()||'#141210';
+  function src(n){return frameDir+'f'+pad(n)+'.webp';}
+  function filmT(p){
+    // Normalized film position (0–1); draw() maps it onto the loaded order
+    // array, so the same map holds at step 1 (235 frames) and step 2 (118).
+    if(p<=0.86) return p/0.86;
+    if(p<=0.88) return 1;
+    return 1-((p-0.88)/0.12)*(35/235); // reverse: settled stack → the whole coin (film frames 235 → 200)
   }
-  function inviteWake() {
-    /* A soft landing still points at the living town: one tap wakes it. */
-    var note = document.getElementById('fallback-note');
-    if (!note || document.getElementById('wakeBtn')) return;
-    var p = document.createElement('p');
-    p.className = 'fallback-wake';
-    var b = document.createElement('button');
-    b.type = 'button';
-    b.id = 'wakeBtn';
-    b.textContent = 'Wake the living town';
-    b.addEventListener('click', function () { window.location.reload(); });
-    p.appendChild(b);
-    note.appendChild(p);
+  function sizeCanvas(){
+    var w=stage.clientWidth, h=stage.clientHeight;
+    var dpr=Math.min(window.devicePixelRatio||1,1.5);
+    canvas.width=Math.round(w*dpr); canvas.height=Math.round(h*dpr);
+    current=-1; targetP=progress(); dispP=targetP; draw(dispP); layoutLeaders();
   }
-  function engage(reason, lock) {
-    if (lock) fbLock = true;
-    if (booted || fb) return;
-    fb = true;
-    document.documentElement.classList.add('town-fallback');
-    if (!lock) inviteWake();
-    liftFade();
+  function progress(){
+    var total=section.offsetHeight-window.innerHeight; if(total<=0) return 0;
+    var y=-section.getBoundingClientRect().top;
+    return Math.min(1,Math.max(0,y/total));
   }
-  function markBooted() {
-    booted = true;
-    noteProgress();
-    if (fb && !fbLock) {
-      fb = false;
-      document.documentElement.classList.remove('town-fallback');
+  function draw(p){
+    if(!frames[order[0]]) return;
+    var t=filmT(p);
+    var idx=Math.round(t*(order.length-1)), n=order[idx], img=frames[n];
+    if(!img){
+      for(var d=1;d<order.length;d++){ if(frames[order[Math.max(0,idx-d)]]){img=frames[order[Math.max(0,idx-d)]];break;} if(frames[order[Math.min(order.length-1,idx+d)]]){img=frames[order[Math.min(order.length-1,idx+d)]];break;} }
+      if(!img) return;
     }
-    liftFade();
-  }
-  function noteProgress() { lastProgress = Date.now(); }
-  window.__townBoot = {
-    markBooted: markBooted,
-    engageFallback: engage,
-    liftFade: liftFade,
-    noteProgress: noteProgress,
-    moduleStarted: noteProgress,
-    isBooted: function () { return booted; },
-    isFallback: function () { return fb; }
-  };
-  /* Hard failure, decided at once: no WebGL at all → the still town,
-     exactly as designed. The probe context is released immediately. */
-  try {
-    var probeCanvas = document.createElement('canvas');
-    var probeGl = probeCanvas.getContext('webgl2') || probeCanvas.getContext('webgl') || probeCanvas.getContext('experimental-webgl');
-    if (!probeGl) engage('webgl', true);
-    else {
-      var loseExt = probeGl.getExtension('WEBGL_lose_context');
-      if (loseExt) loseExt.loseContext();
+    if(!(n===current && frames[n])){
+      var cw=canvas.width, ch=canvas.height, iw=img.naturalWidth, ih=img.naturalHeight;
+      var s=Math.max(cw/iw,ch/ih), dw=iw*s, dh=ih*s;
+      ctx.fillStyle=GROUND; ctx.fillRect(0,0,cw,ch);
+      ctx.drawImage(img,(cw-dw)/2,(ch-dh)/2,dw,dh);
+      if(frames[n]) current=n;
     }
-  } catch (e) { engage('webgl', true); }
-  /* Load progress: every completed subresource is a sign of life, and the
-     module body itself reports in via __townBoot.moduleStarted(). */
-  if ('PerformanceObserver' in window) {
-    try {
-      var po = new PerformanceObserver(function (list) {
-        if (list.getEntries().length) noteProgress();
-      });
-      po.observe({ entryTypes: ['resource'] });
-    } catch (e) {}
-  }
-  document.addEventListener('DOMContentLoaded', noteProgress);
-  window.addEventListener('load', noteProgress);
-  /* A pre-boot error is recorded, never obeyed on its own: a stray error
-     (a webview's own injected script, an extension) must not bury a
-     healthy world. If the error was the module graph dying, silence
-     follows it — and the watchdog reads that silence as the failure. */
-  window.addEventListener('error', function (e) {
-    if (!booted && e && e.message && !errorAt) errorAt = Date.now();
-  });
-  /* Watchdog — progress-based and generous. It engages the still town
-     (soft, never locked) only when the load has truly stalled: an error
-     followed by silence, a long silence after a long wait, or an
-     absolute two-minute cap for a trickle that never arrives. */
-  var wd = setInterval(function () {
-    if (booted) { clearInterval(wd); return; }
-    var now = Date.now(), elapsed = now - startedAt, idle = now - lastProgress;
-    if ((errorAt && now - errorAt >= 8000 && idle >= 4000) ||
-        (elapsed >= 45000 && idle >= 30000) ||
-        elapsed >= 120000) {
-      engage('timeout', false);
-      clearInterval(wd);
+    for(var b=0;b<callouts.length;b++){
+      var c=callouts[b];
+      var from=parseFloat(c.getAttribute('data-sa-from')), to=parseFloat(c.getAttribute('data-sa-to'));
+      var o=0;
+      if(p>=from&&p<=to){ var span=to-from, f=Math.min(1,Math.min((p-from)/span,(to-p)/span)/0.16); o=Math.max(0,f); }
+      c.style.opacity=o.toFixed(3); if(c._leader) c._leader.g.setAttribute('opacity',o.toFixed(3));
+      // Move-aside (behavior law): while a portal is being entered, the
+      // other parts dim and step aside from the camera's path.
+      var asideR=PV.aside, cRoom=c.getAttribute('data-room'), isC=c.classList.contains('center');
+      if(!isC){
+        if(asideR&&cRoom&&cRoom!==asideR){
+          c.style.opacity=(o*0.3).toFixed(3);
+          if(c._leader) c._leader.g.setAttribute('opacity',(o*0.3).toFixed(3));
+          if(window.innerWidth>760){ var dirS=c.classList.contains('right')?1:-1; c.style.transform='translate('+(dirS*42)+'px,-50%)'; }
+        } else { c.style.transform=''; }
+      }
+      if(c._leader&&c._leader.hot){ var hs=c._leader.hot, hon=o>0.55; hs.style.opacity=hon?'1':'0'; hs.style.pointerEvents=hon?'auto':'none'; if(hon){ hs.removeAttribute('tabindex'); } else { hs.setAttribute('tabindex','-1'); } }
+      var door=c.querySelector('.sa-door');
+      if(door){ var live=o>0.85; door.style.pointerEvents=live?'auto':'none'; if(live){ door.removeAttribute('tabindex'); } else { door.setAttribute('tabindex','-1'); } }
     }
-  }, 1000);
+    if(cue) cue.style.opacity=(p>0.04?0:1);
+    if(depth) depth.style.transform='translate3d(0,'+(-46*p).toFixed(1)+'px,0)';
+  }
+  var leaderItems=[];
+  (function buildLeaders(){
+    var NS='http://www.w3.org/2000/svg';
+    var svg=document.createElementNS(NS,'svg');
+    svg.setAttribute('class','sa-leaders'); svg.setAttribute('aria-hidden','true');
+    callouts.forEach(function(c){
+      var tip=c.getAttribute('data-sa-tip'); if(!tip) return;
+      var xy=tip.split(',');
+      var g=document.createElementNS(NS,'g'); g.setAttribute('opacity','0');
+      var line=document.createElementNS(NS,'line'); line.setAttribute('class','sa-leader-line');
+      var halo=document.createElementNS(NS,'circle'); halo.setAttribute('class','sa-leader-halo'); halo.setAttribute('r','11');
+      var dot=document.createElementNS(NS,'circle'); dot.setAttribute('class','sa-leader-dot'); dot.setAttribute('r','4.5');
+      g.appendChild(line); g.appendChild(halo); g.appendChild(dot); svg.appendChild(g);
+      var item={c:c,g:g,line:line,halo:halo,dot:dot,tx:parseFloat(xy[0]),ty:parseFloat(xy[1])};
+      var roomK=c.getAttribute('data-room'); if(roomK){ item.room=roomK; item.hot=section.querySelector('.sa-hotspot[data-room="'+roomK+'"]'); }
+      c._leader=item; leaderItems.push(item);
+    });
+    if(leaderItems.length) beats.parentNode.insertBefore(svg, beats);
+  })();
+  function layoutLeaders(){
+    if(!leaderItems.length) return;
+    var sr=stage.getBoundingClientRect(); if(!sr.width) return;
+    var dpr=canvas.width/stage.clientWidth; if(!isFinite(dpr)||!dpr) dpr=1;
+    var iw=960, ih=540;
+    var s=Math.max(canvas.width/iw,canvas.height/ih), dw=iw*s, dh=ih*s;
+    leaderItems.forEach(function(it){
+      var tx=((canvas.width-dw)/2 + it.tx*dw)/dpr, ty=((canvas.height-dh)/2 + it.ty*dh)/dpr;
+      tx=Math.max(14,Math.min(stage.clientWidth-14,tx));
+      ty=Math.max(10,Math.min(stage.clientHeight-10,ty));
+      var r=it.c.getBoundingClientRect();
+      var sx=Math.min(Math.max(tx, r.left-sr.left), r.right-sr.left);
+      var sy=Math.min(Math.max(ty, r.top-sr.top), r.bottom-sr.top);
+      it.line.setAttribute('x1',sx.toFixed(1)); it.line.setAttribute('y1',sy.toFixed(1));
+      it.line.setAttribute('x2',tx.toFixed(1)); it.line.setAttribute('y2',ty.toFixed(1));
+      it.halo.setAttribute('cx',tx.toFixed(1)); it.halo.setAttribute('cy',ty.toFixed(1));
+      it.dot.setAttribute('cx',tx.toFixed(1)); it.dot.setAttribute('cy',ty.toFixed(1));
+      if(it.room){ PV.tips[it.room]={x:Math.round(tx),y:Math.round(ty)}; if(it.hot){ it.hot.style.left=tx+'px'; it.hot.style.top=ty+'px'; } }
+    });
+  }
+  function chase(){
+    targetP=tour?tour.p:progress();
+    var diff=targetP-dispP;
+    if(Math.abs(diff)<0.00035){
+      if(dispP!==targetP){ dispP=targetP; draw(dispP); }
+      chasing=false;
+      if(tour&&tour.onArrive&&!tour._arrived){ tour._arrived=true; var cbA=tour.onArrive; setTimeout(function(){ cbA(); },80); }
+      return;
+    }
+    dispP+=diff*0.1;
+    draw(dispP);
+    requestAnimationFrame(chase);
+  }
+  function kick(){ if(!chasing){ chasing=true; requestAnimationFrame(chase); } }
+  function prioritySeq(list){
+    var seq=[], placed={}, q=[], i;
+    function take(k){ if(k>=0&&k<list.length&&!placed[k]){ placed[k]=1; seq.push(list[k]); } }
+    take(0); take(list.length-1); take(list.length>>1);
+    q.push([0,list.length-1]);
+    while(q.length){ var ab=q.shift(), a=ab[0], b=ab[1]; if(b-a<2) continue; var m=(a+b)>>1; take(m); q.push([a,m]); q.push([m,b]); }
+    for(i=0;i<list.length;i++) take(i);
+    return seq;
+  }
+  function preload(){
+    if(started) return; started=true;
+    prioritySeq(order).forEach(function(n){ var im=new Image(); im.onload=function(){ kick(); }; im.src=src(n); frames[n]=im; });
+  }
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    section.classList.add('sa-reduced');
+    var im=new Image(); im.onload=function(){ frames[order[0]]=im; sizeCanvas(); draw(0); }; im.src=src(1); frames[1]=im;
+    sizeCanvas(); return;
+  }
+  // Paint the whole coin the moment its frame arrives, so the stage never
+  // sits empty ahead of the full priority preload.
+  var firstIm=new Image(); firstIm.onload=function(){ frames[1]=firstIm; kick(); }; firstIm.src=src(1); frames[1]=firstIm;
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){ if(es[0].isIntersecting){ preload(); io.disconnect(); } },{rootMargin:'120% 0px'});
+    io.observe(section);
+  } else { preload(); }
+  window.addEventListener('scroll',function(){ kick(); },{passive:true});
+  window.addEventListener('resize',sizeCanvas);
+  window.addEventListener('load',function(){ sizeCanvas(); layoutLeaders(); });
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(layoutLeaders);
+  sizeCanvas();
 })();
 </script>
-<link rel="stylesheet" href="./design/vendor/driver.css">
-<link rel="stylesheet" href="./design/guide.css">
-</head>
-<body>
-<nav class="doors" aria-label="The doors of the town">
-  <a class="door-link" href="./" aria-current="page">The Town</a>
-  <a class="door-link" href="record/">The Record</a>
-  <a class="door-link" href="agora/">The Forum</a>
-  <a class="door-link" href="knock/">The Knock</a>
-  <a class="door-link" href="ecosystem/">The Ecosystem</a>
-  <a class="door-link" href="about/">About Us</a>
-  <a class="door-link" href="studio/">The Studio</a>
-  <a class="door-link" href="catalogue/">The Catalogue</a> <a class="door-link" href="coin/">The Coin</a>
-  <button type="button" class="door-link tour-door-nav" data-tour-start>Take the Tour</button>
-</nav>
-<div id="stage" aria-hidden="true"></div>
-<div id="ss-stage" aria-hidden="true">
-  <div id="scene" aria-hidden="true"></div>
-  <div class="vignette"></div>
-  <header class="brand">
-    <h1>PROVADIA</h1>
-    <p>THE SECRET SIDE · REVERSE OF THE COIN</p>
-  </header>
-  <div class="caption-wrap">
-    <h2 id="markName">THE FORTRESS P</h2>
-    <div class="rule"></div>
-    <p class="hint">Tilt the coin — the back keeps secrets.</p>
-    <p class="hint-sub">DRAG TO TILT · DOUBLE-CLICK TO FLIP</p>
-    <button id="tiltBtn" type="button">TILT WITH YOUR PHONE</button>
-  </div>
-  <div id="ssFade"></div>
-</div>
-<div id="scroll-space" aria-hidden="true"></div>
-<div id="fade"><div id="wake" aria-hidden="true">The town is waking</div></div>
-<div id="caption"><span id="captionName">Arrival</span><small>scroll — the street takes thee down to the Wall</small></div>
+<script src="/next/assets/gsap.min.js"></script>
+<script>
+(function(){
+  var root=document.documentElement;
+  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cinematic=!root.classList.contains('static');
 
-<main id="stacks">
-  <div id="fallback-note" class="fallback-only" role="note">
-    <p class="fallback-note-line">The living world of this town needs a WebGL-capable browser. This is its still face — every word, record and door below is the town itself.</p>
-    <nav class="fallback-nav" aria-label="The town, station by station">
-      <a href="#station-arrival">Arrival</a> · <a href="#station-gate">The Gate</a> · <a href="#station-captain">Solnik</a> · <a href="#station-square">The Coin</a> · <a href="#station-wall">The Golden Wall</a> · <a href="record/">The Record</a> · <a href="agora/">The Forum</a> · <a href="knock/">The Knock</a> · <a href="ecosystem/">The Ecosystem</a> · <a href="about/">About Us</a> · <a href="studio/">The Studio</a> · <a href="catalogue/">The Catalogue</a> · <a href="coin/">The Coin</a>
-    </nav>
-  </div>
-  <div class="stack active" data-stack="arrival"><section class="town-panel" data-station="arrival" id="station-arrival" aria-label="Arrival">
-  <div class="panel-inner">
-    <p class="panel-eyebrow">Europe's First Town of Record</p>
-    <h1 class="panel-title panel-title--xl">Provadia</h1>
-    <p class="panel-lead">You are not reading about a town. You are standing in one.</p>
-    <figure class="fallback-only hero-figure">
-      <img src="engines/coin/front-published.jpg" alt="The PROVADIA coin — the Fortress P struck in salt bricks, ringed with 47 beads" width="1000" height="1000">
-      <figcaption>The Fortress P — the coin of this town, the face published on the market.</figcaption>
-    </figure>
-    <p class="fallback-only hero-honesty">PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall’s fate — and nothing else: no redemption, no yield, no rights, no expected return.</p>
-    <p class="panel-small">Scroll, traveller — the street will take thee down to the Wall.</p>
-  </div>
-</section></div>
-  <div class="stack" data-stack="gate"><section class="town-panel" data-station="gate" id="station-gate" aria-label="The Gate">
-  <div class="panel-inner">
-    <p class="panel-eyebrow">The Gate</p>
-    <h2 class="panel-title">The Gate</h2>
-    <p class="panel-body">Every town of record begins at a gate. Ours is watched by Solnik — last of the salt-makers, keeper of the Wall and the book. He stands at the door of this town, and his tales are true: what he tells thee, he can show thee.</p>
-  </div>
-</section></div>
-  <div class="stack" data-stack="captain">
-    <section class="town-panel cap-panel" id="station-captain" aria-label="Solnik at the front door">
-      <div class="panel-inner"><div class="cap-doorway">
-        <p class="cap-static-eyebrow">Provadia · The Front Door</p>
-        <h2 class="cap-static-title">Solnik</h2>
-        <img class="cap-door-img" src="engines/captain/marks/mask.webp" alt="Solnik's golden mask — the clay mask of the age, gold plates on its eyes">
-        <p class="cap-static-greeting">Hail, traveller, and welcome to Provadia — a town that was old when Rome was a pasture. I am Solnik — last of the solniks, the salt-makers who founded this town — keeper of its Wall and its book. Ask me of the gold, of the salt, of the graves by the sea — for what I tell thee, I can show thee. One claim, one Witness, or it never happened.</p>
-        <p class="cap-static-honesty">PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall’s fate — and nothing else: no redemption, no yield, no rights, no expected return.</p>
-        <p class="cap-static-line">This door shows the way; it does not hold the conversation. Solnik's seat of conversation is his Chamber, at the head of the Record — there his tales are told in full, his journeys begin, and his living voice is awake — the Keeper is receiving in his Chamber now. The desk stands open beside him: <a href="mailto:support@provadiacoin.com">support@provadiacoin.com</a>.</p>
-        <a class="doorway-link" href="record/">Walk to the Captain's Chamber →</a>
-      </div></div>
-    </section>
-  </div>
-  <div class="stack" data-stack="square"><section class="town-panel" data-station="square" id="station-square" aria-label="The Coin">
-  <div class="panel-inner">
-    <p class="panel-eyebrow">The Coin</p>
-    <h2 class="panel-title">The Coin</h2>
-    <p class="panel-body">The Fortress P — the name of the coin, struck in salt bricks and crowned with seven battlements. It is the first thing the town shows thee, and the last it lets thee forget.</p>
-    <p class="panel-body">Turn it over. The back keeps secrets: tilt it, and the age looks back — a sceptre, a mask, a bull, a ring — rising out of the gold one at a time, around the letter that never leaves.</p>
-    <p class="panel-body fallback-only">In this still face the coin rests, face up — its turning, its tilting and its secrets live in the living town.</p>
+  /* ================= THE CINEMATIC DIRECTOR (kinetic type) ==============
+     One choreographed timeline: footage, camera, particles and letters
+     move slowly and together. The letters are the dress, never the gate —
+     if GSAP is absent, if the visitor prefers reduced motion, or in any
+     static mode, every word simply stands, complete and readable. Initial
+     states are set by GSAP itself (never by CSS), so a failed load can
+     hide nothing. (Sound: none in this proof — only when permitted.) */
+  function splitLetters(el){
+    var text=el.textContent; el.setAttribute('aria-label',text); el.textContent='';
+    var frag=document.createDocumentFragment();
+    text.split(' ').forEach(function(word,wi,words){
+      var w=document.createElement('span'); w.className='kt-word'; w.setAttribute('aria-hidden','true');
+      word.split('').forEach(function(ch){
+        var s=document.createElement('span'); s.className='kt-letter'; s.textContent=ch; w.appendChild(s);
+      });
+      frag.appendChild(w);
+      if(wi<words.length-1) frag.appendChild(document.createTextNode(' '));
+    });
+    el.appendChild(frag);
+    return el.querySelectorAll('.kt-letter');
+  }
+  if(cinematic&&!reduced&&window.gsap){
+    root.classList.add('kt');
+    /* V3: the arrival is the coin alone — the Director's only arrival
+       cue is the coin stage itself gathering as it settles into the
+       dark. The living letters live inside the coin now: the entry
+       titles that travel and reassemble, and the headings below. */
+    window.gsap.fromTo('.coin-stage',{opacity:0,scale:0.965},{opacity:1,scale:1,duration:1.8,ease:'power2.out',delay:0.1});
+    /* Below the journey: headings rise word by word as they arrive. */
+    if('IntersectionObserver' in window){
+      var io2=new IntersectionObserver(function(es){
+        es.forEach(function(e){
+          if(!e.isIntersecting) return; io2.unobserve(e.target);
+          var words=e.target.textContent.trim().split(/\s+/);
+          e.target.setAttribute('aria-label',e.target.textContent);
+          e.target.innerHTML=words.map(function(w){return '<span class="kt-word" aria-hidden="true">'+w+'</span>';}).join(' ');
+          window.gsap.fromTo(e.target.querySelectorAll('.kt-word'),{opacity:0,y:16},{opacity:1,y:0,duration:0.95,stagger:0.07,ease:'power3.out'});
+        });
+      },{rootMargin:'0px 0px -12% 0px'});
+      document.querySelectorAll('.below h2').forEach(function(h){ io2.observe(h); });
+    }
+  }
 
-    <div class="contract-block">
-      <p class="contract-label">The coin's only name on-chain:</p>
-      <div class="contract-row">
-        <p class="contract-address" id="contractAddress">9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump</p>
-        <button class="copy-btn" type="button" data-copy-target="contractAddress" aria-label="Copy contract address">Copy</button>
-      </div>
-      <ul class="contract-links">
-        <li><a href="https://pump.fun/coin/9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump" target="_blank" rel="noopener">Trade on pump.fun</a></li>
-        <li><a href="https://dexscreener.com/solana/2fvtfwcco71j8xepws7yrez3569u2gxu4fyhe2h8oxdy" target="_blank" rel="noopener">The pair on Dexscreener</a></li>
-      </ul>
-    </div>
-  </div>
-</section>
-    <section class="town-panel coin-controls" aria-label="Coin controls">
-      <div class="panel-inner">
-        <p class="panel-eyebrow">The Coin Is Alive</p>
-        <div class="coin-btns">
-          <button type="button" data-coin="left">&#9664; Tilt</button>
-          <button type="button" data-coin="flip">Flip the Coin</button>
-          <button type="button" data-coin="right">Tilt &#9654;</button>
-          <button type="button" data-coin="home">Home — the P</button>
-        </div>
-        <p class="coin-state" id="coinState">THE FORTRESS P</p>
-        <p class="coin-hint">Tilt it far, both ways — the back keeps secrets. On a computer, thou mayest also drag the coin itself.</p>
-      </div>
-    </section>
-  </div>
-  <div class="stack" data-stack="wall"><section class="town-panel" data-station="wall" id="station-wall" aria-label="The Golden Wall">
-  <div class="panel-inner">
-    <p class="panel-eyebrow">The Golden Wall</p>
-    <h2 class="panel-title">The Golden Wall</h2>
+  /* ================= THE WORLD REGISTRY =================================
+     Every portal the coin can carry, as one record: destination,
+     readiness, assets, fallback. The founder-approved eight are live;
+     slots 9–10 are CONCEPT-ONLY — reserved here so no future service
+     forces a redesign; they are never dressed as functioning rooms.
+     The Portal Engine below reads only this registry. */
+  var REGISTRY={
+    mint:{name:'The Mint',ring:'inner',p:0.10,door:'/listings/mint.html',doorLabel:'Enter \u2014 the Mint',connections:['marketplace','coin'],
+      readiness:'Live door \u00b7 service gated (intake closed, checkout not connected)',
+      line:'Where we create coins for people: the town\u2019s minting service, run end to end \u2014 conversation, the Honest Question, rehearsal, covenant, mark, launch, record, handover.',
+      fact:'The pilot stands at $130, charged at completion only. The intake gate is closed until the founder opens it, and checkout is not connected.'},
+    marketplace:{name:'The Marketplace',ring:'inner',p:0.20,door:'/catalogue/',doorLabel:'Enter \u2014 the Marketplace',connections:['mint','coin'],
+      readiness:'Live door \u00b7 checkout not connected',
+      line:'The store with all the products: 34 services and a custom-build door \u2014 the Studio rides inside it \u2014 every price printed in page text.',
+      fact:'Checkout is not connected yet \u2014 no purchase is possible today. No holding of the coin is ever required to buy a service.'},
+    coin:{name:'The Coin',ring:'inner',p:0.30,door:'/coin/',doorLabel:'Enter \u2014 the Coin, live',connections:['wall','marketplace'],
+      readiness:'Live door',
+      line:'PROVADIA itself: one billion coins, fixed forever, launched on pump.fun on 18 November 2026 \u2014 its live chart and trade stand behind this portal.',
+      fact:'Holding it names you a Bricklayer in the town registry \u2014 and nothing else: no redemption, no yield, no rights, no expected return.'},
+    wall:{name:'The Golden Wall',ring:'inner',p:0.40,door:'/record/',doorLabel:'Enter \u2014 the Wall, on the Record',connections:['record','coin'],
+      readiness:'Live door (the Wall\u2019s home is the Record)',
+      line:'Twenty percent of the coin\u2019s creator fees, forever, buys real 1-gram gold bars into a licensed vault the founder never holds.',
+      fact:'Today the Wall stands at 0 of 47 bricks. It is a public monument \u2014 never backing, never redeemable.'},
+    record:{name:'The Record',ring:'inner',p:0.50,door:'/record/',doorLabel:'Enter \u2014 Read the Record',connections:['wall','town'],
+      readiness:'Live door',
+      line:'The town\u2019s signed, hash-chained public book \u2014 every act of the town is written where anyone can check it.',
+      fact:'Recorded as fact: the Wall stands at 0 of 47 bricks \u2014 Brick #1 is not yet bought.'},
+    forum:{name:'The Forum',ring:'outer',p:0.60,door:'/agora/',doorLabel:'Enter \u2014 the Forum',connections:['keeper','town'],
+      readiness:'Live door',
+      line:'The Agora \u2014 the town square, where members gather, ask, and are answered.',
+      fact:'It is the town\u2019s working support door today: the support email there is live, and the town\u2019s Discord stands open. Telegram stays sealed.'},
+    keeper:{name:'The Keeper \u2014 The Knock',ring:'outer',p:0.70,door:'/knock/',doorLabel:'Enter \u2014 the Knock',connections:['forum'],
+      readiness:'Live door \u00b7 the Keeper himself is OFFLINE',
+      line:'Solnik, Keeper of the Wall \u2014 the town\u2019s host and shopkeeper \u2014 and the Knock, the town\u2019s door for asking to enter its work.',
+      fact:'His status today: OFFLINE. The counter is being built; until he truly serves, the Agora carries the working support door.',
+      alt:{href:'/agora/',label:'The working door today \u2014 the Agora \u2192'}},
+    town:{name:'The Town',ring:'outer',p:0.805,door:'/ecosystem/',doorLabel:'Enter \u2014 the Town',connections:['forum','mint'],
+      readiness:'Live door',
+      line:'Provadia itself, and everything connected to it \u2014 the story of the oldest salt, the houses around the town, and every destination in its world.',
+      fact:'The deeper story is told under the town\u2019s discipline: proven, interpreted, and never-told are kept in separate columns.'},
+    studio:{name:'The Studio',ring:'outer',concept:true,door:'/studio/',
+      readiness:'CONCEPT-ONLY as a world \u00b7 its door exists: \u201cNot yet open\u201d'},
+    observatory:{name:'The Observatory',ring:'outer',concept:true,door:null,
+      readiness:'CONCEPT-ONLY \u00b7 milestones and verified activity \u00b7 no page exists yet'}
+  };
+  window.PV_REGISTRY=REGISTRY;
 
-    <p class="wall-counter" aria-label="0 of 47 bricks laid">0 / 47</p>
-    <p class="wall-counter-sub">bricks laid · 0 grams of gold in the vault</p>
+  /* ================= THE PORTAL ENGINE ==================================
+     ONE system: separation (the journey), selection, the camera, the
+     return. OUT to choose, IN to enter (founder, 2026-11-23 14:03 CT).
+     In static modes none of this runs — chips and links are navigation. */
+  if(!cinematic||!window.PV) return;
+  var section=document.getElementById('journey');
+  var stage=section.querySelector('.sa-stage');
+  var dolly=document.getElementById('dolly');
+  var portal=document.getElementById('portal');
+  var card=document.getElementById('entryCard');
+  var cardTitle=card.querySelector('.ec-title');
+  var cardLine=card.querySelector('.ec-line');
+  var cardFact=card.querySelector('.ec-fact');
+  var cardEnter=card.querySelector('.ec-enter');
+  var cardAlt=card.querySelector('.ec-alt');
+  var cardOnward=card.querySelector('.ec-onward');
+  var cardWindow=card.querySelector('.ec-window');
+  var cardWindowVideo=card.querySelector('.ec-window video');
+  var cardWindowCap=card.querySelector('.ec-window-cap');
+  var allDoorsBtn=document.getElementById('allDoorsBtn');
+  var allDoorsPanel=document.getElementById('allDoorsPanel');
+  var returnBtn=document.getElementById('returnCoin');
+  var state='idle', currentRoom=null, lastInvoker=null, tourTimer=null;
 
-    <div class="wall-slot">
-      <p>One slot waits — outlined, patient. A brick appears here only when it exists: bought, receipted, photographed, its serial written in the book. The Wall is the town's shadow of the truth; it has never shown a brick that was not real.</p>
-    </div>
+  function markChip(room){
+    document.querySelectorAll('.room-chip').forEach(function(c){
+      if(c.getAttribute('data-room')===room) c.setAttribute('aria-current','true');
+      else c.removeAttribute('aria-current');
+    });
+  }
+  function tipFor(room){
+    var t=window.PV.tips&&window.PV.tips[room];
+    if(t) return t;
+    var r=stage.getBoundingClientRect();
+    return {x:r.width*0.5,y:r.height*0.46};
+  }
+  function selectRoom(room,invoker,fromHotspot){
+    var R=REGISTRY[room];
+    if(!R||R.concept) return;
+    if(state==='entering') return;
+    if(state==='entered') resetEntry(true);
+    lastInvoker=invoker||null; currentRoom=room; markChip(room);
+    window.PV.aside=room; returnBtn.hidden=false;
+    if(fromHotspot){ beginEnter(room); return; }
+    state='touring';
+    window.PV.tourTo(R.p,function(){ beginEnter(room); });
+    section.scrollIntoView({behavior:'smooth',block:'start'});
+    if(tourTimer) clearTimeout(tourTimer);
+    tourTimer=setTimeout(function(){ if(state==='touring') beginEnter(room); },7000);
+  }
+  function beginEnter(room){
+    if(state==='entered'&&currentRoom===room&&!card.hidden) return;
+    if(tourTimer){ clearTimeout(tourTimer); tourTimer=null; }
+    state='entering';
+    if(allDoorsBtn) allDoorsBtn.hidden=true;
+    var tip=tipFor(room);
+    dolly.style.transformOrigin=tip.x+'px '+tip.y+'px';
+    portal.style.left=tip.x+'px'; portal.style.top=tip.y+'px';
+    portal.classList.add('on');
+    dolly.classList.add('pushing');
+    setTimeout(function(){ showCard(room); },1250);
+  }
+  function showCard(room){
+    var R=REGISTRY[room];
+    card.setAttribute('data-room',room);
+    cardTitle.textContent=R.name;
+    cardLine.textContent=R.line;
+    cardFact.textContent=R.fact;
+    cardEnter.setAttribute('href',R.door);
+    cardEnter.textContent=R.doorLabel+' \u2192';
+    if(R.alt){ cardAlt.setAttribute('href',R.alt.href); cardAlt.textContent=R.alt.label; cardAlt.hidden=false; }
+    else cardAlt.hidden=true;
+    /* Inter-world portals (the connected universe): this world's golden
+       doors onward, from the registry's connections — world-to-world
+       journeys ride the same Portal Engine as coin-to-world. */
+    cardOnward.innerHTML='';
+    (R.connections||[]).forEach(function(to){
+      var T=REGISTRY[to]; if(!T||T.concept||!T.door) return;
+      var a=document.createElement('a');
+      a.className='ec-portal'; a.setAttribute('href',T.door);
+      a.innerHTML='<span class="ec-portal-ring" aria-hidden="true"></span>'+T.name+' \u2192';
+      cardOnward.appendChild(a);
+    });
+    cardOnward.hidden=cardOnward.children.length===0;
+    /* Through-portal visibility: a portal's world is seen LIVING through
+       its opening before entry. The Mint's own film plays inside its
+       threshold today. The Marketplace's living showroom film does not
+       exist yet — its slot stands marked, never faked, until the
+       CAPTAIN-FLOW order F-4 lands the real footage. */
+    if(room==='mint'){
+      cardWindow.hidden=false;
+      cardWindowVideo.style.display='';
+      cardWindowCap.textContent='Seen through the portal — the Mint, living';
+      if(!cardWindowVideo.getAttribute('src')) cardWindowVideo.setAttribute('src',cardWindowVideo.getAttribute('data-src'));
+      var pr=cardWindowVideo.play(); if(pr&&pr.catch) pr.catch(function(){});
+    } else if(room==='marketplace'){
+      cardWindow.hidden=false;
+      if(cardWindowVideo.pause) cardWindowVideo.pause();
+      cardWindowVideo.style.display='none';
+      cardWindowCap.textContent='This portal\u2019s living showroom film is ordered (CAPTAIN-FLOW F-4) — until the real footage lands, the Marketplace opens on its door below. Nothing here is faked.';
+    } else {
+      cardWindow.hidden=true;
+      if(cardWindowVideo.pause) cardWindowVideo.pause();
+    }
+    if(allDoorsBtn) allDoorsBtn.hidden=true;
+    card.hidden=false;
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      card.classList.add('in'); state='entered';
+      cardEnter.focus({preventScroll:true});
+      /* Typography crosses worlds (Cinematic Director): the destination's
+         name travels through the passage as glowing letters and
+         reassembles inside the world it names. */
+      if(window.gsap&&!reduced){
+        var lts=splitLetters(cardTitle);
+        window.gsap.fromTo(lts,{opacity:0,y:26,scale:1.4,textShadow:'0 0 16px rgba(228,198,91,.9)'},
+          {opacity:1,y:0,scale:1,textShadow:'0 0 0px rgba(228,198,91,0)',duration:1.15,stagger:0.045,ease:'power3.out'});
+      }
+    }); });
+  }
+  function resetEntry(instant){
+    card.classList.remove('in'); card.hidden=true;
+    if(cardWindowVideo&&cardWindowVideo.pause) cardWindowVideo.pause();
+    portal.classList.remove('on');
+    dolly.classList.remove('pushing');
+    window.PV.aside=null;
+    window.PV.release();
+    returnBtn.hidden=true;
+    if(allDoorsBtn) allDoorsBtn.hidden=false;
+    state='idle'; currentRoom=null; markChip(null);
+    if(tourTimer){ clearTimeout(tourTimer); tourTimer=null; }
+    if(!instant&&lastInvoker&&lastInvoker.focus) lastInvoker.focus({preventScroll:true});
+  }
+  function stepBack(){ if(state!=='idle') resetEntry(false); }
 
-    <p class="panel-body">At 47 bricks — or the coin's first birthday — the Wall's fate is voted by the Bricklayers: burial at Provadia, or donation to the Varna Regional Museum. It can never be sold. It is never backing, and never redeemable.</p>
-
-    <div class="sub-block">
-      <h3 class="sub-block-title">The Night Brick</h3>
-      <p class="panel-body">Every night at 21:00 UTC the town posts the counter and one true fact, and the Bricklayers answer: 🧱</p>
-      <p class="night-brick-countdown">next Night Brick in — <span id="nightBrickCountdown">21:00 UTC</span></p>
-    </div>
-
-    <div class="bell-line">
-      <p>The town bell tolls only when the ledger rings it — once per brick laid. The bell has never rung.</p>
-    </div>
-  </div>
-</section><section class="town-panel" data-station="registry" id="station-registry" aria-label="The Book of Bricklayers">
-  <div class="panel-inner">
-    <p class="panel-eyebrow">The Book of Bricklayers</p>
-    <h2 class="panel-title">The Book of Bricklayers</h2>
-    <p class="registry-empty">No name is written yet.</p>
-    <p class="panel-body">The first name enters this book when the first brick is laid in the Wall — with its receipt beside it. Names and brick numbers only. Never holdings, never value. The book grows only when the Wall does, and the book itself now stands with the Record; the family's own registry stands on the Ecosystem page.</p>
-    <div class="registry-treasure">
-      <p>My brick is in the Wall — that sentence is the whole of the treasure.</p>
-    </div>
-    <a class="doorway-link" href="record/">The book, on the Record →</a>
-  </div>
-</section></div>
-  <div class="stack" data-stack="record"><section class="town-panel" data-station="record" id="station-record" aria-label="The Record Doorway">
-  <div class="panel-inner">
-    <p class="panel-eyebrow">The Record</p>
-    <h2 class="panel-title">The Record Stands in Its Own Hall</h2>
-    <p class="panel-body">Everything that needs to be known — the Day-Book and its Verifier, the Three Vaults and the tithe book inside the first of them, the market face, the Fee Card, the Charter, the family's law and its money split shown plainly — now stands on the Record page, with the Captain's Chamber at its head. Nothing was lost in the move: the chain still verifies from this very door, in your own browser.</p>
-    <p class="rec-verdict" data-verify-verdict data-state="working">Recomputing every entry in your browser…</p>
-    <p class="panel-small">The same proof the Record Hall renders in full — every entry, every vault ledger, recomputed on your own machine.</p>
-    <a class="doorway-link" href="record/">Walk to the Record →</a>
-  </div>
-</section><section class="town-panel" data-station="umbrella" id="station-umbrella" aria-label="The Umbrella Doorway">
-  <div class="panel-inner">
-    <p class="panel-eyebrow">The Umbrella</p>
-    <h2 class="panel-title">A Ground Where Coins Are Born</h2>
-    <p class="panel-body">Provadia is not one coin. It is a town with an umbrella over it — and under that umbrella, a founder's own coin can be born, under one covenant, receipted at birth. The family's whole law is written on the Record page; the family's street stands on the Ecosystem page; and the door itself is a knock, not a signup.</p>
-    <a class="doorway-link" href="record/">Learn the family →</a>
-    <a class="doorway-link" href="knock/">Knock →</a>
-    <a class="doorway-link" href="ecosystem/">See the family →</a>
-  </div>
-</section><section class="town-panel" data-station="road" id="station-road" aria-label="The Road">
-  <div class="panel-inner">
-    <p class="panel-eyebrow">The Road</p>
-    <h2 class="panel-title">The Road</h2>
-    <p class="panel-body">A roadmap here is not a promise list. It is a road: paved exactly as far as we have travelled, and not one inch further.</p>
-
-    <ol class="road-list">
-      <li class="road-step road-step--outline">
-        <span class="road-step-num" aria-hidden="true">1</span>
-        <h3 class="road-step-title">The Foundation</h3>
-        <p class="road-step-desc">Brick #1, bought with the founder's own money and receipted in the open · the Charter · the Day-Book opens</p>
-      </li>
-      <li class="road-step road-step--ghost">
-        <span class="road-step-num" aria-hidden="true">2</span>
-        <h3 class="road-step-title">The Promise Machine</h3>
-        <p class="road-step-desc">the site grades its own promises, in public, forever</p>
-      </li>
-      <li class="road-step road-step--ghost">
-        <span class="road-step-num" aria-hidden="true">3</span>
-        <h3 class="road-step-title">The Liveness Layer</h3>
-        <p class="road-step-desc">the town reports its own heartbeat, silence included</p>
-      </li>
-      <li class="road-step road-step--ghost">
-        <span class="road-step-num" aria-hidden="true">4</span>
-        <h3 class="road-step-title">The Signed Solnik</h3>
-        <p class="road-step-desc">the town's officer, auditable</p>
-      </li>
-      <li class="road-step road-step--ghost">
-        <span class="road-step-num" aria-hidden="true">5</span>
-        <h3 class="road-step-title">The Town Build-Out</h3>
-        <p class="road-step-desc">streets rise as the Wall rises</p>
-      </li>
-      <li class="road-step road-step--ghost">
-        <span class="road-step-num" aria-hidden="true">6</span>
-        <h3 class="road-step-title">The Brick Lock</h3>
-        <p class="road-step-desc">the Wall's custody, locked in code</p>
-      </li>
-      <li class="road-step road-step--ghost">
-        <span class="road-step-num" aria-hidden="true">7</span>
-        <h3 class="road-step-title">The Fee Card</h3>
-        <p class="road-step-desc">every fee, receipted</p>
-      </li>
-      <li class="road-step road-step--ghost">
-        <span class="road-step-num" aria-hidden="true">8</span>
-        <h3 class="road-step-title">The Covenant Kit</h3>
-        <p class="road-step-desc">the covenant, whole, for anyone to check</p>
-      </li>
-    </ol>
-
-    <p class="road-footnote">No dates are promised on this road, beyond the Tuesdays of the Seven Secrets and the coin's first birthday.</p>
-  </div>
-</section></div>
-  <div class="stack" data-stack="door"><section class="town-panel" data-station="story" id="station-story" aria-label="The True Story">
-  <div class="panel-inner">
-    <p class="panel-eyebrow">The True Story</p>
-    <h2 class="panel-title">The True Story</h2>
-    <h3 class="panel-subtitle">What the ground says</h3>
-
-    <div class="fact-list">
-      <div class="fact-block">
-        <p><span class="fact-lead">Found by accident —</span> In October 1972 an excavator operator, Raycho Marinov, struck gold in Varna's industrial zone and carried a shoebox of it to the museum. The cemetery was dug from 1972 to 1991.</p>
-      </div>
-      <div class="fact-block">
-        <p><span class="fact-lead">The dating —</span> Radiocarbon puts the Varna cemetery in use about 4560–4450 BC — some 6,500 years ago. Provadia-Solnitsata made salt from about 5500 BC; its fortified age is 4700–4200 BC.</p>
-      </div>
-      <div class="fact-block">
-        <p><span class="fact-lead">The gold —</span> More than 3,000 objects, over 6 kg, in 28 kinds: sceptres, diadems, bracelets, beads by the thousand, rings and ring-idols, gold cattle, gold-painted pottery. And copper, flint, carnelian, and shell from the Mediterranean.</p>
-      </div>
-      <div class="fact-block">
-        <p><span class="fact-lead">The chief —</span> Grave 43 held a man of 40–50 with over 990 gold objects, 1.5 kg in all, and a sceptre — a stone axe on a gold-sheathed shaft. The museum calls him most likely a chief and priest. No name survives; his people had no writing.</p>
-      </div>
-      <div class="fact-block">
-        <p><span class="fact-lead">The fortress —</span> The salt town stood behind stone walls up to 3 metres thick, with bastions and a gate — raised, the ground shows, over salt made in tons.</p>
-      </div>
-    </div>
-
-    <div class="interpretation-block" role="note" aria-label="Interpretation — not settled fact">
-      <p class="interpretation-label">Interpretation — Not Settled Fact</p>
-      <p>Professor Vasil Nikolov, the salt town's excavator since 2005, holds that salt was money — that the salt brick was currency and Provadia Europe's first mint, and that salt wealth explains Varna's gold. He admits there is no direct evidence for how the trade worked; other scholars call 'Europe's oldest town' hyperbole. In this town we tell it as what it is: one professor's reading of the ground.</p>
-    </div>
-  </div>
-</section><section class="town-panel" data-station="door" id="station-door" aria-label="The Support Desk">
-  <div class="panel-inner">
-    <p class="panel-eyebrow">The Support Desk</p>
-    <h2 class="panel-title">The Support Desk</h2>
-    <p class="panel-body">The town's desk now stands at the Forum — where the people talk, where the support standard is written in full, and where every true door of the town is listed. Two doors stand open there: the email desk, answered on the watch around the clock, and the Captain himself, in his Chamber on the Record page.</p>
-    <p class="armor-line">We never DM first. If a door is not listed at the desk, it is not ours.</p>
-    <a class="doorway-link" href="agora/">Walk to the Forum →</a>
-
-    <div class="honesty-block">
-      <p>PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall's fate — and nothing else: no redemption, no yield, no rights, no expected return.</p>
-      <p class="footer-contract">9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump</p>
-      <p class="sign-off">Salt pays.</p>
-    </div>
-
-    <div class="secrets-block">
-      <h3 class="sub-block-title">The Seven Secrets — Commitments</h3>
-      <p class="secrets-intro">Every secret was committed here before it was told. Each hash is the SHA-256 of a salt plus that secret's final text. When a secret is revealed, its salt is published with it — so anyone can recompute the hash and check it against its line.</p>
-      <ul class="secrets-list">
-        <li><span class="secret-name">Secret 1</span> — SHA-256: bd87e81783b985c67c058bbc03f040a7e46ee47b692ebbe98e8d56b42408aa5a</li>
-        <li><span class="secret-name">Secret 2</span> — SHA-256: 4c708c9c9fd0235afe4bab722f0cbdc9399ef37e740014fcbbb38611e51b4406</li>
-        <li><span class="secret-name">Secret 4</span> — SHA-256: 7323eed62295b991d55dca3cf29b58e7cb86db59d18b63e46010a175457ec6f9</li>
-        <li><span class="secret-name">Secret 3</span> — SHA-256: 08e5d41ffae7ca942b757971f5a85f6076f4c3d3c1db054ae194757fd49755ec</li>
-        <li><span class="secret-name">Secret 5</span> — SHA-256: f81757e0fc7d275fe033169782a44e1dadccdac1d8b958007ef209e82bc23edf</li>
-        <li><span class="secret-name">Secret 6</span> — SHA-256: b4812005651022572b55932fd46ba4b06c73462d003819f9c7847875d8d86053</li>
-        <li><span class="secret-name">Secret 7</span> — SHA-256: 4058b2e9586e38df6465b2f91ff4f9820ac9e81d874411c6687aa31274e41b7b</li>
-      </ul>
-    </div>
-  </div>
-</section></div>
-</main>
-<p class="house-line" style="margin-top:16px;font-size:11px">Also from our house — <a href="https://onejobkits.com" style="color:#C9A227">OneJobKits: practical kits for every job →</a></p>
-
-<script type="module">
-import * as THREE from './lib/three.module.min.js';
-import { createWorld } from './engines/world/engine.js';
-import { createCoin } from './engines/coin/engine.js';
-import './sections/record/record.js';
-
-// The whole graph has arrived and this body is running — a sign of life
-// for the boot watchdog, so a slow-but-healthy load is never mistaken
-// for a dead one.
-if (window.__townBoot) window.__townBoot.moduleStarted();
-
-// ---- copy buttons (contract address) ----
-document.querySelectorAll('[data-copy-target]').forEach((btn) => {
-  btn.addEventListener('click', async () => {
-    const target = document.getElementById(btn.dataset.copyTarget);
-    if (!target) return;
-    const old = btn.textContent;
-    try { await navigator.clipboard.writeText(target.textContent.trim()); btn.textContent = 'Copied'; }
-    catch(e) { btn.textContent = 'Select & copy'; }
-    setTimeout(() => { btn.textContent = old; }, 1600);
+  document.querySelectorAll('.room-chip').forEach(function(chip){
+    chip.addEventListener('click',function(e){
+      e.preventDefault();
+      selectRoom(chip.getAttribute('data-room'),chip,false);
+    });
   });
-});
-
-// ---- the Night Brick countdown (next 21:00 UTC) ----
-function tickClock(){
-  const now = new Date();
-  const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 21, 0, 0));
-  if (next <= now) next.setUTCDate(next.getUTCDate() + 1);
-  let s = Math.floor((next - now) / 1000);
-  const hh = String(Math.floor(s / 3600)).padStart(2, '0');
-  const mm = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
-  const ss = String(s % 60).padStart(2, '0');
-  document.querySelectorAll('#nightBrickCountdown').forEach((el) => { el.textContent = hh + ':' + mm + ':' + ss; });
-}
-tickClock();
-setInterval(tickClock, 1000);
-
-// ---- renderer / scene / camera (house contract) ----
-try {
-const stage = document.getElementById('stage');
-const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-stage.appendChild(renderer.domElement);
-
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x141210);
-scene.fog = new THREE.FogExp2(0x141210, 0.02);
-
-const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 300);
-camera.position.set(0, 10, 48);
-
-// ---- the world (NEXUS body · Hex Hive · the Streets · Gate · Wall) ----
-const world = createWorld(scene);
-
-// ---- the coin: the market-published face + the Secret Side ----
-const coin = createCoin({
-  frontArtworkUrl: './engines/coin/front-published.jpg',
-  pTextureUrl: './engines/coin/marks/fortress-p.png',
-  anisotropy: Math.min(8, renderer.capabilities.getMaxAnisotropy())
-});
-coin.group.position.set(0, 2.35, 0);
-scene.add(coin.group);
-
-// ---- ?shot=<0..1> freezes the journey (verification) ----
-const params = new URLSearchParams(window.location.search);
-const shotRaw = params.get('shot');
-const shot = shotRaw === null ? null : parseFloat(shotRaw);
-const THRESHOLDS = [0, .18, .36, .52, .68, .84, 1];
-function stationForProgress(p){
-  let idx = 0;
-  for (let i = 0; i < THRESHOLDS.length; i++) if (p >= THRESHOLDS[i]) idx = i;
-  return world.stations[Math.min(idx, world.stations.length - 1)];
-}
-if (shot !== null && !isNaN(shot)) world.setShotMode(shot);
-
-// ---- scroll journey ----
-function readScroll(){
-  const max = document.documentElement.scrollHeight - window.innerHeight;
-  const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-  if (shot === null) world.setJourneyProgress(p);
-}
-window.addEventListener('scroll', readScroll, { passive: true });
-readScroll();
-
-// ---- station panels ----
-const LABELS = {
-  arrival: 'Arrival — the Overlook',
-  gate: 'The Gate',
-  captain: "Solnik's Door",
-  square: 'Coin Square',
-  wall: 'The Golden Wall',
-  record: 'The Record Doorway',
-  door: 'The Door — Story & Support'
-};
-const captionName = document.getElementById('captionName');
-const finePointer = window.matchMedia('(pointer:fine)').matches;
-function syncCoinInteractive(name){
-  try { coin.api.setInteractive(renderer.domElement, name === 'square' && finePointer); } catch(e) {}
-}
-function showStation(name){
-  document.querySelectorAll('.stack').forEach((s) => s.classList.toggle('active', s.dataset.stack === name));
-  captionName.textContent = LABELS[name] || name;
-  syncCoinInteractive(name);
-  // The Secret Side lives at the square (Option B): its stage takes the
-  // stop while the square is live, and the world's own coin rests hidden
-  // beneath it. Everywhere else the stage is gone and the coin stands.
-  document.body.classList.toggle('at-square', name === 'square');
-  coin.group.visible = name !== 'square';
-}
-let flightDone = shot !== null;
-world.onStation((name) => { if (flightDone) showStation(name); else captionName.textContent = LABELS[name] || name; });
-if (shot !== null && !isNaN(shot)) showStation(stationForProgress(shot));
-else setTimeout(() => { flightDone = true; showStation(world.getStation()); }, 7800);
-
-// ---- coin controls ----
-let tiltDeg = 0;
-const coinState = document.getElementById('coinState');
-document.querySelectorAll('[data-coin]').forEach((btn) => {
-  btn.addEventListener('click', () => {
-    const act = btn.dataset.coin;
-    try {
-      if (act === 'left') { tiltDeg = Math.max(-56, tiltDeg - 14); coin.api.setReverseTilt(tiltDeg); }
-      if (act === 'right') { tiltDeg = Math.min(56, tiltDeg + 14); coin.api.setReverseTilt(tiltDeg); }
-      if (act === 'flip') { coin.api.flip(); }
-      if (act === 'home') { tiltDeg = 0; coin.api.homePose(); }
-    } catch(e) {}
+  document.querySelectorAll('.sa-hotspot').forEach(function(hs){
+    hs.addEventListener('click',function(){
+      selectRoom(hs.getAttribute('data-room'),hs,true);
+    });
   });
-});
-setInterval(() => { try { coinState.textContent = coin.api.getState().caption; } catch(e) {} }, 500);
+  card.querySelector('.ec-back').addEventListener('click',stepBack);
+  /* Return to the Coin — persistent in every held view (behavior law). */
+  returnBtn.addEventListener('click',function(){
+    stepBack();
+    window.scrollTo({top:0,behavior:reduced?'auto':'smooth'});
+  });
+  /* The visitor is never trapped: a scroll gesture or Escape steps back
+     out of a held portal, and cancels a tour in flight. */
+  window.addEventListener('wheel',function(){
+    if(state==='entered') stepBack();
+    else if(state==='touring'){ window.PV.release(); window.PV.aside=null; returnBtn.hidden=true; state='idle'; markChip(null); if(tourTimer){clearTimeout(tourTimer); tourTimer=null;} }
+  },{passive:true});
+  window.addEventListener('touchmove',function(){
+    if(state==='entered') stepBack();
+    else if(state==='touring'){ window.PV.release(); window.PV.aside=null; returnBtn.hidden=true; state='idle'; markChip(null); if(tourTimer){ clearTimeout(tourTimer); tourTimer=null; } }
+  },{passive:true});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'){ stepBack(); closeDoors(); }
+  });
 
+  /* ================= THE TOUCH THAT OPENS (v3) ========================
+     The breath invites; the touch begins the true transformation. The
+     coin itself is the button — no chrome, no caption. Touching it (or
+     pressing Enter on it) carries the visitor into the coin: the page
+     travels to the first separation, and the coin cracks open around
+     them as the journey takes over. Scrolling does the same, untouched. */
+  var openBtn=document.getElementById('coinOpen');
+  if(openBtn){
+    openBtn.addEventListener('click',function(){
+      var total=section.offsetHeight-window.innerHeight; if(total<=0) return;
+      var y=section.getBoundingClientRect().top+window.scrollY+total*0.085;
+      window.scrollTo({top:y,behavior:reduced?'auto':'smooth'});
+    });
+  }
 
-// ---- resize + main loop ----
-window.addEventListener('resize', () => {
-  const w = window.innerWidth, h = window.innerHeight;
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer.setSize(w, h);
-});
-const clockT = new THREE.Clock();
-function tick(){
-  requestAnimationFrame(tick);
-  const dt = Math.min(clockT.getDelta(), 0.05);
-  const t = clockT.elapsedTime;
-  world.update(dt, t);
-  world.applyCamera(camera, dt);
-  coin.api.update(dt, t);
-  renderer.render(scene, camera);
-}
-tick();
-if (window.__townBoot) window.__townBoot.markBooted();
-} catch (bootErr) {
-  if (window.console) console.error(bootErr);
-  if (window.__townBoot) window.__townBoot.engageFallback('engine', true);
-}
+  /* ================= ALL DOORS — INSIDE THE COIN (v3) =================
+     The plain menu is one of the things inside the opened coin: a small
+     door in the corner of the interior, opening the full list of the
+     town's real doors without leaving the coin's space. */
+  function openDoors(){
+    if(!allDoorsPanel) return;
+    allDoorsPanel.hidden=false;
+    if(allDoorsBtn) allDoorsBtn.setAttribute('aria-expanded','true');
+    var first=allDoorsPanel.querySelector('nav a'); if(first) first.focus({preventScroll:true});
+  }
+  function closeDoors(){
+    if(!allDoorsPanel||allDoorsPanel.hidden) return;
+    allDoorsPanel.hidden=true;
+    if(allDoorsBtn){ allDoorsBtn.setAttribute('aria-expanded','false'); allDoorsBtn.focus({preventScroll:true}); }
+  }
+  if(allDoorsBtn) allDoorsBtn.addEventListener('click',openDoors);
+  var allDoorsClose=document.getElementById('allDoorsClose');
+  if(allDoorsClose) allDoorsClose.addEventListener('click',closeDoors);
+  if(allDoorsPanel) allDoorsPanel.addEventListener('click',function(e){ if(e.target===allDoorsPanel) closeDoors(); });
+
+  /* ================= THE ORBIT (desktop arrival) ========================
+     Two concentric rings around the living coin: the INNER ring carries
+     the five primary portals; the OUTER ring the rest — including the
+     two concept slots, drawn dimmed and dashed, never as working doors.
+     Nodes ride the registry. On phones the orbit is hidden: the coin,
+     the journey and the full menu carry the experience there. */
+  var orbit=document.getElementById('orbit');
+  if(orbit&&window.matchMedia('(min-width: 1024px)').matches&&window.getComputedStyle(orbit).display!=='none'){
+    var coinStage=document.querySelector('.coin-stage');
+    var nodes=[];
+    Object.keys(REGISTRY).forEach(function(key){
+      var R=REGISTRY[key];
+      var el;
+      if(R.concept){
+        el=document.createElement('span');
+        el.className='orbit-node concept';
+        el.setAttribute('aria-disabled','true');
+        el.title=R.name+' \u2014 concept only, reserved in the World Registry';
+        el.textContent=R.name.replace('The ','').split(' \u2014 ')[0];
+      } else {
+        el=document.createElement('button');
+        el.type='button';
+        el.className='orbit-node';
+        el.textContent=R.name.replace('The ','').split(' \u2014 ')[0];
+        el.setAttribute('aria-label',R.name+' \u2014 enter this portal');
+        (function(k,node){ node.addEventListener('click',function(){ selectRoom(k,node,false); }); })(key,el);
+      }
+      el.setAttribute('data-ring',R.ring);
+      orbit.appendChild(el);
+      nodes.push({key:key,R:R,el:el});
+    });
+    var byRing={inner:nodes.filter(function(n){return n.R.ring==='inner';}),
+                outer:nodes.filter(function(n){return n.R.ring==='outer';})};
+    byRing.inner.forEach(function(n,i){ n.a0=-Math.PI/2 + i*(Math.PI*2/byRing.inner.length); n.speed=Math.PI*2/120; });
+    byRing.outer.forEach(function(n,i){ n.a0=-Math.PI/2 + (i+0.5)*(Math.PI*2/byRing.outer.length); n.speed=-Math.PI*2/190; });
+    var orbitRun=true, orbitT0=null;
+    function orbitTick(ts){
+      if(!orbitT0) orbitT0=ts;
+      var t=(ts-orbitT0)/1000;
+      var W=coinStage.clientWidth, H=coinStage.clientHeight;
+      nodes.forEach(function(n){
+        var rx=(n.R.ring==='inner'?0.33:0.425)*W, ry=(n.R.ring==='inner'?0.26:0.36)*H;
+        var a=n.a0+n.speed*t;
+        n.el.style.left=(W/2+Math.cos(a)*rx)+'px';
+        n.el.style.top=(H/2+Math.sin(a)*ry)+'px';
+      });
+      if(orbitRun) requestAnimationFrame(orbitTick);
+    }
+    var orbitRaf=requestAnimationFrame(orbitTick);
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(function(es){
+        var vis=es[0].isIntersecting;
+        if(vis&&!orbitRun){ orbitRun=true; orbitT0=null; orbitRaf=requestAnimationFrame(orbitTick); }
+        else if(!vis&&orbitRun){ orbitRun=false; cancelAnimationFrame(orbitRaf); }
+      },{rootMargin:'80px'}).observe(coinStage);
+    }
+    document.addEventListener('visibilitychange',function(){
+      if(document.hidden&&orbitRun){ orbitRun=false; cancelAnimationFrame(orbitRaf); }
+      else if(!document.hidden&&!orbitRun){ orbitRun=true; orbitT0=null; orbitRaf=requestAnimationFrame(orbitTick); }
+    });
+  }
+})();
+
 </script>
-<script type="module" src="./engines/secretside/secretside.js"></script>
-<script src="./design/vendor/driver.js"></script>
-<script src="./design/guide.js"></script>
 </body>
 </html>
