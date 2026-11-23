@@ -128,7 +128,8 @@ main,footer{position:relative;z-index:3}
   padding:6.2rem 1.2rem 3.2rem;position:relative}
 .arrival .halo{position:absolute;left:50%;top:44%;width:min(88vw,620px);aspect-ratio:1;transform:translate(-50%,-50%);
   background:radial-gradient(circle,var(--gold-pale-a12) 0%,var(--gold-a13) 45%,transparent 68%);pointer-events:none}
-.arrival-coin{width:min(46vw,218px);height:auto;filter:drop-shadow(0 24px 44px var(--black-a65));animation:floaty 7.5s ease-in-out infinite alternate;position:relative}
+.arrival-coin{width:min(46vw,218px);height:auto;filter:drop-shadow(0 24px 44px var(--black-a65));animation:floaty 7.5s ease-in-out infinite alternate;position:relative;
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 52%,transparent 70%);mask-image:radial-gradient(circle at 50% 50%,#000 52%,transparent 70%)}
 @keyframes floaty{from{transform:translateY(-7px) rotate(-.6deg)}to{transform:translateY(9px) rotate(.6deg)}}
 .eyebrow{font-size:.68rem;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);margin:1.35rem 0 .55rem}
 .arrival h1{font-size:clamp(2rem,6.4vw,3.6rem);line-height:1.08;margin:.1rem 0 .7rem;text-shadow:0 4px 30px var(--black-a80)}
@@ -303,7 +304,7 @@ html.rm .arrival-coin,html.rm .scroll-cue .arr,html.static .arrival-coin{animati
       </a>
     </div>
     <p class="arrival-note">Checkout is not connected — no purchase is possible today.</p>
-    <a class="keeper-door" href="/agora/"><span class="dot" aria-hidden="true"></span>Keeper — Offline<span style="color:var(--cream-faint)">· Solnik is offline; the Agora carries the working support door</span></a>
+    <a class="keeper-door" href="/agora/"><span class="dot" aria-hidden="true"></span><span style="white-space:nowrap">Keeper — Offline</span><span style="color:var(--cream-faint)">· Solnik is offline; the Agora carries the working support door</span></a>
     <a class="scroll-cue" href="#journey">Discover the town as you scroll<span class="arr" aria-hidden="true">↓</span></a>
   </section>
 
