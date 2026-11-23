@@ -92,6 +92,9 @@
   --gold-a70:rgba(201,162,39,.7);
   --gold-a75:rgba(201,162,39,.75);
   --gold-bright-a16:rgba(228,198,91,.16);
+  --gold-bright-a35:rgba(228,198,91,.35);
+  --gold-bright-a55:rgba(228,198,91,.55);
+  --gold-bright-a70:rgba(228,198,91,.7);
   --gold-pale-a12:rgba(255,239,193,.12);
   --gold-pale-a14:rgba(255,239,193,.14);
   --bronze-a14:rgba(122,86,44,.14);
@@ -343,9 +346,10 @@ html.static .coin-still,html.rm .coin-still{display:block}
 
 /* ---------- V2 behavior laws: return · move-aside · per-portal air ---------- */
 .sa-callout{transition:transform .8s ease}
-.sa-return{position:absolute;left:1rem;top:4.6rem;z-index:9;font:inherit;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--cream);background:var(--surface-strong);border:1px solid var(--gold);border-radius:999px;
-  padding:.55rem 1rem;cursor:pointer;box-shadow:0 0 18px var(--gold-bright-a16)}
+.sa-return{position:absolute;left:1rem;top:4.6rem;z-index:9;font:inherit;font-size:.69rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gold);background:var(--surface-strong);border:1px solid var(--gold);border-radius:999px;
+  padding:.55rem 1rem;cursor:pointer;box-shadow:0 0 18px var(--gold-bright-a16);min-height:44px;display:inline-flex;align-items:center}
+.sa-return[hidden]{display:none}
 .sa-return:hover,.sa-return:focus-visible{color:var(--cream);border-color:var(--cream)}
 .ec-alt{display:inline-block;margin-top:.75rem;font-size:.86rem;color:var(--gold);text-decoration:none;border-bottom:1px solid var(--gold-a50);padding-bottom:.08rem}
 .ec-alt:hover{color:var(--gold)}
@@ -434,11 +438,9 @@ html:not(.cine) .breath,html:not(.cine) .coin-open{display:none}
 .breath-crack{position:absolute;left:50%;top:50%;width:52%;height:2px;transform:translate(-50%,-50%) rotate(-4deg);
   background:linear-gradient(to right,transparent,var(--gold-pale) 50%,transparent);filter:blur(1px);opacity:0;animation:crack 11s ease-in-out infinite}
 @keyframes crack{0%,100%{opacity:0}8%{opacity:.8}14%{opacity:.15}20%{opacity:.55}30%{opacity:0}}
-html.cine .coin-film{animation:coinBreath 9s ease-in-out infinite alternate;
-  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 14%,#000 86%,transparent 100%),linear-gradient(to bottom,transparent 0,#000 5%,#000 95%,transparent 100%);
-  -webkit-mask-composite:source-in;
-  mask-image:linear-gradient(to right,transparent 0,#000 14%,#000 86%,transparent 100%),linear-gradient(to bottom,transparent 0,#000 5%,#000 95%,transparent 100%);
-  mask-composite:intersect}
+html.cine .coin-film{animation:coinBreath 9s ease-in-out infinite alternate;mix-blend-mode:lighten;
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 36%,rgba(0,0,0,.85) 46%,transparent 64%);
+  mask-image:radial-gradient(circle at 50% 50%,#000 36%,rgba(0,0,0,.85) 46%,transparent 64%)}
 @keyframes coinBreath{from{transform:scale(1.005) rotate(-.35deg)}to{transform:scale(1.03) rotate(.35deg)}}
 .coin-open{position:absolute;inset:0;z-index:6;background:transparent;border:0;margin:0;padding:0;cursor:pointer}
 .coin-open:focus-visible{outline:2px solid var(--gold);outline-offset:-6px}
@@ -480,10 +482,10 @@ html.cine .coin-film{animation:coinBreath 9s ease-in-out infinite alternate;
    without JS); the cinematic path never sees it (nothing to rescue). */
 .coin-enter{display:none}
 html.static .coin-enter{display:block;position:absolute;inset:0;z-index:6;background:transparent;border:0;margin:0;padding:0;cursor:pointer}
-.coin-enter .ce-pill{position:absolute;left:50%;bottom:7%;transform:translateX(-50%);display:inline-flex;align-items:center;gap:.55rem;
-  font-family:Cinzel,Georgia,serif;font-size:clamp(.92rem,2.4vw,1.05rem);letter-spacing:.04em;color:var(--cream);white-space:nowrap;
-  background:var(--surface-strong);border:1px solid var(--gold);border-radius:999px;padding:.68rem 1.25rem;
-  box-shadow:0 0 26px var(--gold-bright-a16),0 14px 34px var(--black-a55),inset 0 1px 0 var(--gold-pale-a14);
+.coin-enter .ce-pill{position:absolute;left:50%;top:60%;transform:translate(-50%,-50%);display:inline-flex;align-items:center;gap:.55rem;
+  font-family:Cinzel,Georgia,serif;font-size:12px;letter-spacing:.06em;color:var(--cream);white-space:nowrap;
+  background:rgba(20,18,16,.92);border:1.5px solid var(--gold-bright);border-radius:999px;padding:12px 22px;min-height:44px;
+  box-shadow:0 12px 28px rgba(48,37,27,.55),inset 0 1px 0 var(--gold-pale-a14);
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 .coin-enter .ce-pill::before{content:"";width:.55rem;height:.55rem;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold-a70);flex:none}
 .coin-enter:hover .ce-pill,.coin-enter:focus-visible .ce-pill{border-color:var(--cream)}
@@ -491,6 +493,125 @@ html.static .coin-enter{display:block;position:absolute;inset:0;z-index:6;backgr
 .enter-note{display:none}
 html.static .enter-note{display:block;max-width:38rem;margin:1.1rem auto 0;text-align:center;color:var(--cream-dim);line-height:1.6;font-size:.95rem}
 .enter-note strong{color:var(--cream);font-weight:600}
+
+/* ---------- ENTRY: THE OPENING (Gemini build, founder's order 2026-11-23
+   16:29 CT — "the coin would open and you go into another dimension") ----
+   The NOW layer of Gemini's entry document, staged in code over the
+   approved v3/v3.1 build. State 0 stays the coin alone (the arrival's
+   ground becomes true vault so the film's feathered edge dissolves into
+   it). One touch runs the beats: Beat 1 — the crack ignites, counter-
+   rotating portal rings light around the aperture, the camera pushes
+   18% as warm dimensional depth opens at the coin's centre. Beat 2 —
+   the worlds pop OUT toward the visitor and hold around the centre
+   like satellites (the Universal Structure Law: the thing at centre,
+   opened, its named parts around it — never a menu): the two main
+   doors as bright-gold portal lenses (the Mint shows its real film;
+   the Marketplace — which holds no world footage — shows the coin's
+   own published art in slow drift, atmosphere over its real door,
+   never dressed as footage), the six remaining worlds as antique-gold
+   nodes along the lower arc, and the registry seal "ALL DOORS · 10"
+   at the bottom pole, wired to the coin's existing all-doors panel.
+   Beat 3 — one tap on any lens dives: the chosen ring expands past
+   the viewport while the unchosen fold back, and the flight lands in
+   the journey's own entry machinery (the threshold, its film, its
+   doors). The films F-2/F-2B/F-3 (the true cleave and fly-through)
+   are owed, not faked — see the build record. Cinematic path only:
+   every rule below is scoped to html.cine or lives where static modes
+   never render it; the still page and its rescue are untouched except
+   the pill's restaged seat (v3.1 block above, per the document's §D). */
+html.cine .arrival{background:var(--vault)}
+.coin-core{position:absolute;inset:0;transition:transform .65s cubic-bezier(.22,1,.36,1)}
+.coin-stage.pv-pushing .coin-core{transform:scale(1.18)}
+/* The breath gains its pulse ring: one ring leaves the rim per breath
+   cycle, expanding ~14px outward and dissolving (the discovery cue the
+   v3 record held back, now ordered by the entry document). */
+.breath-pulse{position:absolute;left:50%;top:50%;width:49.5%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
+  border:1px solid var(--gold-a35);opacity:0;animation:breathPulse 7s ease-out infinite}
+@keyframes breathPulse{0%{transform:translate(-50%,-50%) scale(1);opacity:0}22%{opacity:.5}58%{transform:translate(-50%,-50%) scale(1.045);opacity:0}100%{transform:translate(-50%,-50%) scale(1.045);opacity:0}}
+/* TOUCH TO OPEN — the invitation rides inside the coin's lower rim,
+   curving along the bottom inner bevel. No button, no caption below. */
+.pv-touch{position:absolute;left:50%;top:50%;width:49.5%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:5;pointer-events:none;transition:opacity .4s ease}
+html:not(.cine) .pv-touch{display:none}
+.coin-stage.pv-pushing .pv-touch{opacity:0}
+.pv-touch text{font-family:Inter,system-ui,sans-serif;font-size:4.4px;letter-spacing:.24em;fill:rgba(233,221,198,.65)}
+/* The opening layer itself: full-viewport over the arrival, inert until
+   the coin is touched. Geometry (coin centre + diameter) arrives as
+   CSS variables measured by the entry script. */
+.pv-open-layer{display:none}
+html.cine .pv-open-layer{display:block;position:absolute;inset:0;z-index:8;pointer-events:none}
+.pv-depth{position:absolute;left:var(--pv-cx,50%);top:var(--pv-cy,50%);width:calc(var(--pv-cd,300px)*1.6);height:calc(var(--pv-cd,300px)*1.6);
+  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;opacity:0;
+  background:radial-gradient(circle,rgba(255,239,193,.5) 0%,rgba(228,198,91,.34) 26%,rgba(201,162,39,.16) 48%,rgba(48,37,27,.28) 66%,transparent 74%);
+  clip-path:circle(0% at 50% 50%);transition:clip-path .65s cubic-bezier(.22,1,.36,1),opacity .3s ease}
+.pv-depth::before{content:"";position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0deg,rgba(255,239,193,.10) 12deg,transparent 26deg,transparent 120deg,rgba(255,239,193,.08) 134deg,transparent 150deg,transparent 240deg,rgba(255,239,193,.10) 254deg,transparent 268deg);
+  animation:pvSpin 70s linear infinite}
+.pv-beat1 .pv-depth{opacity:1;clip-path:circle(46% at 50% 50%)}
+.pv-rings{position:absolute;left:var(--pv-cx,50%);top:var(--pv-cy,50%);width:calc(var(--pv-cd,300px)*1.55);height:calc(var(--pv-cd,300px)*1.55);
+  transform:translate(-50%,-50%) scale(.3);opacity:0;pointer-events:none;
+  transition:transform .65s cubic-bezier(.22,1,.36,1),opacity .3s ease;filter:drop-shadow(0 0 10px rgba(228,198,91,.45))}
+.pv-beat1 .pv-rings{transform:translate(-50%,-50%) scale(1);opacity:1}
+.pv-rings .pv-r1{animation:pvSpin 30s linear infinite;transform-origin:50% 50%}
+.pv-rings .pv-r2{animation:pvSpinR 22s linear infinite;transform-origin:50% 50%}
+.pv-rings .pv-r3{animation:pvSpin 44s linear infinite;transform-origin:50% 50%}
+@keyframes pvSpin{to{transform:rotate(360deg)}}
+@keyframes pvSpinR{to{transform:rotate(-360deg)}}
+/* The satellites: lenses and nodes. Before the opening they sit folded
+   into the coin's centre (the entry script sets --pv-fx/--pv-fy, the
+   vector home); Beat 2 springs them out to their orbital places. */
+.pv-node{position:absolute;display:flex;flex-direction:column;align-items:center;gap:.45rem;background:none;border:0;margin:0;padding:0;cursor:pointer;font:inherit;
+  transform:translate(calc(-50% + var(--pv-fx,0px)),calc(-50% + var(--pv-fy,0px))) scale(.2);opacity:0;pointer-events:none;
+  transition:transform .7s cubic-bezier(.25,.9,.3,1.1),opacity .35s ease}
+.pv-open .pv-node{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto;transition-delay:var(--pv-d,0s)}
+.pv-node:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:50%}
+.pv-disc{position:relative;border-radius:50%;flex:none}
+.pv-face{position:absolute;inset:0;border-radius:50%;overflow:hidden;background:#000;display:block}
+.pv-face img,.pv-face video,.pv-face picture{width:100%;height:100%;object-fit:cover;display:block}
+.pv-face picture img{width:100%;height:100%;object-fit:cover}
+.pv-main .pv-disc{width:76px;height:76px;border:1.5px solid var(--gold-bright);box-shadow:0 0 26px var(--gold-bright-a16),0 14px 34px var(--black-a55)}
+.pv-main .pv-disc::before{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px dashed var(--gold-bright-a70);animation:pvSpin 26s linear infinite}
+.pv-main .pv-disc::after{content:"";position:absolute;inset:-12px;border-radius:50%;border:1px solid var(--gold-a25);animation:pvSpinR 38s linear infinite}
+.pv-sec .pv-disc{width:44px;height:44px;border:1px solid var(--gold-a70);box-shadow:0 8px 20px var(--black-a55)}
+.pv-sec .pv-face img{filter:brightness(.85) saturate(.92)}
+.pv-label{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-bright);white-space:nowrap;text-shadow:0 1px 8px var(--black-a90),0 0 14px var(--black-a80)}
+.pv-sec .pv-label{font-size:10px;letter-spacing:.16em;color:var(--cream)}
+@media (max-width:760px){
+  /* The lower arc is tight on a phone: the six names run a size
+     smaller and the arc staggers into two rows so no label touches
+     its neighbour (probe-measured collisions at the first spacing). */
+  .pv-sec .pv-label{font-size:9px;letter-spacing:.12em}
+}
+/* The Marketplace lens: the coin's own art in slow circulation drift,
+   with a light sweep — atmosphere over the real door (no footage of
+   that world exists; none is pretended). */
+.pv-face-art img{animation:pvDrift 16s ease-in-out infinite alternate}
+@keyframes pvDrift{from{transform:scale(1.14) rotate(-2.5deg)}to{transform:scale(1.22) rotate(2.5deg)}}
+.pv-face-art::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 32%,var(--gold-pale-a14) 48%,transparent 64%);animation:pvShimmer 5.5s ease-in-out infinite alternate}
+@keyframes pvShimmer{from{transform:translateX(-14%)}to{transform:translateX(14%)}}
+@media (min-width:761px){
+  .pv-main .pv-disc{width:118px;height:118px}
+  .pv-sec .pv-disc{width:56px;height:56px}
+}
+/* The registry seal at the bottom pole — a trigger, not a part: it
+   opens the coin's own all-doors panel (the journey's machinery). */
+.pv-seal{position:absolute;display:inline-flex;align-items:center;gap:.5rem;min-height:40px;padding:.6rem 1rem;cursor:pointer;font:inherit;
+  background:rgba(20,18,16,.55);border:1px solid var(--gold-a35);border-radius:999px;color:var(--gold);
+  font-size:10px;letter-spacing:.2em;text-transform:uppercase;white-space:nowrap;
+  transform:translate(calc(-50% + var(--pv-fx,0px)),calc(-50% + var(--pv-fy,0px))) scale(.2);opacity:0;pointer-events:none;
+  transition:transform .7s cubic-bezier(.25,.9,.3,1.1),opacity .35s ease}
+.pv-seal::before{content:"";width:.5rem;height:.5rem;border-radius:50%;border:1.5px solid var(--gold);flex:none}
+.pv-open .pv-seal{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto;transition-delay:var(--pv-d,0s)}
+.pv-seal:hover,.pv-seal:focus-visible{color:var(--cream);border-color:var(--gold);outline:none}
+/* Beat 3: the unchosen fold back into the portal; the chosen ring
+   carries the flight (the dive disc is script-born, below). */
+.pv-diving .pv-node.pv-fold,.pv-diving .pv-seal.pv-fold{opacity:0;transform:translate(-50%,-50%) scale(.4);transition-duration:.22s;transition-delay:0s;pointer-events:none}
+.pv-diving .pv-node.pv-chosen .pv-disc{box-shadow:0 0 44px var(--gold-bright-a35),0 14px 34px var(--black-a55)}
+.pv-dive{position:fixed;z-index:70;border-radius:50%;pointer-events:none;border:2px solid var(--gold-bright);
+  background:radial-gradient(circle,rgba(255,239,193,.85) 0%,rgba(228,198,91,.5) 34%,rgba(201,162,39,.22) 58%,rgba(20,18,16,.06) 74%);
+  box-shadow:0 0 80px rgba(228,198,91,.35),inset 0 0 60px rgba(255,239,193,.35)}
+.pv-dive.pv-return{border-radius:0;border:0;box-shadow:none;
+  background:radial-gradient(circle at 50% 46%,rgba(255,239,193,.55) 0%,rgba(228,198,91,.3) 30%,transparent 62%)}
+.pv-novis,.pv-novis *{transition:none!important}
 
 /* ---------- REDUCED MOTION / STATIC MODES ---------- */
 /* V3.1: every rule in this sheet is scoped to html:not(.cine). A visitor
@@ -547,19 +668,63 @@ html.rm .scroll-cue .arr{animation:none}
     <p class="eyebrow">Provadia · The Living Town</p>
     <h1 class="kt-h1" aria-label="Provadia — a living digital town.">Provadia — a living digital town.</h1>
     <div class="coin-stage">
+      <div class="coin-core">
       <video class="coin-film" autoplay muted loop playsinline preload="auto" poster="/next/assets/coin-poster.webp" role="img" aria-label="The PROVADIA coin, alive — filmed from its own anchored faces: it turns slowly in golden light, opens into its layers, the rooms of the town, and closes whole again, breathing in a slow loop.">
         <source src="/next/assets/coin-film-desktop.mp4" type="video/mp4" media="(min-width: 701px)">
         <source src="/next/assets/coin-film-mobile.mp4" type="video/mp4">
       </video>
       <img class="coin-still" src="/listings/mint-frames/f001.webp" width="960" height="540" alt="The PROVADIA coin, whole — a brick P on gold">
       <div class="coin-shade" aria-hidden="true"></div>
+      <div class="breath" aria-hidden="true"><span class="breath-glow"></span><span class="breath-ring"></span><span class="breath-pulse"></span><span class="breath-crack"></span></div>
+      <svg class="pv-touch" aria-hidden="true" viewBox="0 0 100 100"><defs><path id="pvArcPath" d="M 15,50 A 35,35 0 0 0 85,50"/></defs><text><textPath href="#pvArcPath" startOffset="50%" text-anchor="middle">TOUCH TO OPEN</textPath></text></svg>
+      </div>
       <button type="button" class="coin-open" id="coinOpen" aria-label="Open the coin — the whole town is inside it"></button>
       <button type="button" class="coin-enter" id="coinEnter" aria-label="Touch the coin — enter the living town"><span class="ce-pill" aria-hidden="true">Touch the coin — enter the living town</span></button>
-      <div class="breath" aria-hidden="true"><span class="breath-glow"></span><span class="breath-ring"></span><span class="breath-crack"></span></div>
       <div class="orbit" id="orbit" role="group" aria-label="The portals in orbit around the coin — the inner ring: Mint, Marketplace, Coin, Golden Wall, Record; the outer ring: Forum, Keeper, Town, and two concept portals">
         <div class="orbit-ring inner" aria-hidden="true"></div>
         <div class="orbit-ring outer" aria-hidden="true"></div>
       </div>
+    </div>
+    <div class="pv-open-layer" id="pvOpen" aria-hidden="true">
+      <div class="pv-depth" aria-hidden="true"></div>
+      <svg class="pv-rings" aria-hidden="true" viewBox="0 0 100 100">
+        <circle class="pv-r1" cx="50" cy="50" r="48.5" fill="none" stroke="#e4c65b" stroke-width=".8" stroke-dasharray="3 2.2" opacity=".9"/>
+        <circle class="pv-r2" cx="50" cy="50" r="41" fill="none" stroke="#e4c65b" stroke-width=".55" stroke-dasharray="14 5" opacity=".65"/>
+        <circle class="pv-r3" cx="50" cy="50" r="34.5" fill="none" stroke="#e4c65b" stroke-width=".7" stroke-dasharray="1.5 3" opacity=".8"/>
+      </svg>
+      <button type="button" class="pv-node pv-main" data-room="mint" data-x="28" data-y="34" tabindex="-1" style="left:28%;top:34%;--pv-d:0ms" aria-label="The Mint — enter this world">
+        <span class="pv-disc"><span class="pv-face"><video class="pv-lens-video" muted loop playsinline preload="none" data-src="/listings/mint-assets/mint-assembly-film.mp4" poster="/listings/mint-frames/f120.webp" aria-hidden="true"></video></span></span>
+        <span class="pv-label">The Mint</span>
+      </button>
+      <button type="button" class="pv-node pv-main" data-room="marketplace" data-x="72" data-y="34" tabindex="-1" style="left:72%;top:34%;--pv-d:60ms" aria-label="The Marketplace — enter this world">
+        <span class="pv-disc"><span class="pv-face pv-face-art"><picture><source media="(max-width: 700px)" srcset="/listings/mint-frames/m/f160.webp"><img src="/listings/mint-frames/f160.webp" alt="" loading="lazy" decoding="async"></picture></span></span>
+        <span class="pv-label">The Marketplace</span>
+      </button>
+      <button type="button" class="pv-node pv-sec" data-room="coin" data-x="13" data-y="62" tabindex="-1" style="left:13%;top:62%;--pv-d:120ms" aria-label="The Coin — enter this world">
+        <span class="pv-disc"><span class="pv-face"><picture><source media="(max-width: 700px)" srcset="/listings/mint-frames/m/f001.webp"><img src="/listings/mint-frames/f001.webp" alt="" loading="lazy" decoding="async"></picture></span></span>
+        <span class="pv-label">The Coin</span>
+      </button>
+      <button type="button" class="pv-node pv-sec" data-room="wall" data-x="26.5" data-y="69.5" tabindex="-1" style="left:26.5%;top:69.5%;--pv-d:180ms" aria-label="The Golden Wall — enter this world">
+        <span class="pv-disc"><span class="pv-face"><picture><source media="(max-width: 700px)" srcset="/listings/mint-frames/m/f110.webp"><img src="/listings/mint-frames/f110.webp" alt="" loading="lazy" decoding="async"></picture></span></span>
+        <span class="pv-label">The Golden Wall</span>
+      </button>
+      <button type="button" class="pv-node pv-sec" data-room="record" data-x="40" data-y="77.5" tabindex="-1" style="left:40%;top:77.5%;--pv-d:240ms" aria-label="The Record — enter this world">
+        <span class="pv-disc"><span class="pv-face"><picture><source media="(max-width: 700px)" srcset="/listings/mint-frames/m/f200.webp"><img src="/listings/mint-frames/f200.webp" alt="" loading="lazy" decoding="async"></picture></span></span>
+        <span class="pv-label">The Record</span>
+      </button>
+      <button type="button" class="pv-node pv-sec" data-room="forum" data-x="60" data-y="77.5" tabindex="-1" style="left:60%;top:77.5%;--pv-d:300ms" aria-label="The Forum — enter this world">
+        <span class="pv-disc"><span class="pv-face"><picture><source media="(max-width: 700px)" srcset="/listings/mint-frames/m/f235.webp"><img src="/listings/mint-frames/f235.webp" alt="" loading="lazy" decoding="async"></picture></span></span>
+        <span class="pv-label">The Forum</span>
+      </button>
+      <button type="button" class="pv-node pv-sec" data-room="keeper" data-x="72.5" data-y="69.5" tabindex="-1" style="left:72.5%;top:69.5%;--pv-d:360ms" aria-label="The Keeper — the Knock — enter this world">
+        <span class="pv-disc"><span class="pv-face"><picture><source media="(max-width: 700px)" srcset="/listings/mint-frames/m/f110.webp"><img src="/listings/mint-frames/f110.webp" alt="" loading="lazy" decoding="async"></picture></span></span>
+        <span class="pv-label">The Keeper — the Knock</span>
+      </button>
+      <button type="button" class="pv-node pv-sec" data-room="town" data-x="87" data-y="62" tabindex="-1" style="left:87%;top:62%;--pv-d:420ms" aria-label="The Town — enter this world">
+        <span class="pv-disc"><span class="pv-face"><picture><source media="(max-width: 700px)" srcset="/listings/mint-frames/m/f160.webp"><img src="/listings/mint-frames/f160.webp" alt="" loading="lazy" decoding="async"></picture></span></span>
+        <span class="pv-label">The Town</span>
+      </button>
+      <button type="button" class="pv-seal" id="pvSeal" data-x="50" data-y="84" tabindex="-1" style="left:50%;top:84%;--pv-d:480ms" aria-label="All doors — open the panel of all ten doors">All Doors · 10</button>
     </div>
     <p class="enter-note" id="enterNote">You are seeing the town <strong>standing still</strong> — your device asked for less motion, or for less data, and the town honours that. But the town is alive: its film, its breath and the worlds inside the coin are one touch away, whenever you choose.</p>
     <p class="lede">Explore its services, marketplace, coin, and public record.</p>
@@ -627,7 +792,7 @@ html.rm .scroll-cue .arr{animation:none}
           <p class="sa-callout center" data-sa-from="0.90" data-sa-to="1.01"><span class="sa-eyebrow">Provadia</span><span class="sa-title">One Coin. One Town.</span><span class="sa-line">Every portal, named. Both main doors stand open below — the services, and the town.</span></p>
         </div>
       </div>
-      <button type="button" class="sa-return" id="returnCoin" hidden>Return to the Coin ↑</button>
+      <button type="button" class="sa-return" id="returnCoin" hidden>← The Coin</button>
       <div class="entry-card" id="entryCard" hidden role="dialog" aria-labelledby="entryTitle" aria-describedby="entryLine">
         <p class="ec-eyebrow">Inside the coin · You are entering</p>
         <h3 class="ec-title" id="entryTitle"></h3>
@@ -1318,6 +1483,12 @@ html.rm .scroll-cue .arr{animation:none}
   var openBtn=document.getElementById('coinOpen');
   if(openBtn){
     openBtn.addEventListener('click',function(){
+      /* ENTRY (Gemini build): while the Opening layer is live on the
+         cinematic path, the coin's touch runs the Opening in the
+         arrival (entry script) — the scroll into the journey is the
+         dive's job now. The flag is set only by that script, so if it
+         ever fails to load, this v3 behavior stands untouched. */
+      if(window.PV&&window.PV.entryOwnsOpen) return;
       var total=section.offsetHeight-window.innerHeight; if(total<=0) return;
       var y=section.getBoundingClientRect().top+window.scrollY+total*0.085;
       window.scrollTo({top:y,behavior:reduced?'auto':'smooth'});
@@ -1407,6 +1578,273 @@ html.rm .scroll-cue .arr{animation:none}
   }
 })();
 
+</script>
+<script>
+/* ================= ENTRY — THE OPENING (Gemini build) ==================
+   The NOW layer of Gemini's entry document, running on the cinematic
+   path only (every other path keeps the approved v3/v3.1 behavior —
+   this script simply never arms). The coin's touch no longer scrolls
+   past the opening: Beat 1 ignites the portal at the coin's centre
+   (rings, depth, the 18% camera push on the coin core), Beat 2 springs
+   the worlds out to their orbital places around the centre — the
+   coin's named parts held like satellites, per the Universal
+   Structure Law — and Beat 3 dives through the chosen lens into the
+   journey's own Portal Engine (hotspot click → dolly push → the
+   world's threshold). The registry seal opens the coin's existing
+   all-doors panel. The Return keeps the engine's behavior and gains
+   the reverse contraction. What is NOT here, by design: the filmed
+   cleave (F-2/F-2B) and the filmed fly-through (F-3) — owed as Flow
+   orders, never faked in code; and no animation is claimed across a
+   document boundary — browser-back restoration is state restoration
+   (below), honestly recorded as such in the build record. */
+(function(){
+  var root=document.documentElement;
+  if(!root.classList.contains('cine')) return;
+  var arrival=document.getElementById('arrival');
+  var stage=arrival?arrival.querySelector('.coin-stage'):null;
+  var layer=document.getElementById('pvOpen');
+  var section=document.getElementById('journey');
+  if(!arrival||!stage||!layer||!section) return;
+  var PV=window.PV||(window.PV={});
+  PV.entryOwnsOpen=true; // the Portal Engine's coin handler defers to this script
+  var openBtn=document.getElementById('coinOpen');
+  var film=stage.querySelector('.coin-film');
+  var nodes=Array.prototype.slice.call(layer.querySelectorAll('.pv-node'));
+  var seal=document.getElementById('pvSeal');
+  var state='closed', timers=[], activeDisc=null;
+  function later(fn,ms){ timers.push(setTimeout(fn,ms)); }
+  function clearTimers(){ for(var i=0;i<timers.length;i++) clearTimeout(timers[i]); timers=[]; }
+
+  /* Geometry: the coin's centre and diameter inside the layer's box,
+     re-measured on resize (the rings, the depth and every satellite's
+     fold-home vector hang off these). */
+  function geom(){
+    var lr=layer.getBoundingClientRect(), sr=stage.getBoundingClientRect();
+    return {cx:sr.left-lr.left+sr.width/2, cy:sr.top-lr.top+sr.height/2, cd:sr.width*0.495, lw:lr.width, lh:lr.height};
+  }
+  function place(){
+    var g=geom();
+    layer.style.setProperty('--pv-cx',g.cx.toFixed(1)+'px');
+    layer.style.setProperty('--pv-cy',g.cy.toFixed(1)+'px');
+    layer.style.setProperty('--pv-cd',g.cd.toFixed(1)+'px');
+    return g;
+  }
+  function setFrom(g){
+    g=g||geom();
+    layer.querySelectorAll('.pv-node,.pv-seal').forEach(function(el){
+      var tx=parseFloat(el.getAttribute('data-x'))/100*g.lw;
+      var ty=parseFloat(el.getAttribute('data-y'))/100*g.lh;
+      el.style.setProperty('--pv-fx',(g.cx-tx).toFixed(1)+'px');
+      el.style.setProperty('--pv-fy',(g.cy-ty).toFixed(1)+'px');
+    });
+  }
+  place();
+  window.addEventListener('resize',function(){ var g=place(); if(state==='open'||state==='opening') setFrom(g); });
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){ place(); });
+
+  /* Prefetch on Beat 1 (the document's §F): the first world's page and
+     its lens film load while the portal ignites, so the dive lands on
+     a decoded world. */
+  var prefetched=false;
+  function prefetch(){
+    if(prefetched) return; prefetched=true;
+    var l=document.createElement('link'); l.rel='prefetch'; l.href='/listings/mint.html'; document.head.appendChild(l);
+    var mv=layer.querySelector('.pv-lens-video');
+    if(mv&&!mv.getAttribute('src')){
+      mv.setAttribute('src',mv.getAttribute('data-src'));
+      try{ mv.load(); }catch(e){}
+      /* Prime playback inside the tap's own task: a muted play() here
+         carries the user activation, so the film is already running
+         when Beat 2 reveals the lens — a play() first attempted from
+         the 650ms timer can be refused by strict autoplay policies.
+         If the film cannot load, the lens keeps its poster (a real
+         frame of the world) — the designed degradation. */
+      var pr=mv.play(); if(pr&&pr.catch) pr.catch(function(){});
+      mv.addEventListener('canplay',function(){
+        if((state==='opening'||state==='open')&&mv.paused){ var p2=mv.play(); if(p2&&p2.catch) p2.catch(function(){}); }
+      });
+    }
+  }
+
+  function openOpening(){
+    if(state!=='closed') return;
+    state='opening';
+    if(navigator.vibrate){ try{ navigator.vibrate(12); }catch(e){} }
+    prefetch();
+    setFrom(place());
+    stage.classList.add('pv-pushing');
+    layer.classList.add('pv-beat1');
+    later(function(){
+      layer.classList.add('pv-open');
+      /* The layer leaves aria-hidden only now, with Beat 2: at Beat 1
+         its worlds are still folded and unfocusable, and assistive
+         tech must not meet them before they exist. */
+      layer.removeAttribute('aria-hidden');
+      nodes.forEach(function(n){ n.removeAttribute('tabindex'); });
+      if(seal) seal.removeAttribute('tabindex');
+      var mv=layer.querySelector('.pv-lens-video');
+      if(mv){ var pr=mv.play(); if(pr&&pr.catch) pr.catch(function(){}); }
+      state='open';
+    },650);
+  }
+  function closeOpening(instant){
+    if(state==='closed') return;
+    clearTimers();
+    state='closed';
+    /* A dive disc never outlives the opening: whatever path closes
+       the opening (Escape mid-dive included) takes the disc down,
+       or its removal timer — cleared above — would strand it. */
+    if(activeDisc){ try{ activeDisc.getAnimations().forEach(function(a){ a.cancel(); }); }catch(e){} if(activeDisc.parentNode) activeDisc.remove(); activeDisc=null; }
+    var ae=document.activeElement;
+    if(ae&&(nodes.indexOf(ae)>-1||ae===seal)&&openBtn) openBtn.focus({preventScroll:true});
+    if(instant){ layer.classList.add('pv-novis'); stage.classList.add('pv-novis'); }
+    layer.classList.remove('pv-open'); layer.classList.remove('pv-beat1'); layer.classList.remove('pv-diving');
+    stage.classList.remove('pv-pushing');
+    layer.setAttribute('aria-hidden','true');
+    nodes.forEach(function(n){ n.setAttribute('tabindex','-1'); n.classList.remove('pv-fold'); n.classList.remove('pv-chosen'); });
+    if(seal){ seal.setAttribute('tabindex','-1'); seal.classList.remove('pv-fold'); }
+    var mv=layer.querySelector('.pv-lens-video');
+    if(mv&&mv.pause) mv.pause();
+    if(instant){ void layer.offsetWidth; setTimeout(function(){ layer.classList.remove('pv-novis'); stage.classList.remove('pv-novis'); },90); }
+  }
+
+  if(openBtn) openBtn.addEventListener('click',function(){
+    if(state==='closed') openOpening();
+    else if(state==='open') closeOpening(false);
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&(state==='open'||state==='opening'||state==='diving')) closeOpening(false);
+  });
+  window.addEventListener('scroll',function(){
+    if((state==='open'||state==='opening')&&window.scrollY>window.innerHeight*0.55) closeOpening(false);
+  },{passive:true});
+
+  /* Beat 3 — the dive. The chosen lens's ring expands past the
+     viewport (750ms, the document's curve); beneath its cover the
+     page steps into the journey and the Portal Engine takes the
+     flight (its own dolly push, portal light and threshold). */
+  function dive(room,el){
+    if(state!=='open') return;
+    state='diving';
+    layer.classList.add('pv-diving');
+    nodes.forEach(function(n){ if(n!==el) n.classList.add('pv-fold'); });
+    if(seal) seal.classList.add('pv-fold');
+    el.classList.add('pv-chosen');
+    var disc=null, cx=window.innerWidth/2, cy=window.innerHeight/2, rad=38;
+    var face=el.querySelector('.pv-disc');
+    if(face){ var r=face.getBoundingClientRect(); cx=r.left+r.width/2; cy=r.top+r.height/2; rad=Math.max(10,r.width/2); }
+    try{
+      disc=document.createElement('div');
+      disc.className='pv-dive'; disc.setAttribute('aria-hidden','true');
+      disc.style.left=(cx-rad)+'px'; disc.style.top=(cy-rad)+'px';
+      disc.style.width=(rad*2)+'px'; disc.style.height=(rad*2)+'px';
+      document.body.appendChild(disc);
+      activeDisc=disc;
+      var need=Math.ceil(Math.hypot(Math.max(cx,window.innerWidth-cx),Math.max(cy,window.innerHeight-cy))/rad)+1;
+      disc.animate([{transform:'scale(1)'},{transform:'scale('+need+')'}],{duration:750,easing:'cubic-bezier(.55,0,.2,1)',fill:'forwards'});
+    }catch(e){ disc=null; }
+    later(function(){
+      if(film&&film.pause) film.pause();
+      var de=document.documentElement, prev=de.style.scrollBehavior;
+      de.style.scrollBehavior='auto';
+      section.scrollIntoView({behavior:'auto',block:'start'});
+      de.style.scrollBehavior=prev;
+      var hs=section.querySelector('.sa-hotspot[data-room="'+room+'"]');
+      if(hs) hs.click();
+    }, disc?640:120);
+    later(function(){
+      if(disc){
+        var f=disc.animate([{opacity:'1'},{opacity:'0'}],{duration:260,easing:'ease-out',fill:'forwards'});
+        f.onfinish=function(){ disc.remove(); if(activeDisc===disc) activeDisc=null; };
+        setTimeout(function(){ if(disc.parentNode) disc.remove(); if(activeDisc===disc) activeDisc=null; },600);
+      }
+      closeOpening(true);
+      state='closed';
+    }, disc?830:300);
+  }
+  nodes.forEach(function(n){
+    n.addEventListener('click',function(){ dive(n.getAttribute('data-room'),n); });
+  });
+
+  /* The seal: travel into the coin's interior and open its own
+     all-doors panel (the panel itself is untouched machinery). */
+  if(seal) seal.addEventListener('click',function(){
+    if(state!=='open') return;
+    closeOpening(true);
+    /* Instant, not smooth — and the panel opens a beat after the cut,
+       never in the scroll's own task: a smooth scroll raced with the
+       panel's opening focus left the flight unfinished mid-stage in
+       probes (the scroll arrested 55px short of the threshold), and a
+       same-task scroll+open left the stage's layers unsettled. The cut
+       is covered by the panel's own rise-in animation. */
+    var de=document.documentElement, prev=de.style.scrollBehavior;
+    de.style.scrollBehavior='auto';
+    section.scrollIntoView({behavior:'auto',block:'start'});
+    de.style.scrollBehavior=prev;
+    later(function(){
+      /* Open the panel only if the flight actually landed at the
+         journey's threshold; a visitor who scrolled away inside the
+         beat is not ambushed by a panel opening off-screen. */
+      var t=section.getBoundingClientRect().top;
+      if(t>-60&&t<160){ var b=document.getElementById('allDoorsBtn'); if(b) b.click(); }
+    },450);
+  });
+
+  /* The Return (the document's §C, in-page leg): the engine's own
+     step-back and scroll home stand; the held world contracts into a
+     golden aperture as the visitor flies back out. */
+  var returnBtn=document.getElementById('returnCoin');
+  if(returnBtn) returnBtn.addEventListener('click',function(){
+    if(window.scrollY<window.innerHeight*0.5) return;
+    var disc=null;
+    try{
+      disc=document.createElement('div');
+      disc.className='pv-dive pv-return'; disc.setAttribute('aria-hidden','true');
+      disc.style.left='0'; disc.style.top='0'; disc.style.width='100vw'; disc.style.height='100vh';
+      document.body.appendChild(disc);
+      var a=disc.animate([
+        {clipPath:'circle(120% at 50% 46%)',opacity:'1'},
+        {clipPath:'circle(16% at 50% 46%)',opacity:'1'}
+      ],{duration:450,easing:'cubic-bezier(.55,0,.2,1)',fill:'forwards'});
+      a.onfinish=function(){
+        var f=disc.animate([{opacity:'1'},{opacity:'0'}],{duration:220,easing:'ease-out',fill:'forwards'});
+        f.onfinish=function(){ disc.remove(); };
+        setTimeout(function(){ if(disc.parentNode) disc.remove(); },500);
+      };
+    }catch(e){ if(disc&&disc.parentNode) disc.remove(); }
+    closeOpening(true);
+  });
+
+  /* Browser back / history restore (§C, cross-page leg — what is
+     real): a restored page comes back to State 0, the coin alone —
+     panel closed and any held entry stepped back through the page's
+     own controls, scroll at the threshold. No animation is staged
+     across the document boundary. */
+  function navType(){ try{ var n=performance.getEntriesByType('navigation')[0]; return n?n.type:''; }catch(e){ return ''; } }
+  if('scrollRestoration' in history&&navType()==='back_forward'){ try{ history.scrollRestoration='manual'; }catch(e){} }
+  window.addEventListener('pageshow',function(e){
+    if(!e.persisted&&navType()!=='back_forward') return;
+    closeOpening(true);
+    var p=document.getElementById('allDoorsPanel');
+    if(p&&!p.hidden){ var c=document.getElementById('allDoorsClose'); if(c) c.click(); }
+    var card=document.getElementById('entryCard');
+    if(card&&!card.hidden){ var b=card.querySelector('.ec-back'); if(b) b.click(); }
+    window.scrollTo(0,0);
+    setTimeout(function(){ window.scrollTo(0,0); },80);
+  });
+
+  /* Single-canvas discipline (the document's §F): the arrival film
+     rests while the visitor is inside the coin or beyond it, and
+     wakes when the threshold returns — two heavy surfaces never
+     compete on a phone. */
+  if('IntersectionObserver' in window&&film){
+    new IntersectionObserver(function(es){
+      if(es[0].isIntersecting){
+        if(state==='closed'&&film.paused){ var pr=film.play(); if(pr&&pr.catch) pr.catch(function(){}); }
+      } else if(!film.paused){ film.pause(); }
+    },{threshold:0.04}).observe(arrival);
+  }
+})();
 </script>
 </body>
 </html>
