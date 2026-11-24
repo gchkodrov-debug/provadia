@@ -276,6 +276,9 @@ $('signBtn').addEventListener('click', async () => {
   $('connectBtn').disabled = true;
   clearError(); $('result').textContent = ''; $('verifyVerdict').textContent = ''; $('verifyVerdict').className = '';
   let wasSubmitted = false;
+  // Amendment 3 (Addendum 10): the sign flow retries a blockhash expiry with
+  // a freshly built stamp, up to this many attempts inside the one click.
+  const MAX_SIGN_ATTEMPTS = 3;
   try {
     // FIX 2 (critic 2a): assert the rendered memo still equals the constant
     // before anything is signed. Signed bytes below come from MEMO_TEXT
@@ -306,75 +309,145 @@ $('signBtn').addEventListener('click', async () => {
     const web3 = window.solanaWeb3;
     if (!web3) throw new Error('@solana/web3.js failed to load.');
     const connection = new web3.Connection(RPC, 'confirmed');
-    // Mirror of buildAnchorTransaction in anchor-tx.mjs:
-    const { blockhash } = await connection.getLatestBlockhash('confirmed');
-    const data = typeof Buffer !== 'undefined'
-      ? Buffer.from(MEMO_TEXT, 'utf8')
-      : new TextEncoder().encode(MEMO_TEXT);
-    const instruction = new web3.TransactionInstruction({
-      programId: new web3.PublicKey(MEMO_PROGRAM_ID),
-      keys: [],
-      data,
-    });
-    const tx = new web3.Transaction();
-    tx.feePayer = walletPubkey;
-    tx.recentBlockhash = blockhash;
-    // The §3.1 shape (Addendum 8, founder ruling 2026-11-24): our own
-    // ComputeBudget pair first — price, then limit, the gate10 diagnostic's
-    // proven construction order — then the Memo. Mirror of anchor-tx.mjs.
-    tx.add(web3.ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 0 }));
-    tx.add(web3.ComputeBudgetProgram.setComputeUnitLimit({ units: COMPUTE_UNIT_LIMIT }));
-    tx.add(instruction);
-    // SEND PATH (Addendum 7 — Option 1: amend the instrument, never the
-    // standard). Phantom's combined sign-and-send call AUGMENTED this
-    // transaction on the Addendum 6 gate run: it prepended its own
-    // ComputeBudget SetComputeUnitPrice (375,000 µL/CU) + SetComputeUnitLimit
-    // (200,000) instructions, and the landed transaction had 3 instructions
-    // and an 80,000-lamport fee instead of 1 instruction and 5,000. So the
-    // wallet now SIGNS ONLY: signTransaction returns the signed transaction
-    // to this page, the page asserts below that what was signed is still
-    // exactly the instrument's transaction, and the PAGE broadcasts the raw
-    // bytes itself. The wallet never gets a send path to augment.
-    const signedTx = await provider.signTransaction(tx);
-    // Fail closed BEFORE broadcast: if the returned transaction is not still
-    // exactly the §3.1 shape — our ComputeBudget pair (price 0, limit
-    // 210,000) then the Memo instruction, zero keys, the constant's exact
-    // bytes, and this wallet as fee payer — refuse to broadcast it. A
-    // transaction that does not match the published shape must never leave
-    // this page wearing the instrument's name.
-    const signedIxs = signedTx.instructions || [];
-    if (signedIxs.length !== 3) {
-      throw new Error('Wallet returned a transaction with ' + signedIxs.length + ' instructions (expected exactly 3) — refusing to broadcast a transaction that does not match the published shape. Nothing was sent.');
+    // AMENDMENT 3 (Addendum 10) — SURVIVE A SLOW APPROVAL. A blockhash
+    // fetched at Sign-click carries ~150 blocks of life (~60 s), and that
+    // window must cover Phantom's simulation, the founder's careful
+    // check-and-confirm, and the broadcast — on the founder's phone the
+    // approval legitimately outlived it four times on 2026-11-24 (every
+    // attempt failed closed and free, but the day stayed unanchored). The
+    // sign flow is therefore a BOUNDED REBUILD LOOP: up to MAX_SIGN_ATTEMPTS
+    // attempts inside this one click. Each attempt fetches a FRESH
+    // blockhash, rebuilds the IDENTICAL §3.1 transaction, and asks the
+    // wallet to sign again; each returned transaction passes the FULL
+    // pre-broadcast assert below before any broadcast; and a signed
+    // transaction whose blockhash has already expired is never broadcast
+    // at all (the freshness check after the assert). Only a blockhash-
+    // expiry failure retries — a wallet rejection, a shape mismatch, or
+    // any other error stops the flow at once, exactly as before.
+    const isBlockhashExpiry = (e) => !!e && /blockhash/i.test((e && e.message) || '');
+    let sig = null;
+    let lastExpiryError = null;
+    for (let attempt = 1; attempt <= MAX_SIGN_ATTEMPTS && !sig; attempt++) {
+      if (attempt > 1) {
+        // Tell the founder plainly why another Phantom sheet is about to
+        // appear — expected, not alarming.
+        $('result').textContent = attempt === 2
+          ? 'The first stamp aged out before the approval finished — a fresh one is ready. Confirm the new sheet when Phantom shows it.'
+          : 'The second stamp aged out too — a fresh one is ready (attempt ' + attempt + ' of ' + MAX_SIGN_ATTEMPTS + ', the last). Confirm the new sheet when Phantom shows it.';
+      }
+      // Mirror of buildAnchorTransaction in anchor-tx.mjs:
+      const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
+      const data = typeof Buffer !== 'undefined'
+        ? Buffer.from(MEMO_TEXT, 'utf8')
+        : new TextEncoder().encode(MEMO_TEXT);
+      const instruction = new web3.TransactionInstruction({
+        programId: new web3.PublicKey(MEMO_PROGRAM_ID),
+        keys: [],
+        data,
+      });
+      const tx = new web3.Transaction();
+      tx.feePayer = walletPubkey;
+      tx.recentBlockhash = blockhash;
+      tx.lastValidBlockHeight = lastValidBlockHeight;
+      // The §3.1 shape (Addendum 8, founder ruling 2026-11-24): our own
+      // ComputeBudget pair first — price, then limit, the gate10 diagnostic's
+      // proven construction order — then the Memo. Mirror of anchor-tx.mjs.
+      tx.add(web3.ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 0 }));
+      tx.add(web3.ComputeBudgetProgram.setComputeUnitLimit({ units: COMPUTE_UNIT_LIMIT }));
+      tx.add(instruction);
+      // SEND PATH (Addendum 7 — Option 1: amend the instrument, never the
+      // standard). Phantom's combined sign-and-send call AUGMENTED this
+      // transaction on the Addendum 6 gate run: it prepended its own
+      // ComputeBudget SetComputeUnitPrice (375,000 µL/CU) + SetComputeUnitLimit
+      // (200,000) instructions, and the landed transaction had 3 instructions
+      // and an 80,000-lamport fee instead of 1 instruction and 5,000. So the
+      // wallet now SIGNS ONLY: signTransaction returns the signed transaction
+      // to this page, the page asserts below that what was signed is still
+      // exactly the instrument's transaction, and the PAGE broadcasts the raw
+      // bytes itself. The wallet never gets a send path to augment.
+      let signedTx = null;
+      try {
+        signedTx = await provider.signTransaction(tx);
+      } catch (e) {
+        // Only an expiry retries (a stamp can age out inside Phantom's own
+        // simulation). A founder rejection or any other wallet error stops
+        // the flow — the page never re-prompts unasked.
+        if (isBlockhashExpiry(e) && attempt < MAX_SIGN_ATTEMPTS) { lastExpiryError = e; continue; }
+        throw e;
+      }
+      // Fail closed BEFORE broadcast: if the returned transaction is not still
+      // exactly the §3.1 shape — our ComputeBudget pair (price 0, limit
+      // 210,000) then the Memo instruction, zero keys, the constant's exact
+      // bytes, and this wallet as fee payer — refuse to broadcast it. A
+      // transaction that does not match the published shape must never leave
+      // this page wearing the instrument's name.
+      const signedIxs = signedTx.instructions || [];
+      if (signedIxs.length !== 3) {
+        throw new Error('Wallet returned a transaction with ' + signedIxs.length + ' instructions (expected exactly 3) — refusing to broadcast a transaction that does not match the published shape. Nothing was sent.');
+      }
+      const cbPrice = decodeComputeBudget(signedIxs[0].data || []);
+      if (!signedIxs[0].programId || signedIxs[0].programId.toString() !== COMPUTE_BUDGET_PROGRAM_ID || !cbPrice || cbPrice.kind !== 'price' || cbPrice.value !== 0) {
+        throw new Error('Wallet returned a transaction whose instruction[0] is not our ComputeBudget SetComputeUnitPrice at price 0 — refusing to broadcast. Nothing was sent.');
+      }
+      const cbLimit = decodeComputeBudget(signedIxs[1].data || []);
+      if (!signedIxs[1].programId || signedIxs[1].programId.toString() !== COMPUTE_BUDGET_PROGRAM_ID || !cbLimit || cbLimit.kind !== 'limit' || cbLimit.value !== COMPUTE_UNIT_LIMIT) {
+        throw new Error('Wallet returned a transaction whose instruction[1] is not our ComputeBudget SetComputeUnitLimit at ' + COMPUTE_UNIT_LIMIT + ' — refusing to broadcast. Nothing was sent.');
+      }
+      const six = signedIxs[2];
+      if (!six.programId || six.programId.toString() !== MEMO_PROGRAM_ID) {
+        throw new Error('Wallet returned a transaction whose instruction[2] is not the Memo program — refusing to broadcast. Nothing was sent.');
+      }
+      if ((six.keys || []).length !== 0) {
+        throw new Error('Wallet returned a Memo instruction with accounts attached — refusing to broadcast. Nothing was sent.');
+      }
+      const signedData = six.data || [];
+      const expectedData = new TextEncoder().encode(MEMO_TEXT);
+      const dataEqual = signedData.length === expectedData.length &&
+        Array.prototype.every.call(signedData, (b, i) => b === expectedData[i]);
+      if (!dataEqual) {
+        throw new Error('Wallet returned a Memo instruction whose bytes differ from the memo constant — refusing to broadcast. Nothing was sent.');
+      }
+      if (!signedTx.feePayer || signedTx.feePayer.toString() !== walletPubkey.toString()) {
+        throw new Error('Wallet returned a transaction with a different fee payer — refusing to broadcast. Nothing was sent.');
+      }
+      // FRESHNESS CHECK (Amendment 3): if this stamp's blockhash already
+      // expired while the approval was open, do NOT broadcast a doomed
+      // transaction — rebuild with a fresh stamp instead. The check is
+      // advisory: if the height read itself fails, fall through to the
+      // broadcast, whose preflight performs the same expiry test
+      // authoritatively (an expired stamp is rejected there, never lands,
+      // and costs no fee — and the broadcast catch below then rebuilds).
+      let stampExpired = false;
+      if (typeof lastValidBlockHeight === 'number') {
+        try {
+          const heightNow = await connection.getBlockHeight('confirmed');
+          stampExpired = heightNow > lastValidBlockHeight;
+        } catch (heightErr) { stampExpired = false; }
+      }
+      if (stampExpired) {
+        lastExpiryError = new Error('Blockhash expired before broadcast — the signed stamp aged out during the approval.');
+        continue;
+      }
+      const rawTx = signedTx.serialize();
+      try {
+        sig = await connection.sendRawTransaction(rawTx, { skipPreflight: false });
+      } catch (e) {
+        // A blockhash rejection at preflight means the stamp was NOT
+        // submitted — safe to rebuild with a fresh one. Anything else keeps
+        // the standing behavior: stop and report.
+        if (isBlockhashExpiry(e) && attempt < MAX_SIGN_ATTEMPTS) { lastExpiryError = e; sig = null; continue; }
+        throw e;
+      }
+      if (!sig || !/^[1-9A-HJ-NP-Za-km-z]{87,88}$/.test(sig)) {
+        throw new Error('Wallet returned no valid signature. Treat the transaction as NOT submitted and check the wallet before retrying.');
+      }
     }
-    const cbPrice = decodeComputeBudget(signedIxs[0].data || []);
-    if (!signedIxs[0].programId || signedIxs[0].programId.toString() !== COMPUTE_BUDGET_PROGRAM_ID || !cbPrice || cbPrice.kind !== 'price' || cbPrice.value !== 0) {
-      throw new Error('Wallet returned a transaction whose instruction[0] is not our ComputeBudget SetComputeUnitPrice at price 0 — refusing to broadcast. Nothing was sent.');
-    }
-    const cbLimit = decodeComputeBudget(signedIxs[1].data || []);
-    if (!signedIxs[1].programId || signedIxs[1].programId.toString() !== COMPUTE_BUDGET_PROGRAM_ID || !cbLimit || cbLimit.kind !== 'limit' || cbLimit.value !== COMPUTE_UNIT_LIMIT) {
-      throw new Error('Wallet returned a transaction whose instruction[1] is not our ComputeBudget SetComputeUnitLimit at ' + COMPUTE_UNIT_LIMIT + ' — refusing to broadcast. Nothing was sent.');
-    }
-    const six = signedIxs[2];
-    if (!six.programId || six.programId.toString() !== MEMO_PROGRAM_ID) {
-      throw new Error('Wallet returned a transaction whose instruction[2] is not the Memo program — refusing to broadcast. Nothing was sent.');
-    }
-    if ((six.keys || []).length !== 0) {
-      throw new Error('Wallet returned a Memo instruction with accounts attached — refusing to broadcast. Nothing was sent.');
-    }
-    const signedData = six.data || [];
-    const expectedData = new TextEncoder().encode(MEMO_TEXT);
-    const dataEqual = signedData.length === expectedData.length &&
-      Array.prototype.every.call(signedData, (b, i) => b === expectedData[i]);
-    if (!dataEqual) {
-      throw new Error('Wallet returned a Memo instruction whose bytes differ from the memo constant — refusing to broadcast. Nothing was sent.');
-    }
-    if (!signedTx.feePayer || signedTx.feePayer.toString() !== walletPubkey.toString()) {
-      throw new Error('Wallet returned a transaction with a different fee payer — refusing to broadcast. Nothing was sent.');
-    }
-    const rawTx = signedTx.serialize();
-    const sig = await connection.sendRawTransaction(rawTx, { skipPreflight: false });
-    if (!sig || !/^[1-9A-HJ-NP-Za-km-z]{87,88}$/.test(sig)) {
-      throw new Error('Wallet returned no valid signature. Treat the transaction as NOT submitted and check the wallet before retrying.');
+    if (!sig) {
+      // Every attempt aged out. Fail closed and honest, as the instrument
+      // always has: nothing was sent, no fee was paid.
+      throw lastExpiryError && /blockhash/i.test(lastExpiryError.message || '')
+        ? lastExpiryError
+        : new Error('Blockhash expired before signing on every attempt — nothing was sent and no fee was paid.');
     }
     wasSubmitted = true;
     submitted = true;
@@ -411,10 +484,13 @@ $('signBtn').addEventListener('click', async () => {
       showResult(sig, 'Submitted to ' + CLUSTER + ' but not confirmed within ~60 seconds. Do NOT sign again — check Solscan first; the transaction may still land.');
     }
   } catch (e) {
-    // A stale blockhash (slow Phantom approval) fails honestly here: nothing was sent,
-    // the button is re-enabled below, and the next click fetches a FRESH blockhash.
+    // A stale blockhash fails honestly here. Since Amendment 3 the flow above
+    // already rebuilt the stamp with a fresh blockhash on every attempt
+    // (up to MAX_SIGN_ATTEMPTS) before reaching this catch — so a blockhash
+    // error shown here means every attempt aged out: nothing was sent, no
+    // fee was paid, and the button is re-enabled below for a fresh click.
     if (!wasSubmitted && e && /blockhash/i.test(e.message || '')) {
-      showError(new Error('The blockhash expired before signing (approval took too long) — nothing was sent and no fee was paid. Click Sign again; a fresh blockhash is fetched on every click.'));
+      showError(new Error('The blockhash expired before signing (approval took too long) — nothing was sent and no fee was paid. The page rebuilt the stamp with a fresh blockhash on every attempt (' + MAX_SIGN_ATTEMPTS + ' tries) and each one aged out. Click Sign again to start over.'));
     } else {
       showError(e);
     }
