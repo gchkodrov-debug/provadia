@@ -4,13 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PROVADIA — The Forum · The Agora</title>
-<meta name="description" content="The Agora — Provadia's gathering square: where the town talks, where its support desk stands, and the conduct law of its rooms, written on the face.">
+<meta name="description" content="The Agora — Provadia's gathering floor: the Bricklayer registry, the town's living forum in two modes, its support desk, and the conduct & honors law of its rooms, written on the face.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../sections/panels.css">
 <link rel="stylesheet" href="../sections/record/panels.css">
 <link rel="stylesheet" href="../pages.css">
+<link rel="stylesheet" href="agora.css">
 <noscript><style>#fade{display:none!important}#stage{display:none!important}.fallback-only{display:block!important}.cap-static{display:block!important}</style></noscript>
 <script>
 /* BOOT — the living world IS the site; the still town is its emergency net,
@@ -115,7 +116,6 @@
   }, 1000);
 })();
 </script>
-<link rel="stylesheet" href="../nexus.css">
 </head>
 <body>
 <div id="stage" aria-hidden="true"></div>
@@ -135,9 +135,15 @@
 <p class="fallback-note-line">The living world of this town needs a WebGL-capable browser. This is its still face — every word, record and door below is the town itself.</p>
 </div>
 <header class="room-head">
-<p class="room-eyebrow">The Forum</p>
+<p class="room-eyebrow">Inside the Coin · Door 06 · The Agora</p>
 <h1 class="room-title">The Agora</h1>
-<p class="room-lede">Where the town talks. The square, its doors, its support desk, and the law of conduct in its rooms — all of it written on the face of this page, in the town itself.</p>
+<p class="room-lede">The town's gathering floor. Where Bricklayers gather, post, and deliberate in the open. Free town membership opens the Bricklayer registry — no coin purchase required, nothing to stake.</p>
+<ul class="fact-chips" aria-label="The Agora tonight, in facts">
+<li class="fact-chip"><span class="fact-chip-label">Registry Status</span><span class="fact-chip-value" id="chipMembers">Live · 0 members tonight — be Bricklayer #0001</span></li>
+<li class="fact-chip"><span class="fact-chip-label">Membership</span><span class="fact-chip-value">Free account · starts your 30-day town clock</span></li>
+<li class="fact-chip"><span class="fact-chip-label">Solnik's Hearth</span><span class="fact-chip-value">Off watch — honestly offline until the founder's key steps land</span></li>
+<li class="fact-chip"><span class="fact-chip-label">External Gates</span><span class="fact-chip-value">Discord unsealed · Telegram sealed</span></li>
+</ul>
 </header>
 
 <section class="town-panel" aria-label="The Agora Square">
@@ -147,12 +153,13 @@
 <p class="panel-lead">The forum of this town is a place before it is anything else: the Agora, the gathering square at the heart of Provadia.</p>
 <p class="panel-body">The doors below stand in this square as buildings stand around a square — each one a house with its own purpose, not a button on a page. A visitor walks to them the way a visitor walks across a square.</p>
 <p class="panel-body">People talk here. They talk about the project — for it or against it, in plain words, in the open. The talk is the square's purpose. The law that governs the talk is written on the conduct face at the foot of this page, and it binds every room in the town.</p>
+<p class="panel-body">The floor below is one room with two faces, and both are first-class citizens of this page: the <strong>Spatial Amphitheatre</strong>, where real discussion stands as light in a bronze bowl, and the <strong>Plain Ledger</strong>, the same floor in clean text. One tap moves between them; nothing is hidden in either.</p>
 </div>
 </section>
 
-<section class="town-panel" aria-label="Join the Town">
+<section class="town-panel" id="threshold" aria-label="Join the Town — the Threshold">
 <div class="panel-inner">
-<p class="panel-eyebrow">The Forum · The Gathering</p>
+<p class="panel-eyebrow">The Forum · 01 — The Threshold</p>
 <h2 class="panel-title">Join the Town</h2>
 <p class="panel-lead">Membership in this town is free, and the registry stands open.</p>
 <p class="panel-body">A member's account is made with an email and a password of his own — no coin to buy, no fee to pay, nothing to stake. Joining writes your name into the town registry as a Bricklayer, and your days in the record begin: the thirty days the Knock asks of every house run on a member's account, counted from the day the name is written.</p>
@@ -168,18 +175,161 @@
 <span class="door-status">Live</span>
 </li>
 </ul>
-<p class="panel-body">The joining door itself is being fitted to this page, and a door that does not work is never painted open. The town's membership service stands live behind it; until the door hangs here, the desk above answers for it.</p>
+
+<div class="registry-door" id="registryDoor">
+<h3 class="panel-subtitle">The Registry Door</h3>
+<p class="registry-door-state" id="doorState" role="status">The registry service stands behind this door. Checking whether it answers…</p>
+
+<div id="authAnon">
+<div class="auth-switch" role="group" aria-label="Join or sign in">
+<button type="button" class="auth-switch-btn is-active" id="tabJoin" aria-pressed="true">Join the Town</button>
+<button type="button" class="auth-switch-btn" id="tabSignIn" aria-pressed="false">Sign In</button>
+</div>
+
+<form class="auth-form" id="joinForm" novalidate>
+<label class="auth-label" for="joinEmail">Email</label>
+<input class="auth-input" id="joinEmail" name="email" type="email" autocomplete="email" required>
+<label class="auth-label" for="joinPassword">Password — at least 8 characters</label>
+<input class="auth-input" id="joinPassword" name="password" type="password" autocomplete="new-password" required minlength="8">
+<button class="auth-submit" type="submit">Write my name in the registry</button>
+<p class="auth-note">Create a free member account to receive your permanent Bricklayer Number and your place on the Agora floor, and to hold a future vote on the Golden Wall.</p>
+</form>
+
+<form class="auth-form" id="loginForm" hidden novalidate>
+<label class="auth-label" for="loginEmail">Email</label>
+<input class="auth-input" id="loginEmail" name="email" type="email" autocomplete="email" required>
+<label class="auth-label" for="loginPassword">Password</label>
+<input class="auth-input" id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+<button class="auth-submit" type="submit">Sign in</button>
+<p class="auth-note">Welcome back, Bricklayer.</p>
+</form>
+
+<p class="auth-status" id="authStatus" role="alert" aria-live="polite"></p>
+
+<div class="social-plates" aria-label="Social sign-in">
+<p class="social-plates-label">Social sign-in</p>
+<button type="button" class="social-plate" disabled aria-disabled="true">Google — Coming soon</button>
+<button type="button" class="social-plate" disabled aria-disabled="true">X — Coming soon</button>
+<button type="button" class="social-plate" disabled aria-disabled="true">Facebook — Coming soon</button>
+<p class="auth-note">Social sign-in is not configured yet — use email sign-up today. A door that is not ready is shown closed, never painted open.</p>
+</div>
+
+<p class="auth-honesty">Your Bricklayer membership is permanent and non-transferable. Joining is free and never requires holding PROVADIA.</p>
+</div>
+
+<div id="authMember" hidden>
+<p class="member-welcome" id="memberWelcome">Welcome, Bricklayer</p>
+<p class="panel-body" id="memberSince"></p>
+<div class="clock-track" aria-hidden="true"><div class="clock-fill" id="clockFill"></div></div>
+<p class="panel-body" id="memberClock"></p>
+<p class="panel-body" id="memberWallet"></p>
+<p class="panel-body" id="memberTicket"></p>
+<p class="member-badge-line" id="memberCrest" hidden><span class="crest crest-held" aria-hidden="true">◆</span> Genesis Member — the founding-era crest, carried by every name written in the registry's founding era. It is a citizenship honor, not the collectible; the alcove at the foot of this page shows the collectible itself, under seal.</p>
+<div class="member-actions">
+<a class="auth-submit member-floor-link" href="#chambers">Open the floor</a>
+<button type="button" class="auth-submit auth-submit-quiet" id="signOutBtn">Sign out</button>
+</div>
+</div>
+</div>
 </div>
 </section>
 
-<section class="town-panel sealed" aria-label="The Telegram Door">
+<section class="town-panel agora-floor" id="chambers" aria-label="The Chambers — the forum floor">
 <div class="panel-inner">
-<p class="panel-eyebrow">The Forum · A Sealed Door</p>
-<h2 class="panel-title">The Telegram Door</h2>
-<span class="seal-line">Sealed — being built</span>
-<p class="panel-body">Behind this door, when it opens, stand two rooms of one house. The first is the town-crier channel: the crier's post, where the town's announcements are cried — the counter, the record, the news of the Wall — and no other voice speaks there. The second is its linked discussion group: the talk that answers the crier, where the town gathers and speaks back.</p>
-<p class="panel-body">This door opens when the town gathers; it is being raised with the founder, and a door that does not exist is shown sealed, never painted open.</p>
-<p class="panel-body">There is no link on this door, because there is nothing true to link to yet. When the rooms exist, their address will be written here — receipted, like everything else in this town.</p>
+<p class="panel-eyebrow">The Forum · 02 — The Chambers</p>
+<h2 class="panel-title">The Floor</h2>
+<div class="mode-toggle" role="group" aria-label="Choose the floor's face">
+<button type="button" class="mode-btn" id="modeSpatial" aria-pressed="true">Spatial Amphitheatre</button>
+<button type="button" class="mode-btn" id="modeLedger" aria-pressed="false">Plain Ledger</button>
+</div>
+
+<div id="spatialView">
+<div class="amphitheatre" id="amphitheatre">
+<svg class="amphitheatre-svg" viewBox="0 0 680 400" role="img" aria-label="The Resonance Amphitheatre at rest: concentric bronze steps around an empty floor. No discussions stand in the vault tonight.">
+<defs>
+<radialGradient id="bowlGlow" cx="50%" cy="46%" r="65%">
+<stop offset="0%" stop-color="#C9A227" stop-opacity="0.10"/>
+<stop offset="55%" stop-color="#C9A227" stop-opacity="0.03"/>
+<stop offset="100%" stop-color="#C9A227" stop-opacity="0"/>
+</radialGradient>
+</defs>
+<ellipse cx="340" cy="200" rx="330" ry="192" fill="url(#bowlGlow)"/>
+<g fill="none" stroke="#C9A227">
+<ellipse cx="340" cy="200" rx="318" ry="180" stroke-opacity="0.28" stroke-width="1.5"/>
+<ellipse cx="340" cy="200" rx="272" ry="152" stroke-opacity="0.22"/>
+<ellipse cx="340" cy="200" rx="226" ry="124" stroke-opacity="0.18"/>
+<ellipse cx="340" cy="200" rx="180" ry="97" stroke-opacity="0.15"/>
+<ellipse cx="340" cy="200" rx="134" ry="70" stroke-opacity="0.13"/>
+<ellipse cx="340" cy="200" rx="88" ry="45" stroke-opacity="0.25"/>
+</g>
+<path d="M 40 128 A 318 180 0 0 1 640 128" fill="none" stroke="#C9A227" stroke-opacity="0.25" stroke-width="3"/>
+<g id="prismLayer"></g>
+<circle cx="340" cy="200" r="26" fill="none" stroke="#C9A227" stroke-opacity="0.5"/>
+<circle cx="340" cy="200" r="3.5" fill="#C9A227" fill-opacity="0.6"/>
+</svg>
+<div class="glyph-layer" id="glyphLayer" aria-hidden="true"></div>
+<div class="echo-layer" id="echoLayer" aria-hidden="true"></div>
+<div class="quiet-inscription" id="quietInscription">
+<p class="quiet-line">The Amphitheatre Is Quiet — <span id="quietCount">0 discussions in the vault</span></p>
+<p class="quiet-sub">Nothing here is simulated. The bowl lights only when real Bricklayers speak.</p>
+<div class="quiet-actions">
+<a class="auth-submit quiet-join" href="#threshold">Join the town to speak</a>
+<button type="button" class="auth-submit auth-submit-quiet" id="quietToLedger">Switch to Plain Ledger</button>
+</div>
+</div>
+</div>
+<p class="panel-body amphitheatre-note">In the spatial face, every real discussion stands in the bowl as a prism of obsidian and gold; its light is its life — replies and recency only, counted from the real floor below. At rest, the bowl rests: no glyph rain, no idle motion, no invented crowd.</p>
+</div>
+
+<div id="ledgerView" hidden>
+<p class="panel-eyebrow">Plain Ledger View · The Floor's Ledger</p>
+<div class="ledger-empty" id="ledgerEmpty">
+<h3 class="ledger-empty-title">The Agora Rests Quiet — 0 Threads Posted Yet</h3>
+<p class="panel-body">Nothing here is simulated or pre-populated. Join the town above to open the first discussion on the floor.</p>
+</div>
+<ul class="thread-list" id="threadList"></ul>
+<div class="composer" id="composer">
+<h3 class="panel-subtitle">Open a Discussion</h3>
+<div id="composerAnon">
+<p class="panel-body">Join the town above to open the first discussion on the floor.</p>
+</div>
+<form id="threadForm" hidden novalidate>
+<label class="auth-label" for="threadTitle">Title</label>
+<input class="auth-input" id="threadTitle" type="text" maxlength="140" required>
+<label class="auth-label" for="threadBody">Your words</label>
+<textarea class="auth-input auth-textarea" id="threadBody" rows="4" maxlength="4000" required></textarea>
+<button class="auth-submit" type="submit">Post to the floor</button>
+<p class="auth-status" id="threadStatus" role="alert" aria-live="polite"></p>
+</form>
+</div>
+</div>
+</div>
+</section>
+
+<section class="town-panel" aria-label="The Hearth and Gates">
+<div class="panel-inner">
+<p class="panel-eyebrow">The Forum · 03 — The Hearth &amp; Gates</p>
+<h2 class="panel-title">The Hearth &amp; Gates</h2>
+<div class="gate-grid">
+<article class="gate-card gate-live">
+<p class="gate-status"><span class="gate-dot gate-dot-live" aria-hidden="true"></span> Unsealed · Live</p>
+<h3 class="gate-name">PROVADIA Discord</h3>
+<p class="gate-copy">Real-time community gathering outside the vault — the town's hall, standing open tonight.</p>
+<a class="gate-action" href="https://discord.gg/GUXuaauKb" target="_blank" rel="noopener noreferrer">Enter Discord →</a>
+</article>
+<article class="gate-card gate-sealed">
+<p class="gate-status"><span class="gate-dot gate-dot-sealed" aria-hidden="true"></span> Sealed</p>
+<h3 class="gate-name">Official Telegram</h3>
+<p class="gate-copy">Telegram remains sealed by the founder's order — the town's only closed external door. Behind it, when it opens, stand two rooms of one house: the town-crier channel, where the town's announcements are cried — the counter, the record, the news of the Wall — and no other voice speaks there; and its linked discussion group, where the town gathers and speaks back. There is no link on this door, because there is nothing true to link to yet; when the rooms exist, their address will be written here — receipted, like everything else in this town.</p>
+<span class="gate-action gate-action-sealed" aria-disabled="true">Telegram Sealed</span>
+</article>
+<article class="gate-card">
+<p class="gate-status"><span class="gate-dot gate-dot-watch" aria-hidden="true"></span> Solnik Off Watch</p>
+<h3 class="gate-name">Solnik's Hearth &amp; Written Support</h3>
+<p class="gate-copy">Solnik, the town's resident host, is honestly offline until the founder's key steps land — no voice is simulated at this hearth. Need direct help? The written support desk below answers today.</p>
+<a class="gate-action" href="#support-desk">Contact support ↓</a>
+</article>
+</div>
 </div>
 </section>
 
@@ -204,7 +354,7 @@
 </div>
 </section>
 
-<section class="town-panel" aria-label="The Support Desk">
+<section class="town-panel" id="support-desk" aria-label="The Support Desk">
 <div class="panel-inner">
 <p class="panel-eyebrow">The Forum · The Support Desk</p>
 <h2 class="panel-title">The Support Desk</h2>
@@ -224,6 +374,84 @@
 <p class="panel-body">The email door answers today. For the Captain's door, the honest line stands until his living voice wakes: the keeper's house is built; he wakes when the host stands.</p>
 <p class="armor-line">We never DM first.</p>
 <p class="panel-body">No claim links. No seed phrases, ever. Nobody from this town will ever ask for either — anyone who asks in the town's name is not the town.</p>
+</div>
+</section>
+
+<section class="town-panel" aria-label="Conduct and Honors">
+<div class="panel-inner">
+<p class="panel-eyebrow">The Forum · 04 — Conduct &amp; Honors</p>
+<h2 class="panel-title">Conduct in the Rooms</h2>
+<p class="panel-body">One law of conduct covers every room of this town — the Telegram group, the Discord rooms, and the Captain's Chamber alike. It is short, and it is the whole law.</p>
+<h3 class="panel-subtitle">The One-Warning Rule</h3>
+<p class="panel-body">Cursing, dirty talk, and abuse earn one calm public warning from the Captain's account or the founder's account: continue with this language or attitude and you are banned from this project. A second offense is removal — a ban from the rooms.</p>
+<p class="panel-body">Every ban is logged — handle, date, and reason — into the Day-Book's world, by the Captain's report, where it stands on the record.</p>
+<h3 class="panel-subtitle">On a ban, and money</h3>
+<p class="panel-body">What was paid to the project through a returnable rail is returned through that same rail. Market trades cannot be un-traded, and the coin stays the holder's own property: the ban closes the community, never a man's wallet.</p>
+<h3 class="panel-subtitle">Free speech in the rooms</h3>
+<p class="panel-body">Opinions are free, and criticism is protected. Liking the project or lowering it, arguing its merits, disagreeing with the Captain or with the founder, hard questions in plain words — none of it is an offense, and none of it is ever warned. The sole trigger for the rule above is profanity and abuse. Manners are the law; opinions are free.</p>
+<p class="panel-body">A warning issued for criticism is itself a breach of the house law, and is corrected by the Captain when it is reported.</p>
+<h3 class="panel-subtitle">Crystallization</h3>
+<p class="panel-body">A thread that reaches a genuine decision does not evaporate: it is crystallized — encased in halite, marked on this floor, and hash-linked permanently into the Record, where talk becomes town history.</p>
+
+<div class="honors-tablet">
+<h3 class="panel-subtitle">The Honors Tablet — Five Citizenship Badges</h3>
+<ul class="badge-row">
+<li class="badge-cell">
+<svg class="badge-crest" viewBox="0 0 64 64" role="img" aria-label="Genesis Member crest"><circle cx="32" cy="32" r="29" fill="none" stroke="#8a6d1f" stroke-width="2"/><circle cx="32" cy="32" r="24" fill="none" stroke="#C9A227" stroke-width="1"/><path d="M20 40 L32 22 L44 40 Z" fill="none" stroke="#C9A227" stroke-width="2"/><line x1="24" y1="44" x2="40" y2="44" stroke="#C9A227" stroke-width="2"/></svg>
+<span class="badge-name">Genesis Member</span>
+<span class="badge-deed">Granted at founding-era registration — the first names in the registry.</span>
+</li>
+<li class="badge-cell">
+<svg class="badge-crest" viewBox="0 0 64 64" role="img" aria-label="Town Contributor crest"><circle cx="32" cy="32" r="29" fill="none" stroke="#8a6d1f" stroke-width="2"/><circle cx="32" cy="32" r="24" fill="none" stroke="#C9A227" stroke-width="1"/><rect x="22" y="24" width="20" height="9" fill="none" stroke="#C9A227" stroke-width="2"/><rect x="22" y="36" width="20" height="9" fill="none" stroke="#C9A227" stroke-width="2"/></svg>
+<span class="badge-name">Town Contributor</span>
+<span class="badge-deed">For genuine work given to the town — awarded by the Captain on the record.</span>
+</li>
+<li class="badge-cell">
+<svg class="badge-crest" viewBox="0 0 64 64" role="img" aria-label="Community Builder crest"><circle cx="32" cy="32" r="29" fill="none" stroke="#8a6d1f" stroke-width="2"/><circle cx="32" cy="32" r="24" fill="none" stroke="#C9A227" stroke-width="1"/><path d="M18 42 V30 L32 20 L46 30 V42" fill="none" stroke="#C9A227" stroke-width="2"/><line x1="18" y1="42" x2="46" y2="42" stroke="#C9A227" stroke-width="2"/></svg>
+<span class="badge-name">Community Builder</span>
+<span class="badge-deed">For raising rooms, gatherings, and newcomers into the town's life.</span>
+</li>
+<li class="badge-cell">
+<svg class="badge-crest" viewBox="0 0 64 64" role="img" aria-label="Knowledge Keeper crest"><circle cx="32" cy="32" r="29" fill="none" stroke="#8a6d1f" stroke-width="2"/><circle cx="32" cy="32" r="24" fill="none" stroke="#C9A227" stroke-width="1"/><path d="M24 20 h13 a3 3 0 0 1 3 3 v21 h-13 a3 3 0 0 0 -3 3 Z" fill="none" stroke="#C9A227" stroke-width="2"/><line x1="24" y1="44" x2="40" y2="44" stroke="#C9A227" stroke-width="2"/></svg>
+<span class="badge-name">Knowledge Keeper</span>
+<span class="badge-deed">For answers that hold up — the town's questions answered truly, on the record.</span>
+</li>
+<li class="badge-cell">
+<svg class="badge-crest" viewBox="0 0 64 64" role="img" aria-label="Anniversary Member crest"><circle cx="32" cy="32" r="29" fill="none" stroke="#8a6d1f" stroke-width="2"/><circle cx="32" cy="32" r="24" fill="none" stroke="#C9A227" stroke-width="1"/><circle cx="32" cy="32" r="11" fill="none" stroke="#C9A227" stroke-width="2"/><circle cx="32" cy="32" r="2.5" fill="#C9A227"/></svg>
+<span class="badge-name">Anniversary Member</span>
+<span class="badge-deed">For a full year standing in the record — time itself is the deed.</span>
+</li>
+</ul>
+<p class="badge-caption">Non-transferable honors recognizing genuine deeds in the town — never airdrops of financial value.</p>
+</div>
+</div>
+</section>
+
+<section class="town-panel" aria-label="The Genesis Specimen Alcove">
+<div class="panel-inner">
+<p class="panel-eyebrow">The Forum · The Alcove off the Amphitheatre</p>
+<h2 class="panel-title">The Genesis Alcove</h2>
+<p class="panel-lead">In this alcove stands the first sight of the Genesis Bricklayer — the town's founding collectible, shown as a specimen, under seal.</p>
+<div class="specimen-card">
+<svg class="specimen-seal" viewBox="0 0 200 200" role="img" aria-label="Specimen seal: a hexagonal bronze mason's seal — a gold brick laid on a raw salt crystal. Marked SPECIMEN.">
+<polygon points="100,8 180,54 180,146 100,192 20,146 20,54" fill="rgba(48,37,27,.65)" stroke="#8a6d1f" stroke-width="3"/>
+<polygon points="100,20 168,60 168,140 100,180 32,140 32,60" fill="none" stroke="#C9A227" stroke-width="1.5"/>
+<polygon points="100,118 128,134 100,150 72,134" fill="none" stroke="#E9DDC6" stroke-width="1.5"/>
+<polygon points="100,118 100,150 84,96" fill="none" stroke="#E9DDC6" stroke-opacity=".55"/>
+<polygon points="100,118 100,150 118,98" fill="none" stroke="#E9DDC6" stroke-opacity=".55"/>
+<rect x="66" y="66" width="68" height="24" fill="rgba(201,162,39,.16)" stroke="#C9A227" stroke-width="2.5"/>
+<line x1="100" y1="66" x2="100" y2="90" stroke="#C9A227" stroke-width="1.5"/>
+<text x="100" y="172" text-anchor="middle" font-family="Cinzel, serif" font-size="12" letter-spacing="4" fill="#C9A227">SPECIMEN</text>
+</svg>
+<p class="specimen-badge">Genesis Collectible · Specimen #000 / 470</p>
+<p class="specimen-banner">Specimen preview — mainnet minting sealed until devnet rehearsal passes &amp; the founder deploys</p>
+</div>
+<p class="panel-body">The Genesis Bricklayer is an edition of 470 numbered pieces, free to gated, verified members when — and only when — the founder gives the deploy word. Citizenship is one thing and the collectible is another: a sale of the piece never moves a Bricklayer number, a Wall vote, or a line of town history. Under the Genesis Privacy Amendment, no Bricklayer number is ever published on the collectible or on-chain; the piece carries a serial only.</p>
+<p class="panel-body">The birth ceremony — Solnik striking the seal — is being filmed in the town's studio. Its preview plate stands sealed until the film is judged; a ceremony that has not been filmed is not painted here.</p>
+<p class="specimen-plate" aria-disabled="true">Preview the Ceremony — Sealed · Film in Production</p>
+<div class="honesty-block">
+<p>The Genesis Bricklayer Collectible is a free, numbered commemorative mark of early town membership. It carries no financial value, no gold ownership or redemption, no yield, and no voting or membership rights.</p>
+</div>
 </div>
 </section>
 
@@ -257,30 +485,13 @@
 </div>
 </section>
 
-<section class="town-panel" aria-label="Conduct in the Rooms">
-<div class="panel-inner">
-<p class="panel-eyebrow">The Forum · Conduct</p>
-<h2 class="panel-title">Conduct in the Rooms</h2>
-<p class="panel-body">One law of conduct covers every room of this town — the Telegram group, the Discord rooms, and the Captain's Chamber alike. It is short, and it is the whole law.</p>
-<h3 class="panel-subtitle">The One-Warning Rule</h3>
-<p class="panel-body">Cursing, dirty talk, and abuse earn one calm public warning from the Captain's account or the founder's account: continue with this language or attitude and you are banned from this project. A second offense is removal — a ban from the rooms.</p>
-<p class="panel-body">Every ban is logged — handle, date, and reason — into the Day-Book's world, by the Captain's report, where it stands on the record.</p>
-<h3 class="panel-subtitle">On a ban, and money</h3>
-<p class="panel-body">What was paid to the project through a returnable rail is returned through that same rail. Market trades cannot be un-traded, and the coin stays the holder's own property: the ban closes the community, never a man's wallet.</p>
-<h3 class="panel-subtitle">Free speech in the rooms</h3>
-<p class="panel-body">Opinions are free, and criticism is protected. Liking the project or lowering it, arguing its merits, disagreeing with the Captain or with the founder, hard questions in plain words — none of it is an offense, and none of it is ever warned. The sole trigger for the rule above is profanity and abuse. Manners are the law; opinions are free.</p>
-<p class="panel-body">A warning issued for criticism is itself a breach of the house law, and is corrected by the Captain when it is reported.</p>
-</div>
-</section>
-
 <footer class="room-foot">
 <p class="footer-contract">9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump</p>
 <p class="sign-off">Salt pays.</p>
 <p class="house-line" style="margin-top:16px;font-size:11px">Also from our house — <a href="https://onejobkits.com" style="color:#C9A227">OneJobKits: practical kits for every job →</a></p>
 </footer>
 </main>
+<script src="agora.js" defer></script>
 <script type="module" src="../pageworld.js"></script>
-<script type="application/json" id="nexus-share-manifest">{"title": "PROVADIA \u2014 The Forum", "text": "The Forum of PROVADIA \u2014 the town's gathering hall and Support Desk. Join the town free and stand on the registry as a Bricklayer.", "url": "https://provadiacoin.com/agora/", "media": "https://provadiacoin.com/marks/front-published.webp"}</script>
-<script src="../nexus.js"></script>
 </body>
 </html>
