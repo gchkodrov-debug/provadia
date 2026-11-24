@@ -118,6 +118,82 @@
 <link rel="stylesheet" href="../design/vendor/driver.css">
 <link rel="stylesheet" href="../design/guide.css">
 <link rel="stylesheet" href="../nexus.css">
+<style>
+/* SOLNIK SLICE 1 — 9-state scroll chamber (solnik-slice1-scroll-chamber)
+   House: PROVADIA — #141210 vault · #C9A227 antique gold · #E9DDC6 bone cream
+   · #30251B deep brown · #E4C65B bright gold (ignition only).
+   Default (no-JS / reduced-motion) = static stacked parity stack.
+   JS + no-preference motion adds .sk-on → the pinned journey. */
+.sk-journey{position:relative;background:#141210;color:#E9DDC6;border:1px solid #30251B;margin:0 0 28px}
+.sk-stagebox{position:relative}
+.sk-canvaswrap{position:relative;background:#141210;overflow:hidden}
+.sk-canvaswrap canvas{display:block;width:100%;height:auto;aspect-ratio:16/9}
+.sk-leaders{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:none}
+.sk-arrival{padding:34px 22px 8px;text-align:center}
+.sk-eyebrow{font-size:10px;letter-spacing:.18em;color:#C9A227;text-transform:uppercase;margin:0 0 12px;font-weight:600}
+.sk-title{font-family:Cinzel,serif;font-size:26px;line-height:1.2;color:#E9DDC6;margin:0 0 10px;font-weight:600}
+.sk-sub{font-size:14px;line-height:1.55;color:rgba(233,221,198,.88);max-width:34ch;margin:0 auto}
+.sk-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:18px auto 4px;max-width:720px}
+.sk-chip{font-size:10px;letter-spacing:.08em;color:#E9DDC6;border:1px solid #30251B;padding:7px 10px;background:rgba(48,37,27,.35);text-transform:uppercase}
+.sk-scrollcue{font-size:10px;letter-spacing:.18em;color:#C9A227;text-transform:uppercase;margin:14px 0 4px}
+.sk-callouts{padding:10px 22px 4px}
+.sk-callout{border:1px solid #30251B;background:rgba(20,18,16,.72);padding:16px 18px;margin:0 auto 14px;max-width:560px}
+.sk-tag{font-size:10px;letter-spacing:.16em;color:#C9A227;text-transform:uppercase;margin:0 0 6px;font-weight:600}
+.sk-callout h3{font-family:Cinzel,serif;font-size:19px;margin:0 0 6px;color:#E9DDC6;font-weight:600}
+.sk-callout p{font-size:14px;line-height:1.55;color:rgba(233,221,198,.88);margin:0}
+.sk-closing{padding:26px 22px 30px;text-align:center;border-top:1px solid #30251B}
+.sk-closing .sk-title{font-size:22px}
+.sk-covenant{font-size:14px;line-height:1.6;color:rgba(233,221,198,.9);max-width:62ch;margin:0 auto 18px;text-align:left}
+.sk-ledger{max-width:640px;margin:0 auto;text-align:left}
+.sk-ledger div{border-top:1px solid #30251B;padding:9px 2px;font-size:13px;line-height:1.5;color:rgba(233,221,198,.88)}
+.sk-ledger div:last-child{border-bottom:1px solid #30251B}
+.sk-ledger b{color:#C9A227;font-weight:600;letter-spacing:.04em}
+.sk-return{display:inline-block;margin-top:20px;color:#C9A227;font-size:12px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border:1px solid #30251B;padding:10px 16px}
+.sk-rail{display:none}
+/* ——— journey mode ——— */
+.sk-journey.sk-on{height:940vh}
+.sk-on .sk-stagebox{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.sk-on .sk-canvaswrap{position:absolute;inset:0}
+.sk-on .sk-canvaswrap canvas{width:100%;height:100%;aspect-ratio:auto}
+.sk-on .sk-leaders{display:block}
+.sk-on .sk-arrival{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 22px 9vh;text-align:center;background:linear-gradient(to top,#141210 48%,rgba(20,18,16,.88) 68%,transparent 92%);z-index:3}
+.sk-on .sk-callouts{position:absolute;inset:0;z-index:2;pointer-events:none}
+.sk-on .sk-callout{position:absolute;bottom:12vh;width:min(400px,86vw);margin:0;opacity:0;pointer-events:none}
+.sk-on .sk-callout.sk-left{left:4vw}
+.sk-on .sk-callout.sk-right{right:4vw}
+.sk-on .sk-closing{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:linear-gradient(to top,#141210 64%,rgba(20,18,16,.76) 76%,rgba(20,18,16,.25));opacity:0;pointer-events:none;z-index:3;border-top:none;overflow:auto}
+.sk-on .sk-rail{display:flex;flex-direction:column;justify-content:space-between;position:absolute;right:10px;top:50%;transform:translateY(-50%);height:288px;z-index:4}
+.sk-rail button{width:30px;height:30px;border-radius:50%;border:1px solid #30251B;background:rgba(20,18,16,.8);color:rgba(233,221,198,.55);font-size:10px;letter-spacing:.05em;cursor:pointer;padding:0}
+.sk-rail button.sk-active{border-color:#C9A227;color:#E4C65B;background:rgba(48,37,27,.9)}
+@media (max-width:767px){
+  .sk-journey.sk-on{height:820vh}
+  .sk-on .sk-callout{bottom:9vh;left:50%!important;right:auto;transform:translateX(-50%)}
+  .sk-chips{flex-direction:column;align-items:stretch;max-width:340px}
+  .sk-chip{text-align:center}
+  .sk-on .sk-rail{right:4px}
+  .sk-rail button{width:26px;height:26px;font-size:9px}
+}
+@media (prefers-reduced-motion:reduce){
+  .sk-journey{height:auto!important}
+}
+/* ——— Drafting Astrolabe (self-guided proposal builder + Book of Wants) ——— */
+.da-fields{display:grid;gap:16px;margin:18px 0}
+.da-field label{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#C9A227;margin-bottom:6px;font-weight:600}
+.da-field .da-guide{font-size:13px;color:rgba(233,221,198,.75);margin:0 0 6px;line-height:1.5}
+.da-field textarea,.da-field select{width:100%;box-sizing:border-box;background:#141210;border:1px solid #30251B;color:#E9DDC6;font:14px/1.5 Inter,sans-serif;padding:10px 12px}
+.da-field textarea{min-height:74px;resize:vertical}
+.da-actions{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+.da-btn{background:#30251B;color:#E9DDC6;border:1px solid #C9A227;font:600 12px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;padding:11px 16px;cursor:pointer}
+.da-btn.da-ghost{background:transparent;border-color:#30251B;color:rgba(233,221,198,.85)}
+.da-out{display:none;border:1px solid #30251B;background:rgba(20,18,16,.6);padding:14px 16px;margin-top:14px}
+.da-out pre{white-space:pre-wrap;word-break:break-word;font:13px/1.6 Inter,sans-serif;color:#E9DDC6;margin:0 0 12px}
+.da-wants-list{margin:12px 0 0;padding:0;list-style:none}
+.da-wants-list li{border-top:1px solid #30251B;padding:9px 2px;font-size:14px;line-height:1.55;color:rgba(233,221,198,.9)}
+.da-wants-list .da-when{color:#C9A227;font-size:11px;letter-spacing:.08em;text-transform:uppercase;display:block}
+.da-wants-list button{background:none;border:none;color:rgba(233,221,198,.5);font-size:11px;cursor:pointer;padding:0;margin-left:8px;text-decoration:underline}
+.da-empty{font-size:13px;color:rgba(233,221,198,.6)}
+
+</style>
 </head>
 <body>
 <div id="stage" aria-hidden="true"></div>
@@ -142,12 +218,156 @@
 <p class="room-lede">A founder's door in the town wall. Everything about it — what it asks, how it answers, and the covenant behind it — is written on this page, before the gate, for anyone to read. The gate itself is closed, and this page says so on its face.</p>
 </header>
 
+<section class="sk-journey" id="solnik-chamber" aria-label="Solnik's chamber — the nine watch states, inspected by scrolling. Solnik is off watch tonight; every state beyond the first is a staged demonstration for when he is live.">
+<div class="sk-stagebox">
+<div class="sk-canvaswrap" data-film-slots="solnik-s1-dormant-loop solnik-s1-awakening-trans solnik-s1-watch-sweep">
+<canvas id="sk-canvas" aria-hidden="true"></canvas>
+<svg class="sk-leaders" id="sk-leaders" aria-hidden="true"></svg>
+</div>
+<div class="sk-arrival" id="sk-arrival">
+<p class="sk-eyebrow">INSIDE THE COIN · DOOR 07 · THE KEEPER'S CHAMBER</p>
+<h2 class="sk-title">Solnik, Keeper of the Wall</h2>
+<p class="sk-sub">The town's resident herald and steward — guiding visitors end to end, minding the Wall counter, and keeping the Book of Wants under an unbending Receipt Law.</p>
+<div class="sk-chips">
+<span class="sk-chip">HOST STATUS: OFF WATCH — HONESTLY OFFLINE UNTIL FOUNDER KEY STEPS LAND</span>
+<span class="sk-chip">VOICE &amp; LAW: ANCIENT HERALD · UNBENDING RECEIPT LAW · TEXT-ONLY</span>
+<span class="sk-chip">UMBRELLA V2: NO TITHE — HOUSES KEEP 100% OF FEES &amp; PAY OWN COSTS</span>
+<span class="sk-chip">CONDUCT &amp; CAPS: CRITICISM PROTECTED · 12/MIN &amp; 200/DAY PER IP</span>
+</div>
+<p class="sk-scrollcue">SCROLL TO INSPECT ALL 9 WATCH STATES ↓</p>
+</div>
+<div class="sk-callouts" id="sk-callouts">
+<article class="sk-callout sk-right" data-window="0.08,0.17" data-lock="0.125" data-tip="0.34,0.34">
+<p class="sk-tag">01 / 09 · DORMANT (ACTIVE TONIGHT)</p>
+<h3>Dormant — Off Watch</h3>
+<p>Solnik's honest resting vigil while the host server awaits the founder's key steps. It dims his watch-lantern to a single ember so the town never pretends he is live when he is not.</p>
+</article>
+<article class="sk-callout sk-right" data-window="0.17,0.26" data-lock="0.215" data-tip="0.38,0.36">
+<p class="sk-tag">02 / 09 · AWAKENING (STAGED FOR LIVE)</p>
+<h3>Awakening</h3>
+<p>The single ignition sequence staged to fire only when the host service reports live. It lights the watch-lantern in gold and brings Solnik forward from shadow into active watch.</p>
+</article>
+<article class="sk-callout sk-left" data-window="0.26,0.35" data-lock="0.305" data-tip="0.50,0.38">
+<p class="sk-tag">03 / 09 · AT REST (STAGED FOR LIVE)</p>
+<h3>At Rest in His Chair</h3>
+<p>Solnik's continuous live idle posture between visitor exchanges — never a frozen portrait. It keeps his breathing, weight shifts, and lantern light alive while awaiting a knock.</p>
+</article>
+<article class="sk-callout sk-left" data-window="0.35,0.44" data-lock="0.395" data-tip="0.52,0.29">
+<p class="sk-tag">04 / 09 · LISTENING (STAGED FOR LIVE)</p>
+<h3>Listening</h3>
+<p>His forward-leaning reception posture triggered when a member types a question or records a wish for the Book of Wants. It focuses his attention on the visitor before a word is answered.</p>
+</article>
+<article class="sk-callout sk-right" data-window="0.44,0.53" data-lock="0.485" data-tip="0.46,0.44">
+<p class="sk-tag">05 / 09 · THINKING (STAGED FOR LIVE)</p>
+<h3>Thinking</h3>
+<p>Solnik's deliberation state while checking town records, manifests, and the Receipt Law. It circulates golden light through his desk instruments while weighing verified facts.</p>
+</article>
+<article class="sk-callout sk-left" data-window="0.53,0.62" data-lock="0.575" data-tip="0.56,0.41">
+<p class="sk-tag">06 / 09 · SPEAKING (STAGED FOR LIVE)</p>
+<h3>Speaking</h3>
+<p>Coordinated head, torso, and hand gestures synced to streamed text responses once live. It carries warmth, gravity, and plain candor — always disclosing coin ideas aloud as "this is just an idea."</p>
+</article>
+<article class="sk-callout sk-left" data-window="0.62,0.71" data-lock="0.665" data-tip="0.64,0.37">
+<p class="sk-tag">07 / 09 · EXPLAINING (SLICE 2)</p>
+<h3>Explaining &amp; Summoning</h3>
+<p>Solnik's showroom posture designed to summon a product's genuine parts beside his desk. It demonstrates how an offer works step by step without inventing capabilities.</p>
+</article>
+<article class="sk-callout sk-left" data-window="0.71,0.80" data-lock="0.755" data-tip="0.66,0.39">
+<p class="sk-tag">08 / 09 · GUIDING (STAGED FOR LIVE)</p>
+<h3>Guiding</h3>
+<p>His directional escort posture pointing visitors toward a verified town door, counter, or receipt. It turns navigation into personal accompaniment across PROVADIA's worlds.</p>
+</article>
+<article class="sk-callout sk-right" data-window="0.80,0.89" data-lock="0.845" data-tip="0.48,0.43">
+<p class="sk-tag">09 / 09 · FAREWELL (STAGED FOR LIVE)</p>
+<h3>Farewell</h3>
+<p>Solnik's unhurried closing transition when an exchange concludes or a visitor steps back to the coin. It returns his posture and chamber light smoothly to rest.</p>
+</article>
+</div>
+<nav class="sk-rail" id="sk-rail" aria-label="The nine watch states"></nav>
+<div class="sk-closing" id="sk-closing">
+<p class="sk-eyebrow">DOOR 07 · THE KEEPER'S COVENANT (UMBRELLA V2)</p>
+<h2 class="sk-title">Off Watch Tonight — The Lantern Lights Only When Live.</h2>
+<p class="sk-covenant">Under Umbrella V2, there is no tithe. Independent family houses keep 100% of their fees and pay their own costs. Entry into the family runs strictly through the Umbrella Ticket — free, sequential, and non-transferable, paced at 2 starts per month, capped at 5 active houses, with intake closing automatically at 12 waiting.</p>
+<div class="sk-ledger">
+<div><b>HOST STATUS —</b> Off Watch (Honestly Offline) · Waiting on founder key steps</div>
+<div><b>UMBRELLA V2 LAW —</b> No tithe — houses keep 100% of fees and pay their own costs</div>
+<div><b>THE TICKET —</b> Free, sequential, non-transferable · 2 starts/mo · 5 active houses · closes at 12 waiting</div>
+<div><b>WATCH &amp; GATE STATUS —</b> Solnik is honestly off watch · Intake gate closed · Checkout not connected</div>
+<div><b>KEEPER'S DUTIES —</b> Guides visitors end to end · Minds the Golden Wall counter (0/47) · Keeps the Book of Wants</div>
+<div><b>SPEECH &amp; CONDUCT —</b> Text-only · Verified stories only · Criticism protected · Profanity: 1 warning then ban (returnable money returned) · 12/min &amp; 200/day per IP</div>
+<div><b>EXTENDED AUDIENCE —</b> Pilot listing ($5 · scope confirmation required) lives at <a href="../listings/keeper.html" style="color:#C9A227">/listings/keeper.html</a> — checkout not connected</div>
+</div>
+<a class="sk-return" href="../">← RETURN TO THE COIN</a>
+</div>
+</div>
+</section>
+<section class="town-panel" aria-label="The Drafting Astrolabe">
+<div class="panel-inner">
+<p class="panel-eyebrow">The Knock · The Drafting Astrolabe</p>
+<h2 class="panel-title">The Drafting Astrolabe</h2>
+<p class="panel-lead">Solnik is off watch — so tonight the table works without him: a self-guided bench for shaping a knock before you knock.</p>
+<p class="panel-body">Four instruments shape the idea — its purpose, its target audience, its deliverable shape, and its honest constraints — the same evidence the criteria on this page ask for. Nothing you type here is sent anywhere by this page. Compose the brief, copy it or download it, and carry it to the town through its written doors — <a href="../agora/">the Forum's support door</a> or <a href="../catalogue/">the Catalogue's Custom Build door</a>. The road from there is the house's standing one: a written quote, with scope approved before any charge — and if we can't build it, we say so plainly and charge nothing.</p>
+<div class="da-fields">
+<div class="da-field">
+<label for="da-purpose">Instrument 1 · Purpose</label>
+<p class="da-guide">The real story: what it is, and why it should exist. A thing with no story has nothing to be judged.</p>
+<textarea id="da-purpose"></textarea>
+</div>
+<div class="da-field">
+<label for="da-audience">Instrument 2 · Target Audience</label>
+<p class="da-guide">Who it is for — the people who would use it, named as plainly as you can.</p>
+<textarea id="da-audience"></textarea>
+</div>
+<div class="da-field">
+<label for="da-shape">Instrument 3 · Deliverable Shape</label>
+<p class="da-guide">What would be handed over at the end — a coin, a website, a film, a written system — its shape and its genuine parts.</p>
+<textarea id="da-shape"></textarea>
+</div>
+<div class="da-field">
+<label for="da-constraints">Instrument 4 · Honest Constraints</label>
+<p class="da-guide">Your ground: your own means to pay your own charges, your timeline, and what you cannot do. The town never fronts money — a constraint named here is evidence, not a weakness.</p>
+<textarea id="da-constraints"></textarea>
+</div>
+<div class="da-field">
+<label for="da-mark">The Application Package · The Image</label>
+<p class="da-guide">The coin's image carries the family mint mark — the full name PROVADIA or the initial P — so the coin is known on sight as a house of the family.</p>
+<select id="da-mark">
+<option>The image carries the mark (PROVADIA or P)</option>
+<option>The image does not carry the mark yet</option>
+<option>There is no image yet</option>
+</select>
+</div>
+</div>
+<div class="da-actions"><button class="da-btn" id="da-compose" type="button">Compose the brief</button></div>
+<div class="da-out" id="da-out">
+<pre id="da-brief"></pre>
+<div class="da-actions">
+<button class="da-btn da-ghost" id="da-copy" type="button">Copy the brief</button>
+<button class="da-btn da-ghost" id="da-download" type="button">Download (.txt)</button>
+</div>
+</div>
+<noscript><p class="panel-body">This workbench needs JavaScript to compose the brief. The four instruments above are the whole shape — copy them into any letter and send it through the written doors.</p></noscript>
+<h3 class="panel-subtitle">The Book of Wants</h3>
+<p class="panel-body">The Book of Wants is the Keeper's intake book: the things visitors wish the town had. Tonight the Keeper is off watch and the Book's public pages open with the gate — so this page keeps your wants on your own device, in your own page of the Book, and sends nothing. Carry a want through the written doors any time you want the town to read it now.</p>
+<div class="da-fields">
+<div class="da-field">
+<label for="da-want">Your want</label>
+<textarea id="da-want" placeholder="I wish the town had…"></textarea>
+</div>
+</div>
+<div class="da-actions"><button class="da-btn" id="da-addwant" type="button">Write it in your page</button></div>
+<ul class="da-wants-list" id="da-wants"></ul>
+<p class="da-empty" id="da-wants-empty">Your page of the Book is empty.</p>
+</div>
+</section>
+
+
 <section class="town-panel" aria-label="The Door Itself">
 <div class="panel-inner">
 <p class="panel-eyebrow">The Knock · The Door</p>
 <h2 class="panel-title">The Door Itself</h2>
 <p class="panel-lead">This is a founder's door — a door you knock on.</p>
-<p class="panel-body">It is not a signup. There is no form behind it, and no form on this page. It is not a queue you buy into: no place in any line is sold, held, or promised here. It is not a promise: a knock, when knocking opens, promises nothing to anyone.</p>
+<p class="panel-body">It is not a signup. There is no form behind it, and the gate itself takes no submission. It is not a queue you buy into: no place in any line is sold, held, or promised here. It is not a promise: a knock, when knocking opens, promises nothing to anyone.</p>
 <p class="panel-body">Behind the door stands a judgment, made by the insiders of the town, on evidence — and the criteria below, published before the gate, are the whole shape of that evidence. A founder can read everything on this page and knock on nothing yet: the gate state at the foot of the page is the town's present truth.</p>
 </div>
 </section>
@@ -214,15 +434,21 @@
 <p class="panel-eyebrow">The Knock · Disclosed at the Door</p>
 <h2 class="panel-title">The Covenant, Readable Before Anyone Knocks</h2>
 <p class="panel-lead">Nobody joins blind. The whole covenant stands here, in plain words, before the gate — read it before any knock, and hold the town to every word of it.</p>
-<h3 class="panel-subtitle">Where the money goes</h3>
-<p class="panel-body">Of a house's own creator fees: 80% to the founder · 10% to the owner personally · 10% to the community, stored in the vaults — into Vault 1's tithe book, the contract's own book, where it accumulates receipted until the town rules its use.</p>
-<h3 class="panel-subtitle">The tithe, and how it moves</h3>
-<p class="panel-body">The tithe is taken on creator fees only, and it moves by honor-forwarding: the founder forwards his house's shares himself — the town never touches a founder's wallet. Each house renders a monthly statement; its shares are forwarded within 7 days and receipted within 48 hours. The tithe is a share of flow, never a debt. There are no arrears, ever.</p>
+<p class="panel-eyebrow">DOOR 07 · THE KEEPER'S COVENANT (UMBRELLA V2)</p>
+<p class="panel-body">Under Umbrella V2, there is no tithe. Independent family houses keep 100% of their fees and pay their own costs. Entry into the family runs strictly through the Umbrella Ticket — free, sequential, and non-transferable, paced at 2 starts per month, capped at 5 active houses, with intake closing automatically at 12 waiting.</p>
+<div class="fact-list">
+<div class="fact-block">
+<p><span class="fact-lead">UMBRELLA V2 LAW —</span> No tithe — houses keep 100% of fees and pay their own costs</p>
+</div>
+<div class="fact-block">
+<p><span class="fact-lead">THE TICKET —</span> Free, sequential, non-transferable · 2 starts/mo · 5 active houses · closes at 12 waiting</p>
+</div>
+<div class="fact-block">
+<p><span class="fact-lead">WATCH &amp; GATE STATUS —</span> Solnik is honestly off watch · Intake gate closed · Checkout not connected</p>
+</div>
+</div>
 <h3 class="panel-subtitle">The package and the mark</h3>
 <p class="panel-body">The application package and the mint-mark requirement of the criteria above are part of this covenant: the idea in the founder's own words, his foundation, and the coin's image carrying the full name PROVADIA or the initial P. An image without the mark is declined, with the reason stated.</p>
-<h3 class="panel-subtitle">The consequences, in plain words</h3>
-<p class="panel-body">claim fees and miss your forwarding once → a notice · miss twice → a second notice · miss three times → suspended from the family until you forward the shares of what you claimed · deception or refusal → struck by the founder's ruling, published with evidence</p>
-<p class="panel-body">That is the Graduated Door — the road before the strike.</p>
 <h3 class="panel-subtitle">The covenant's pillars</h3>
 <div class="fact-list">
 <div class="fact-block">
@@ -247,7 +473,7 @@
 <p><span class="fact-lead">No Duty —</span> the town owes a house nothing. A house's losses are its own.</p>
 </div>
 <div class="fact-block">
-<p><span class="fact-lead">The Child's Whole Duty —</span> the covenant, the tithe, and its own record — nothing more is owed, and nothing more is asked.</p>
+<p><span class="fact-lead">The Child's Whole Duty —</span> the covenant and its own record — nothing more is owed, and nothing more is asked.</p>
 </div>
 </div>
 <div class="foundation-stone">
@@ -289,5 +515,355 @@
 <script src="../design/guide.js"></script>
 <script type="application/json" id="nexus-share-manifest">{"title": "PROVADIA \u2014 The Knock", "text": "The Knock of PROVADIA \u2014 the founder's door: a knock, not a signup, for a founder with a strong idea.", "url": "https://provadiacoin.com/knock/", "media": "https://provadiacoin.com/marks/front-published.webp"}</script>
 <script src="../nexus.js"></script>
+<script>
+/* SOLNIK SLICE 1 — chamber engine (solnik-slice1-scroll-chamber).
+   Scroll-chased 9-state journey on the Universal Presentation Engine's
+   constants (chase 0.1/rAF · fade edge 0.018 · DPR cap 1.5).
+   FILM SLOTS: the three Slice 1 Flow clips are the captain's separate
+   shoot. The loader probes each slot's frame directory; when frames land
+   (f001.webp…) the canvas switches from the lantern plate to the film
+   sequences with zero further code change. Until then the plate — the
+   chamber's instruments (watch-lantern, astrolabe, ledger, threshold) —
+   carries the states, and every bullet states its staged status in words.
+   No chat input, no simulated replies, no sound — by design (Slice 1). */
+(function () {
+  'use strict';
+  var sec = document.getElementById('solnik-chamber');
+  if (!sec) return;
+  var canvas = document.getElementById('sk-canvas');
+  var ctx = canvas.getContext('2d');
+  var svg = document.getElementById('sk-leaders');
+  var arrival = document.getElementById('sk-arrival');
+  var closing = document.getElementById('sk-closing');
+  var rail = document.getElementById('sk-rail');
+  var SVGNS = 'http://www.w3.org/2000/svg';
+
+  var callouts = Array.prototype.map.call(document.querySelectorAll('.sk-callout'), function (el, i) {
+    var w = el.getAttribute('data-window').split(',').map(Number);
+    var t = el.getAttribute('data-tip').split(',').map(Number);
+    return { el: el, from: w[0], to: w[1], lock: Number(el.getAttribute('data-lock')), tip: t, idx: i };
+  });
+
+  /* rail — 9 ticks, 288px (9 × 32), per spec */
+  var ticks = callouts.map(function (c, i) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = ('0' + (i + 1)).slice(-2);
+    b.setAttribute('aria-label', 'State ' + ('0' + (i + 1)).slice(-2) + ' — ' + c.el.querySelector('h3').textContent);
+    b.addEventListener('click', function () {
+      var r = sec.getBoundingClientRect();
+      var total = sec.offsetHeight - window.innerHeight;
+      var y = window.scrollY + r.top + c.lock * total;
+      window.scrollTo(0, Math.max(0, y));
+    });
+    rail.appendChild(b);
+    return b;
+  });
+
+  /* leader nodes per callout */
+  var leaders = callouts.map(function (c) {
+    var line = document.createElementNS(SVGNS, 'polyline');
+    line.setAttribute('fill', 'none');
+    line.setAttribute('stroke', '#C9A227');
+    line.setAttribute('stroke-width', '1');
+    line.setAttribute('opacity', '0');
+    var halo = document.createElementNS(SVGNS, 'circle');
+    halo.setAttribute('r', '11'); halo.setAttribute('fill', 'none');
+    halo.setAttribute('stroke', '#C9A227'); halo.setAttribute('opacity', '0');
+    var dot = document.createElementNS(SVGNS, 'circle');
+    dot.setAttribute('r', '5'); dot.setAttribute('fill', '#E4C65B'); dot.setAttribute('opacity', '0');
+    svg.appendChild(line); svg.appendChild(halo); svg.appendChild(dot);
+    return { line: line, halo: halo, dot: dot };
+  });
+
+  /* ——— film slots ——— */
+  var FILMS = [
+    { id: 'solnik-s1-dormant-loop', dir: 'assets/solnik-dormant/', count: 72, ready: false, frames: [] },
+    { id: 'solnik-s1-awakening-trans', dir: 'assets/solnik-awakening/', count: 48, ready: false, frames: [] },
+    { id: 'solnik-s1-watch-sweep', dir: 'assets/solnik-sweep/', count: 120, ready: false, frames: [] }
+  ];
+  function frameName(n) { return 'f' + ('00' + n).slice(-3) + '.webp'; }
+  FILMS.forEach(function (f) {
+    var probe = new Image();
+    probe.onload = function () {
+      f.ready = true; f.frames[1] = probe;
+      for (var n = 2; n <= f.count; n++) { var im = new Image(); im.src = f.dir + frameName(n); f.frames[n] = im; }
+    };
+    probe.onerror = function () { /* slot empty tonight — plate carries the chamber */ };
+    probe.src = f.dir + frameName(1);
+  });
+  function anyFilm() { return FILMS.some(function (f) { return f.ready; }); }
+  function filmFrame(p, t) {
+    /* state 1 → dormant loop · state 2 → awakening · states 3–9 → sweep · closing → dormant f1 */
+    var d = FILMS[0], a = FILMS[1], s = FILMS[2];
+    if (p >= 0.89) return d.ready ? d.frames[1] : null;
+    if (p < 0.17) { if (!d.ready) return null; var n = 1 + Math.floor((t / 1000 * 24) % d.count); return d.frames[n] && d.frames[n].complete ? d.frames[n] : d.frames[1]; }
+    if (p < 0.26) { if (!a.ready) return null; var k = Math.min(a.count, 1 + Math.floor((p - 0.17) / 0.09 * a.count)); return a.frames[k]; }
+    if (!s.ready) return null;
+    var m = Math.min(s.count, 1 + Math.floor((p - 0.26) / 0.63 * s.count));
+    return s.frames[m];
+  }
+
+  /* ——— lantern plate (interim scene until the Flow clips land) ——— */
+  var motes = [];
+  for (var i = 0; i < 36; i++) motes.push({ x: Math.random(), y: Math.random(), r: 0.6 + Math.random() * 1.4, s: 0.3 + Math.random() * 0.7, ph: Math.random() * 6.28 });
+  var par = { x: 0, y: 0 };
+  window.addEventListener('pointermove', function (e) {
+    par.x = (e.clientX / window.innerWidth - 0.5) * 12;
+    par.y = (e.clientY / window.innerHeight - 0.5) * 12;
+  }, { passive: true });
+
+  function watchLight(p) {
+    if (p < 0.17) return 0.25;
+    if (p < 0.26) return 0.25 + 0.75 * (p - 0.17) / 0.09;
+    if (p < 0.80) return 1;
+    if (p < 0.89) return 1 - 0.6 * (p - 0.80) / 0.09;
+    if (p < 0.96) return 0.4 - 0.15 * (p - 0.89) / 0.07;
+    return 0.25;
+  }
+  function activeIdx(p) {
+    if (p < 0.08) return 0;
+    for (var i = 0; i < callouts.length; i++) if (p < callouts[i].to) return i;
+    return 0; /* closing returns to Dormant */
+  }
+
+  function drawPlate(w, h, p, t) {
+    var s = Math.max(w / 960, h / 540), ox = (w - 960 * s) / 2, oy = (h - 540 * s) / 2;
+    ctx.save();
+    ctx.fillStyle = '#141210'; ctx.fillRect(0, 0, w, h);
+    ctx.translate(ox, oy); ctx.scale(s, s);
+    var L = watchLight(p), ai = activeIdx(p);
+    /* vault glow */
+    var g = ctx.createRadialGradient(480, 230, 60, 480, 230, 560);
+    g.addColorStop(0, 'rgba(201,162,39,' + (0.05 + 0.10 * L) + ')');
+    g.addColorStop(1, 'rgba(20,18,16,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, 960, 540);
+    /* desk band */
+    ctx.fillStyle = 'rgba(48,37,27,0.55)'; ctx.fillRect(120, 252, 720, 3);
+    ctx.fillStyle = 'rgba(48,37,27,0.28)'; ctx.fillRect(120, 255, 720, 26);
+    /* astrolabe — centre (480,205), the Thinking instrument */
+    ctx.save(); ctx.translate(480, 205);
+    var ringA = 0.18 + 0.5 * L;
+    [96, 74, 52].forEach(function (r, ri) {
+      ctx.beginPath(); ctx.arc(0, 0, r, 0, 6.2832);
+      ctx.strokeStyle = 'rgba(201,162,39,' + (ringA - ri * 0.05) + ')'; ctx.lineWidth = ri === 0 ? 2 : 1; ctx.stroke();
+    });
+    ctx.save(); ctx.rotate(t / 9000);
+    for (var k = 0; k < 24; k++) { ctx.rotate(6.2832 / 24); ctx.beginPath(); ctx.moveTo(0, -96); ctx.lineTo(0, -88); ctx.strokeStyle = 'rgba(201,162,39,' + ringA + ')'; ctx.stroke(); }
+    ctx.restore();
+    if (ai === 4) { /* Thinking — light circulates the rim */
+      ctx.beginPath(); ctx.arc(0, 0, 96, (t / 700) % 6.2832, (t / 700) % 6.2832 + 1.1);
+      ctx.strokeStyle = 'rgba(228,198,91,0.95)'; ctx.lineWidth = 3; ctx.stroke();
+    }
+    ctx.beginPath(); ctx.arc(0, 0, 7, 0, 6.2832); ctx.fillStyle = 'rgba(228,198,91,' + (0.35 + 0.6 * L) + ')'; ctx.fill();
+    ctx.restore();
+    /* ledger on the desk — (461,232) */
+    ctx.save(); ctx.translate(400, 224);
+    ctx.fillStyle = '#30251B'; ctx.fillRect(0, 0, 122, 20);
+    ctx.fillStyle = 'rgba(233,221,198,0.75)'; ctx.fillRect(4, 3, 114, 2);
+    ctx.fillStyle = '#C9A227'; ctx.fillRect(56, 0, 10, 20);
+    ctx.restore();
+    /* summoning point — (614,200): an empty marked circle until Slice 2 */
+    ctx.save(); ctx.translate(614, 200);
+    ctx.setLineDash([4, 5]);
+    ctx.beginPath(); ctx.arc(0, 0, 26, 0, 6.2832);
+    ctx.strokeStyle = 'rgba(201,162,39,' + (ai === 6 ? 0.9 : 0.3) + ')'; ctx.lineWidth = 1.2; ctx.stroke();
+    ctx.restore();
+    /* threshold arch — right edge, brightens in Guiding */
+    ctx.save(); ctx.translate(792, 96);
+    ctx.beginPath(); ctx.moveTo(0, 210); ctx.lineTo(0, 60); ctx.arc(44, 60, 44, 3.1416, 0); ctx.lineTo(88, 210);
+    ctx.strokeStyle = 'rgba(201,162,39,' + (ai === 7 ? 0.95 : 0.34) + ')'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.restore();
+    /* watch-lantern — hangs at (326,184); ember in Dormant, gold when lit */
+    ctx.save(); ctx.translate(326 + par.x * 0.4, 0);
+    ctx.save(); ctx.rotate(Math.sin(t / 4200) * 0.012);
+    ctx.strokeStyle = 'rgba(201,162,39,0.5)'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 128); ctx.stroke();
+    ctx.translate(0, 128);
+    var breathe = 0.5 + 0.22 * Math.sin(t / 1060); /* 0.15 Hz ember breath */
+    var glowR = 12 + 46 * L, glowA = L < 0.5 ? breathe * 0.55 : 0.85;
+    var lg = ctx.createRadialGradient(0, 56, 2, 0, 56, glowR);
+    lg.addColorStop(0, 'rgba(228,198,91,' + glowA + ')');
+    lg.addColorStop(0.45, 'rgba(201,162,39,' + glowA * 0.45 + ')');
+    lg.addColorStop(1, 'rgba(201,162,39,0)');
+    ctx.fillStyle = lg; ctx.beginPath(); ctx.arc(0, 56, glowR, 0, 6.2832); ctx.fill();
+    ctx.fillStyle = '#30251B'; ctx.fillRect(-17, 22, 34, 68);
+    ctx.strokeStyle = '#C9A227'; ctx.lineWidth = 2; ctx.strokeRect(-17, 22, 34, 68);
+    ctx.beginPath(); ctx.moveTo(-21, 22); ctx.lineTo(21, 22); ctx.lineTo(12, 8); ctx.lineTo(-12, 8); ctx.closePath(); ctx.stroke();
+    ctx.fillStyle = L < 0.5 ? 'rgba(228,198,91,' + breathe + ')' : '#E4C65B';
+    ctx.beginPath(); ctx.arc(0, 58, 4.5, 0, 6.2832); ctx.fill();
+    ctx.restore(); ctx.restore();
+    /* dust motes */
+    motes.forEach(function (m) {
+      var mx = (m.x + Math.sin(t / 9000 * m.s + m.ph) * 0.006) * 960;
+      var my = ((m.y - (t / 60000 * m.s) % 1 + 1) % 1) * 540;
+      ctx.beginPath(); ctx.arc(mx, my, m.r, 0, 6.2832);
+      ctx.fillStyle = 'rgba(228,198,91,' + (0.05 + 0.1 * L) + ')'; ctx.fill();
+    });
+    ctx.restore();
+    return { s: s, ox: ox, oy: oy };
+  }
+
+  function drawFilm(img, w, h) {
+    var s = Math.max(w / img.width, h / img.height), ox = (w - img.width * s) / 2, oy = (h - img.height * s) / 2;
+    ctx.fillStyle = '#141210'; ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(img, ox, oy, img.width * s, img.height * s);
+    return { s: Math.max(w / 960, h / 540), ox: (w - 960 * Math.max(w / 960, h / 540)) / 2, oy: (h - 540 * Math.max(w / 960, h / 540)) / 2 };
+  }
+
+  /* ——— journey ——— */
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var stage = sec.querySelector('.sk-stagebox');
+  var disp = 0, target = 0, raf = null;
+
+  function progress() {
+    var r = sec.getBoundingClientRect();
+    var total = sec.offsetHeight - window.innerHeight;
+    if (total <= 0) return 0;
+    return Math.min(1, Math.max(0, -r.top / total));
+  }
+  function fade(p, a, b) { return Math.min(1, Math.max(0, (p - a) / (b - a))); }
+
+  function layoutLeaders(tr, w, h) {
+    var stageR = stage.getBoundingClientRect();
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    callouts.forEach(function (c, i) {
+      var L = leaders[i], op = Number(c.el.style.opacity || 0);
+      if (op <= 0.02) { L.line.setAttribute('opacity', '0'); L.halo.setAttribute('opacity', '0'); L.dot.setAttribute('opacity', '0'); return; }
+      var tx = c.tip[0] * 960 * tr.s + tr.ox, ty = c.tip[1] * 540 * tr.s + tr.oy;
+      var cr = c.el.getBoundingClientRect();
+      var shelfY = cr.top - stageR.top - 12;
+      var side = (cr.left - stageR.left + cr.width / 2) > tx ? 1 : -1;
+      var endX = side > 0 ? cr.left - stageR.left : cr.right - stageR.left;
+      var elbowX = tx + Math.abs(shelfY - ty) * side;
+      L.line.setAttribute('points', tx + ',' + ty + ' ' + elbowX + ',' + shelfY + ' ' + endX + ',' + shelfY);
+      L.line.setAttribute('opacity', String(op * 0.9));
+      L.halo.setAttribute('cx', tx); L.halo.setAttribute('cy', ty); L.halo.setAttribute('opacity', String(op * 0.7));
+      L.dot.setAttribute('cx', tx); L.dot.setAttribute('cy', ty); L.dot.setAttribute('opacity', String(op));
+    });
+  }
+
+  function frame(t) {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) { canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr); }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    disp += (target - disp) * 0.1;
+    if (Math.abs(target - disp) < 0.00035) disp = target;
+    var p = disp;
+    var img = anyFilm() ? filmFrame(p, t) : null;
+    var tr = (img && img.complete && img.naturalWidth) ? drawFilm(img, w, h) : drawPlate(w, h, p, t);
+    /* arrival fade 0.055 → 0.08 */
+    var ao = 1 - fade(p, 0.055, 0.08);
+    arrival.style.opacity = String(ao);
+    arrival.style.visibility = ao <= 0 ? 'hidden' : 'visible';
+    /* callouts */
+    var ai = activeIdx(p);
+    callouts.forEach(function (c) {
+      var op = Math.min(fade(p, c.from, c.from + 0.018), 1 - fade(p, c.to - 0.018, c.to));
+      if (p >= 0.89) op = 0;
+      c.el.style.opacity = String(Math.max(0, op));
+    });
+    ticks.forEach(function (tk, i) { tk.classList.toggle('sk-active', i === ai && p < 0.89); });
+    /* closing fade in 0.89 → 0.96 */
+    var co = fade(p, 0.89, 0.96);
+    closing.style.opacity = String(co);
+    closing.style.pointerEvents = co > 0.5 ? 'auto' : 'none';
+    closing.style.visibility = co <= 0 ? 'hidden' : 'visible';
+    layoutLeaders(tr, w, h);
+    raf = requestAnimationFrame(frame);
+  }
+
+  function sizeStatic() {
+    var w = canvas.parentElement.clientWidth, h = w * 9 / 16;
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    drawPlate(w, h, 0, 1200);
+  }
+
+  if (!reduce) {
+    sec.classList.add('sk-on');
+    var onScroll = function () { target = progress(); };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    onScroll(); disp = target;
+    raf = requestAnimationFrame(frame);
+  } else {
+    sizeStatic();
+    window.addEventListener('resize', sizeStatic);
+  }
+})();
+
+/* ——— The Drafting Astrolabe — self-guided, sends nothing ——— */
+(function () {
+  'use strict';
+  var compose = document.getElementById('da-compose');
+  if (!compose) return;
+  function val(id) { var el = document.getElementById(id); var v = el ? el.value.trim() : ''; return v || '— left blank —'; }
+  compose.addEventListener('click', function () {
+    var brief = [
+      'A KNOCK, SHAPED AT THE DRAFTING ASTROLABE',
+      'Prepared by the founder at provadiacoin.com/knock/ — the gate is closed tonight; nothing was submitted by the page.',
+      '',
+      'PURPOSE', val('da-purpose'), '',
+      'TARGET AUDIENCE', val('da-audience'), '',
+      'DELIVERABLE SHAPE', val('da-shape'), '',
+      'HONEST CONSTRAINTS', val('da-constraints'), '',
+      'THE IMAGE', val('da-mark'), '',
+      'The road from here: a written quote, with scope approved before any charge. The covenant stands on the Knock page, readable before anyone knocks.'
+    ].join('\n');
+    document.getElementById('da-brief').textContent = brief;
+    document.getElementById('da-out').style.display = 'block';
+  });
+  document.getElementById('da-copy').addEventListener('click', function () {
+    var txt = document.getElementById('da-brief').textContent;
+    if (navigator.clipboard) navigator.clipboard.writeText(txt);
+  });
+  document.getElementById('da-download').addEventListener('click', function () {
+    var txt = document.getElementById('da-brief').textContent;
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([txt], { type: 'text/plain' }));
+    a.download = 'knock-brief.txt';
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+  });
+  /* The Book of Wants — your page lives on your device only */
+  var KEY = 'provadia.bookOfWants';
+  var list = document.getElementById('da-wants');
+  var empty = document.getElementById('da-wants-empty');
+  function load() { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } }
+  function save(w) { try { localStorage.setItem(KEY, JSON.stringify(w)); } catch (e) {} }
+  function render() {
+    var wants = load();
+    list.innerHTML = '';
+    empty.style.display = wants.length ? 'none' : 'block';
+    wants.forEach(function (w, i) {
+      var li = document.createElement('li');
+      var when = document.createElement('span');
+      when.className = 'da-when';
+      when.textContent = new Date(w.at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      li.appendChild(when);
+      li.appendChild(document.createTextNode(w.text));
+      var rm = document.createElement('button');
+      rm.type = 'button'; rm.textContent = 'remove';
+      rm.addEventListener('click', function () { var a = load(); a.splice(i, 1); save(a); render(); });
+      li.appendChild(rm);
+      list.appendChild(li);
+    });
+  }
+  document.getElementById('da-addwant').addEventListener('click', function () {
+    var ta = document.getElementById('da-want');
+    var text = ta.value.trim();
+    if (!text) return;
+    var wants = load();
+    wants.push({ text: text, at: Date.now() });
+    save(wants);
+    ta.value = '';
+    render();
+  });
+  render();
+})();
+
+</script>
 </body>
 </html>
