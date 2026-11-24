@@ -87,9 +87,13 @@
   }
 
   function radius() {
+    /* satellites alternate between a wide ring (odd satellites) and a
+       tighter ring (even) so tall cards clear their neighbours; the value
+       returned here is the WIDE ring. */
     var m = Math.min(window.innerWidth, window.innerHeight);
-    return m < 560 ? 128 : 242;
+    return m < 560 ? 128 : 262;
   }
+  var RING_RATIO = 0.80;
 
   function buildOrbit() {
     orbit.innerHTML = '';
@@ -102,6 +106,7 @@
     core.addEventListener('click', close);
     orbit.appendChild(core);
 
+    var r2 = Math.round(r * RING_RATIO);
     /* 01 · Share This World */
     var shareInner = '<div class="nexus-share"><div class="nexus-share-grid" data-nexus-share></div>' +
       '<p class="nexus-share-note">Instagram, TikTok, YouTube and Snapchat offer no web share intent — for those, the Nexus hands you the media and the caption to post by your own hand.</p>' +
@@ -151,7 +156,7 @@
     }
 
     /* 02 · My PROVADIA */
-    orbit.appendChild(sat(60, r, '02 / 06 · My PROVADIA', 'My PROVADIA',
+    orbit.appendChild(sat(60, r2, '02 / 06 · My PROVADIA', 'My PROVADIA',
       'Your personal member sanctuary holding your Bricklayer citizenship, Genesis collectible status, and saved records — civic identity kept separate from your wallet and private from public share links.',
       '<a class="nexus-go" href="' + u('account/') + '">Enter My PROVADIA</a>'));
 
@@ -169,7 +174,7 @@
       .catch(function () { /* unreachable host: the OFF WATCH plate stands */ });
 
     /* 04 · The Agora */
-    orbit.appendChild(sat(180, r, '04 / 06 · The Agora', 'The Agora',
+    orbit.appendChild(sat(180, r2, '04 / 06 · The Agora', 'The Agora',
       'The town\'s public gathering dimension where verified Bricklayers post, debate, and crystallize decisions into the Record. Open to read anytime; posting unlocks with free town membership.',
       '<a class="nexus-go" href="' + u('agora/') + '">Enter the Forum</a>'));
 
@@ -183,7 +188,7 @@
     /* 06 · Support & Human Escalation — the LIVE Agora support door.
        The captain's standing correction: an unreceipted mailbox address
        is never printed; support routes to the Support Desk in the Forum. */
-    orbit.appendChild(sat(300, r, '06 / 06 · Support', 'Support &amp; Human Escalation',
+    orbit.appendChild(sat(300, r2, '06 / 06 · Support', 'Support &amp; Human Escalation',
       'Direct written support and human escalation for account, service, or record inquiries — through the town\'s Support Desk in the Forum, answered on a standing watch by real people, without fake automated promises.',
       '<a class="nexus-go" href="' + u('agora/') + '">The Support Desk</a>'));
   }
