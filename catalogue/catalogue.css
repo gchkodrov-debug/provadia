@@ -28,3 +28,35 @@
 .bridge-note{margin-top:18px;font-size:12px;color:var(--salt)}
 @media(max-width:620px){.flagship-bridge{padding-top:46px}.bridge-frame{padding:24px 18px}.bridge-frame::before{inset:6px}.bridge-card{padding:22px 18px}.bridge-prices{gap:12px 22px}.bridge-badge-mark{display:block;width:fit-content;max-width:100%;margin:0 0 8px}.bridge-link{gap:18px}}
 @media (prefers-reduced-motion:reduce){.bridge-link{transition:none}}
+
+/* The Exchange Gyro — the catalogue's instrument (appended; existing rules untouched).
+   Town palette only, on the page's own vars. Bright gold #E4C65B is spent
+   on the gyro's centre alone — the threshold light, nowhere else here. */
+.gyro{padding-block:64px 10px;border-bottom:1px solid var(--quiet-line)}
+.gyro h2{margin-block:16px 20px;font-size:clamp(30px,3.3vw,48px)}
+.gyro-lede{font-size:14px;max-width:58ch;line-height:1.65}
+.gyro-stage{display:grid;grid-template-columns:340px 1fr;gap:6%;align-items:center;margin-top:34px}
+.gyro-svg{display:block;width:100%;max-width:340px;height:auto;justify-self:center}
+.gyro-ring{fill:none;stroke:var(--bronze);stroke-width:1}
+.gyro-centre{fill:var(--field);stroke:#E4C65B;stroke-width:1.5}
+.gyro-crystal{fill:none;stroke:var(--gold);stroke-width:1.5}
+.gyro-spin{transform-box:fill-box;transform-origin:center;animation:gyro-spin 90s linear infinite}
+@keyframes gyro-spin{to{transform:rotate(360deg)}}
+.gyro-node{fill:var(--gold)}
+.gyro-node-off{opacity:.18}
+.gyro-rooms{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.gyro-room{display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;background:transparent;border:0;border-left:2px solid var(--bronze);padding:10px 6px 10px 16px;color:var(--salt);font-size:13px;cursor:pointer;text-decoration:none;line-height:1.55}
+.gyro-room:hover{border-left-color:var(--gold)}
+.gyro-room strong{display:block;color:var(--pale);font-family:var(--display);font-size:16px;font-weight:400;margin-bottom:2px}
+.gyro-room-duty{display:block;font-size:12px;opacity:.85;max-width:52ch}
+.gyro-dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--gold);margin-top:7px}
+.gyro-filters{margin-top:36px;display:grid;gap:12px}
+.gyro-filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.gyro-filter-label{font-size:12px;color:var(--pale);min-width:44px}
+.gyro-filter-row button{border:1px solid var(--bronze);background:transparent;color:var(--salt);padding:10px 16px;min-height:44px;font-size:13px;cursor:pointer}
+.gyro-filter-row button[aria-pressed=true]{background:var(--gold);color:var(--field);border-color:var(--gold)}
+.gyro-readout{font-size:13px;color:var(--pale);min-height:1.5em;margin:4px 0 0}
+.film-slot:empty{height:0}
+@media(max-width:850px){.gyro-stage{grid-template-columns:1fr;gap:26px}.gyro-svg{max-width:300px}}
+@media(max-width:620px){.gyro{padding-top:46px}.gyro-filter-label{min-width:0;width:100%}}
+@media (prefers-reduced-motion:reduce){.gyro-spin{animation:none}}
