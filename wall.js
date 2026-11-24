@@ -4,6 +4,9 @@
    reassembly → the covenant ledger), the live counter + countdown, and
    the 47-slot registry — all read from the signed wall ledger
    (data/golden-wall.json), whose schema carries grams and bricks only.
+   The ledger's seal is RECOMPUTED before anything renders from it
+   (see verifyLedger below): a figure that cannot be reconciled
+   renders NOTHING — the monument fails closed to its honest face.
    Paths resolve against this script's own home (the town root), so the
    whole monument lifts to its own route (/wall/) with zero rebuild.
    Still-town parity: no JS, reduced motion, or a failed ledger fetch
@@ -130,17 +133,67 @@
     cdEls.forEach(function (el) { el.textContent = text; });
   }
 
+  /* ---------- the ledger's seal: recompute before anything renders ----
+     Definition (BUILD_RECORD_WALL_DIGEST_CHECK_2026-11-23.md): the
+     digest is SHA-256 over the canonical JSON — keys sorted at every
+     depth, compact separators, no trailing newline — of every field
+     of the ledger EXCEPT the signature block itself. The digest of
+     record for the true file (0 grams · 0 of 47) is 86011a77… .
+     On a match the monument renders exactly as it always has. On a
+     mismatch, a missing or malformed seal, or no crypto available to
+     check with, NOTHING is rendered from the file: the monument fails
+     closed to its founded face — 0 grams · 0 of 47 · receipt dark —
+     and the registry note says the seal did not verify. */
+  function canonicalJson(v) {
+    if (v === null || typeof v !== 'object') return JSON.stringify(v);
+    if (Array.isArray(v)) return '[' + v.map(canonicalJson).join(',') + ']';
+    return '{' + Object.keys(v).sort().map(function (k) {
+      return JSON.stringify(k) + ':' + canonicalJson(v[k]);
+    }).join(',') + '}';
+  }
+  function sha256Hex(str) {
+    if (!window.crypto || !crypto.subtle || !crypto.subtle.digest) return Promise.resolve(null);
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function (buf) {
+      return Array.prototype.map.call(new Uint8Array(buf), function (b) {
+        return ('0' + b.toString(16)).slice(-2);
+      }).join('');
+    }, function () { return null; });
+  }
+  function verifyLedger(ledger) {
+    if (!ledger || typeof ledger !== 'object' || Array.isArray(ledger)) return Promise.resolve(false);
+    var sig = ledger.signature;
+    if (!sig || sig.algorithm !== 'SHA-256' || typeof sig.digest !== 'string' ||
+        !/^[0-9a-f]{64}$/i.test(sig.digest)) return Promise.resolve(false);
+    var body = {};
+    Object.keys(ledger).forEach(function (k) { if (k !== 'signature') body[k] = ledger[k]; });
+    return sha256Hex(canonicalJson(body)).then(function (hex) {
+      return hex !== null && hex === sig.digest.toLowerCase();
+    });
+  }
+  function failClosedLedger() {
+    var zeroBook = { bricksLaid: 0, bricksTarget: 47, gramsTotal: 0, bricks: [] };
+    renderCounter(zeroBook);
+    renderRegistry(zeroBook);
+    fillSockets(zeroBook);
+    if (note) note.textContent = 'The wall ledger\u2019s seal did not verify from here \u2014 ' +
+      'no figure on this page is rendered from an unreconciled ledger. The Wall stands at ' +
+      'its receipted face: 0 grams \u00B7 0 of 47 bricks, receipt locked.';
+  }
+
   /* ---------- load the signed ledger ---------- */
   fetch(new URL('data/golden-wall.json', BASE).href, { cache: 'no-store' })
     .then(function (r) { if (!r.ok) throw new Error('ledger ' + r.status); return r.json(); })
     .then(function (ledger) {
-      renderCounter(ledger);
-      renderRegistry(ledger);
-      fillSockets(ledger);
-      deadline = Date.parse(ledger.birthdayDeadlineUtc);
-      cdEls = Array.prototype.slice.call(root.querySelectorAll('[data-wall-countdown]'));
-      tickCountdown();
-      setInterval(tickCountdown, 1000);
+      return verifyLedger(ledger).then(function (sealed) {
+        if (!sealed) { failClosedLedger(); return; }
+        renderCounter(ledger);
+        renderRegistry(ledger);
+        fillSockets(ledger);
+        deadline = Date.parse(ledger.birthdayDeadlineUtc);
+        cdEls = Array.prototype.slice.call(root.querySelectorAll('[data-wall-countdown]'));
+        tickCountdown();
+        setInterval(tickCountdown, 1000);
+      });
     })
     .catch(function () {
       /* the ledger could not be read: the static face already says 0 / 47,
