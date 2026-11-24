@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="captain-api" content="https://api.provadiacoin.com">
+<title>PROVADIA — My PROVADIA · The Member Sanctuary</title>
+<meta name="description" content="My PROVADIA — the member sanctuary of the town: your Bricklayer citizenship, your Genesis eligibility, and your wallet ownership as three separate instruments, in their true states. The registry stands at zero members tonight.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../sections/panels.css">
+<link rel="stylesheet" href="../sections/record/panels.css">
+<link rel="stylesheet" href="../pages.css">
+<link rel="stylesheet" href="../account.css">
+<link rel="stylesheet" href="../nexus.css">
+<noscript><style>#fade{display:none!important}#stage{display:none!important}.fallback-only{display:block!important}.cap-static{display:block!important}</style></noscript>
+<script>
+/* BOOT — the living world IS the site; the still town is its emergency net,
+   never the show. This classic script runs before every module: it owns
+   the veil and the fallback. The veil (with its waking line) stays up
+   while the world loads. The fallback engages ONLY on a hard failure —
+   no WebGL, a dead module graph, or the engine's own exception — never
+   merely because a phone is slow: the watchdog reads load progress, not
+   a stopwatch. Every soft path stays unlocked, so whenever the engine
+   does arrive, it takes the town. */
+(function () {
+  var booted = false, fb = false, fbLock = false;
+  var startedAt = Date.now(), lastProgress = startedAt, errorAt = 0;
+  function liftFade() {
+    var f = document.getElementById('fade');
+    if (f) { f.classList.add('quick'); f.classList.add('gone'); }
+  }
+  function inviteWake() {
+    /* A soft landing still points at the living town: one tap wakes it. */
+    var note = document.getElementById('fallback-note');
+    if (!note || document.getElementById('wakeBtn')) return;
+    var p = document.createElement('p');
+    p.className = 'fallback-wake';
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.id = 'wakeBtn';
+    b.textContent = 'Wake the living town';
+    b.addEventListener('click', function () { window.location.reload(); });
+    p.appendChild(b);
+    note.appendChild(p);
+  }
+  function engage(reason, lock) {
+    if (lock) fbLock = true;
+    if (booted || fb) return;
+    fb = true;
+    document.documentElement.classList.add('town-fallback');
+    if (!lock) inviteWake();
+    liftFade();
+  }
+  function markBooted() {
+    booted = true;
+    noteProgress();
+    if (fb && !fbLock) {
+      fb = false;
+      document.documentElement.classList.remove('town-fallback');
+    }
+    liftFade();
+  }
+  function noteProgress() { lastProgress = Date.now(); }
+  window.__townBoot = {
+    markBooted: markBooted,
+    engageFallback: engage,
+    liftFade: liftFade,
+    noteProgress: noteProgress,
+    moduleStarted: noteProgress,
+    isBooted: function () { return booted; },
+    isFallback: function () { return fb; }
+  };
+  /* Hard failure, decided at once: no WebGL at all → the still town,
+     exactly as designed. The probe context is released immediately. */
+  try {
+    var probeCanvas = document.createElement('canvas');
+    var probeGl = probeCanvas.getContext('webgl2') || probeCanvas.getContext('webgl') || probeCanvas.getContext('experimental-webgl');
+    if (!probeGl) engage('webgl', true);
+    else {
+      var loseExt = probeGl.getExtension('WEBGL_lose_context');
+      if (loseExt) loseExt.loseContext();
+    }
+  } catch (e) { engage('webgl', true); }
+  /* Load progress: every completed subresource is a sign of life, and the
+     module body itself reports in via __townBoot.moduleStarted(). */
+  if ('PerformanceObserver' in window) {
+    try {
+      var po = new PerformanceObserver(function (list) {
+        if (list.getEntries().length) noteProgress();
+      });
+      po.observe({ entryTypes: ['resource'] });
+    } catch (e) {}
+  }
+  document.addEventListener('DOMContentLoaded', noteProgress);
+  window.addEventListener('load', noteProgress);
+  /* A pre-boot error is recorded, never obeyed on its own: a stray error
+     (a webview's own injected script, an extension) must not bury a
+     healthy world. If the error was the module graph dying, silence
+     follows it — and the watchdog reads that silence as the failure. */
+  window.addEventListener('error', function (e) {
+    if (!booted && e && e.message && !errorAt) errorAt = Date.now();
+  });
+  /* Watchdog — progress-based and generous. It engages the still town
+     (soft, never locked) only when the load has truly stalled: an error
+     followed by silence, a long silence after a long wait, or an
+     absolute two-minute cap for a trickle that never arrives. */
+  var wd = setInterval(function () {
+    if (booted) { clearInterval(wd); return; }
+    var now = Date.now(), elapsed = now - startedAt, idle = now - lastProgress;
+    if ((errorAt && now - errorAt >= 8000 && idle >= 4000) ||
+        (elapsed >= 45000 && idle >= 30000) ||
+        elapsed >= 120000) {
+      engage('timeout', false);
+      clearInterval(wd);
+    }
+  }, 1000);
+})();
+</script>
+<link rel="stylesheet" href="../design/vendor/driver.css">
+<link rel="stylesheet" href="../design/guide.css">
+<link rel="stylesheet" href="../design/keeper.css">
+</head>
+<body>
+<div id="stage" aria-hidden="true"></div>
+<div id="fade"><div id="wake" aria-hidden="true">The town is waking</div></div>
+<nav class="doors" aria-label="The doors of the town">
+  <a class="door-link" href="../">The Town</a>
+  <a class="door-link" href="../record/">The Record</a>
+  <a class="door-link" href="../agora/">The Forum</a>
+  <a class="door-link" href="../knock/">The Knock</a>
+  <a class="door-link" href="../ecosystem/">The Ecosystem</a>
+  <a class="door-link" href="../about/">About Us</a>
+  <a class="door-link" href="../studio/">The Studio</a>
+  <a class="door-link" href="../catalogue/">The Catalogue</a> <a class="door-link" href="../coin/">The Coin</a>
+</nav>
+<main class="room acct-room">
+  <div id="fallback-note" class="fallback-only" role="note"><p class="fallback-note-line">The living world of this town needs a WebGL-capable browser. This is its still face — every word, record and door below is the town itself.</p></div>
+  <header class="room-head">
+    <p class="room-eyebrow">My PROVADIA · The Member Sanctuary</p>
+    <h1 class="room-title">My PROVADIA</h1>
+    <p class="room-lede">One sanctuary, three things never blended: your <b>citizenship</b> (your account), your <b>eligibility</b> (the Genesis Gate), and your <b>ownership</b> (your wallet). Each stands as its own instrument below, in its true state.</p>
+  </header>
+<section class="acct-threshold">
+<span class="acct-seal">The Sanctuary Threshold · Sealed Tonight</span>
+<h2>No member is signed in — and the registry stands empty, honestly</h2>
+<p>My PROVADIA is every member's personal sanctuary: your Bricklayer citizenship, your Genesis standing, and your private records, kept apart and kept yours. Joining the town is free — it writes your name into the town registry as a Bricklayer, and your thirty days begin.</p>
+<p>The town's membership service stands live on the town's own host tonight, and its roll is empty: <b>zero members</b>. The door from this page into that service is being fitted — a door that does not work is never painted open in this town, so no sign-in or registration form is painted here yet. Until it hangs, joining is answered at <a href="../agora/">the Forum's Join the Town panel</a>, and every question reaches a person at <a href="../agora/">the Support Desk in the Forum</a>.</p>
+<p>Below, the sanctuary's seven instruments stand in their true states — what each one is, what it does, and exactly where it stands tonight. Nothing here is simulated.</p>
+<p class="acct-probe" data-acct-probe>Live check: asking the town's host whether the members service answers from this page…</p>
+</section>
+<section class="acct-inst"><p class="acct-tag">01 / 07 · Citizenship</p><h3>The Citizenship Stone — Account &amp; Bricklayer Registry</h3><p class="acct-what">Your off-chain verified town membership: your identity, your permanent Bricklayer number, your join date, your thirty-day town clock, and your Founding Stone motto. It anchors your voice in the Forum and your future vote on the Golden Wall — and it stays yours forever, even if you never connect a wallet or one day sell a collectible.</p><p class="acct-state"><span class="acct-badge">Registry: 0 members</span><b>State: standing empty.</b> No name is written in the registry yet. The first member's stone is uncut — citizenship begins the day the joining door opens, and not a day before.</p></section>
+<section class="acct-inst"><p class="acct-tag">02 / 07 · Eligibility ≠ Ownership</p><h3>The Genesis Gate &amp; Collectible Pedestal</h3>
+<p class="acct-what">Two meters that are never blended. The left reads your <b>account</b>: whether you are eligible to claim. The right reads your <b>wallet</b>: whether you actually hold a Genesis Bricklayer collectible. Eligibility is not ownership, and ownership is not eligibility.</p>
+<div class="acct-meters">
+<div class="acct-meter"><h4>Left Meter — Genesis Eligibility Gate (Account State)</h4>
+<p>The three locks of the signed amendment:</p>
+<ul class="acct-locks">
+<li><b>Lock 1</b>Verified membership — not yet open</li>
+<li><b>Lock 2</b>Seven-day qualifying period — not yet begun</li>
+<li><b>Lock 3</b>First genuine deed — none recorded</li>
+</ul>
+<p><span class="acct-badge">Mainnet Sealed</span> The edition stands at SPECIMEN — 0 of 470 struck. The ceremony rehearses on devnet; mainnet opens only on the founder's DEPLOY word.</p></div>
+<div class="acct-meter"><h4>Right Meter — Verified Collectible Ownership (Wallet State)</h4>
+<p>When a wallet is connected at the Wallet Bridge below, this meter reads the chain for Genesis Bricklayer pieces (slots 001–470) held in it, and offers the birth certificate to share — carrying the piece's public serial, never a Bricklayer number.</p>
+<p><b>State: no wallet connected.</b> Nothing is held, nothing is claimed, and nothing is inferred.</p></div>
+</div></section>
+<section class="acct-inst"><p class="acct-tag">03 / 07 · Wallet</p><h3>The Optional Wallet Bridge — Read-Only Key Ring</h3><p class="acct-what">An optional link to your Phantom or Solflare public key. It displays your public address and your verified PROVADIA and Genesis holdings, read-only. It is never required to join the town, it never stores a private key, and it never authorizes a transaction on its own.</p><p class="acct-state"><b>State: not connected.</b> The bridge is crossed by your own hand, on the Coin door, whenever you choose: <a href="../coin/">connect read-only at the Coin</a>. This sanctuary asks for no signature tonight.</p></section>
+<section class="acct-inst"><p class="acct-tag">04 / 07 · Participation</p><h3>The Agora Ledger &amp; Honor Crests</h3><p class="acct-what">Your public Forum threads and replies, the entries your words crystallize into the Record, and the town's non-transferable citizenship honors — Genesis Member · Town Contributor · Community Builder · Knowledge Keeper · Anniversary Member — earned by deeds, never bought.</p><p class="acct-state"><b>State: an empty ledger.</b> The Forum stands open to read tonight with zero members and zero threads; no honor has been earned or awarded yet. <a href="../agora/">Enter the Forum</a>.</p></section>
+<section class="acct-inst"><p class="acct-tag">05 / 07 · Private Record</p><h3>The Acquisitions &amp; Commissions Vault</h3><p class="acct-what">Your private log of commissioned town services — a Mint scope, a Keeper session — with delivery checklists and thirty-day support windows, beside your saved store items, linked by reference only. This vault is sealed behind your session and is barred from every share payload the Nexus builds.</p><p class="acct-state"><b>State: sealed and empty.</b> No commission has been placed through this sanctuary, and the town's till stands closed tonight — the listings in <a href="../catalogue/">the Catalogue</a> show their gates honestly.</p></section>
+<section class="acct-inst"><p class="acct-tag">06 / 07 · Private Conversations</p><h3>The Keeper's Desk &amp; Support Archive</h3><p class="acct-what">Your private thread history with Solnik when he wakes, and your written support and escalation tickets — kept so you never have to repeat yourself, sealed behind your session, and barred from sharing.</p><p class="acct-state"><b>State: no threads.</b> Solnik stands honestly <b>OFF WATCH</b> tonight. Human support is live today at <a href="../agora/">the Support Desk in the Forum</a> — that door, and no invented mailbox, is where a person answers.</p></section>
+<section class="acct-inst"><p class="acct-tag">07 / 07 · Notifications &amp; Share Tools</p><h3>The Watch Bells &amp; Personal Nexus Kit</h3><p class="acct-what">Your opt-in bells — Forum replies, delivery milestones, a brick laid on the Wall — and your personal share kit: your public birth-certificate card and your invite link, for introducing new visitors by your own explicit act.</p><p class="acct-state"><b>State: the bells hang silent.</b> No member preferences exist to ring for, and no share kit is struck until a member and a collectible exist to carry it. The town's Nexus — the golden sphere at the top right of every door — already shares every public world tonight, from public facts only.</p></section>
+  <div class="foundation-stone"><p class="stone-eyebrow">The foundation stone of this sanctuary</p><p>PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall’s fate — and nothing else: no redemption, no yield, no rights, no expected return.</p></div>
+  <footer class="room-foot"><p class="footer-contract">9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump</p><p class="sign-off">Salt pays.</p><p class="house-line" style="margin-top:16px;font-size:11px">Also from our house — <a href="https://onejobkits.com" style="color:#C9A227">OneJobKits: practical kits for every job →</a></p></footer>
+<script type="application/json" id="nexus-share-manifest">{"title": "PROVADIA \u2014 My PROVADIA", "text": "My PROVADIA \u2014 the member sanctuary of the town of PROVADIA: citizenship, Genesis standing, and private records, never blended and never simulated.", "url": "https://provadiacoin.com/account/", "media": "https://provadiacoin.com/marks/front-published.webp"}</script>
+</main>
+<script type="module" src="../pageworld.js"></script>
+<script type="module" src="../engines/captain/captain.js"></script>
+<script type="module" src="../sections/record/record.js"></script>
+<script type="module" src="../sections/record/registry.js"></script>
+<script src="../design/vendor/driver.js"></script>
+<script src="../design/guide.js"></script>
+<script src="../design/keeper.js"></script>
+<script src="../account.js"></script>
+<script src="../nexus.js"></script>
+</body>
+</html>
