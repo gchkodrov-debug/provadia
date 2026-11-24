@@ -19,7 +19,6 @@
 .keeper-return .kr-door{display:inline-block;font-family:Cinzel,serif;font-size:1.25rem;color:#141210;background:#c9a227;border-radius:999px;padding:.85rem 2rem;text-decoration:none;box-shadow:0 0 44px rgba(201,162,39,.35)}
 .keeper-return .kr-door:hover{background:#e4c65b}
 </style>
-<link rel="stylesheet" href="../nexus.css">
 </head><body id="top" data-page="/catalogue/" data-listing-slug="keeper" data-price-missing="false" data-purchase-enabled="false" data-motion-tier="3"><!-- CANONICAL SHELL v1 — include verbatim; active door is set by shared.js. -->
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="town-header" data-shell="header">
@@ -76,6 +75,15 @@
 .sa-callout.right{right:3.5%;text-align:right}
 .sa-callout.center{left:50%;transform:translate(-50%,0);top:auto;bottom:9%;width:min(88%,42rem);text-align:center}
 .sa-callout.center .sa-title{font-size:clamp(1.35rem,3.2vw,2.2rem)}
+/* Fix pass (Gemini HOLD, 2026-11-23): the closing card is a solid plaque
+   (#141210 fill, 1px antique-gold border, full #E9DDC6 legibility) and
+   carries two titles — the separation title, then the reassembled-whole
+   title (the reassembled beat, .sa-whole). */
+.sa-callout.sa-closing{background:#141210;border:1px solid #C9A227;color:#E9DDC6;-webkit-backdrop-filter:none;backdrop-filter:none}
+.sa-callout.sa-closing .sa-line{color:#E9DDC6}
+.sa-callout .sa-title-b{display:none}
+.sa-callout.sa-whole .sa-title-a{display:none}
+.sa-callout.sa-whole .sa-title-b{display:block}
 .sa-cue{position:absolute;left:50%;top:1.1rem;transform:translateX(-50%);margin:0;font-family:Inter,sans-serif;font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;color:rgba(244,239,230,.85);text-shadow:0 1px 8px rgba(0,0,0,.9);z-index:3}
 .sa-rail{position:absolute;right:10px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:14px;z-index:4}
 .sa-rail button{width:26px;height:26px;border-radius:50%;border:1px solid rgba(201,162,39,.55);background:rgba(24,16,8,.55);color:#ffefc1;font-family:Cinzel,serif;font-size:.72rem;line-height:1;padding:0;cursor:pointer;opacity:.55}
@@ -108,8 +116,8 @@
       <p class="sa-callout left" data-sa-from="0.32" data-sa-to="0.44" data-sa-tip="0.475,0.410" data-sa-tip-end="0.455,0.402" data-sa-lock="126"><span class="sa-chip" aria-hidden="true">3</span><span class="sa-eyebrow">Layer 3 · What it is</span><span class="sa-title">The Voice and Tone</span><span class="sa-line">What it does: sets how the Keeper speaks — the voice, the tone, and the words it will not use.</span></p>
       <p class="sa-callout right" data-sa-from="0.44" data-sa-to="0.56" data-sa-tip="0.376,0.440" data-sa-tip-end="0.347,0.484" data-sa-lock="138"><span class="sa-chip" aria-hidden="true">4</span><span class="sa-eyebrow">Layer 4 · What it is</span><span class="sa-title">The Unanswered Questions</span><span class="sa-line">What it does: finds the questions nobody has answered yet — the blank pages — before a guest finds them first.</span></p>
       <p class="sa-callout left" data-sa-from="0.56" data-sa-to="0.68" data-sa-tip="0.624,0.478" data-sa-tip-end="0.549,0.469" data-sa-lock="150"><span class="sa-chip" aria-hidden="true">5</span><span class="sa-eyebrow">Layer 5 · What it is</span><span class="sa-title">Privacy and Escalation</span><span class="sa-line">What it does: draws the boundaries — what stays private, and when a question is handed to a human.</span></p>
-      <p class="sa-callout right" data-sa-from="0.68" data-sa-to="0.80" data-sa-tip="0.634,0.587" data-sa-tip-end="0.606,0.531" data-sa-lock="162"><span class="sa-chip" aria-hidden="true">6</span><span class="sa-eyebrow">Layer 6 · What it is</span><span class="sa-title">The Documented Experience</span><span class="sa-line">What it does: writes the whole welcome down — the proposed experience, documented and ready to agree.</span></p>
-      <p class="sa-callout center" data-sa-from="0.80" data-sa-to="1.01"><span class="sa-eyebrow">The Keeper</span><span class="sa-title">Every Layer, Named</span><span class="sa-line">That is the whole plan: a welcome built from approved answers and clear limits, with a human at the end of it. Proposed scope — to be agreed before booking.</span></p>
+      <p class="sa-callout left" data-sa-from="0.68" data-sa-to="0.80" data-sa-tip="0.634,0.587" data-sa-tip-end="0.606,0.531" data-sa-lock="162"><span class="sa-chip" aria-hidden="true">6</span><span class="sa-eyebrow">Layer 6 · What it is</span><span class="sa-title">The Documented Experience</span><span class="sa-line">What it does: writes the whole welcome down — the proposed experience, documented and ready to agree.</span></p>
+      <p class="sa-callout center sa-closing" data-sa-from="0.80" data-sa-to="1.01" data-sa-hold="1"><span class="sa-eyebrow">The Keeper</span><span class="sa-title sa-title-a">Every Layer, Named</span><span class="sa-title sa-title-b">The Chamber, Whole</span><span class="sa-line">That is the whole plan: a welcome built from approved answers and clear limits, with a human at the end of it. Proposed scope — to be agreed before booking.</span></p>
     </div>
     <nav class="sa-rail" aria-label="Jump to a layer">
       <button type="button" data-sa-goto="0.14" aria-label="Layer 1 — The Audience Map">1</button>
@@ -133,6 +141,7 @@
   var railBtns=Array.prototype.slice.call(section.querySelectorAll('.sa-rail button'));
   var TOTAL=379, pad=function(n){return ('00'+n).slice(-3);};
   var small=window.matchMedia('(max-width: 700px)').matches;
+  var mq767=window.matchMedia('(max-width: 767px)');
   var saveData=!!(navigator.connection&&navigator.connection.saveData);
   var step=(small||saveData)?2:1;
   var order=[]; for(var i=1;i<=TOTAL;i+=step){order.push(i);} if(order[order.length-1]!==TOTAL){order.push(TOTAL);}
@@ -186,7 +195,11 @@
       var c=callouts[b];
       var from=parseFloat(c.getAttribute('data-sa-from')), to=parseFloat(c.getAttribute('data-sa-to'));
       var o=0;
-      if(p>=from&&p<=to){ var span=to-from, f=Math.min(1,Math.min((p-from)/span,(to-p)/span)/0.16); o=Math.max(0,f);  }
+      if(p>=from&&p<=to){ var span=to-from;
+        if(c.getAttribute('data-sa-hold')){ o=Math.max(0,Math.min(1,(p-from)/span/0.16)); }
+        else { var f=Math.min(1,Math.min((p-from)/span,(to-p)/span)/0.16); o=Math.max(0,f); }
+      }
+      if(c.getAttribute('data-sa-hold')) c.classList.toggle('sa-whole', p>=0.935);
       c.style.opacity=o.toFixed(3); if(c._leader) c._leader.g.setAttribute('opacity',o.toFixed(3));
     }
     // Rail: light the tick of the layer whose window holds p.
@@ -232,6 +245,7 @@
         fx=it.tx+(it.ex-it.tx)*f; fy=it.ty+(it.ey-it.ty)*f;
       }
       var tx=((canvas.width-dw)/2 + fx*dw)/dpr, ty=((canvas.height-dh)/2 + fy*dh)/dpr;
+      if(mq767.matches) tx=Math.min(tx, stage.clientWidth*0.82);
       tx=Math.max(14,Math.min(stage.clientWidth-14,tx));
       ty=Math.max(10,Math.min(stage.clientHeight-10,ty));
       var r=it.c.getBoundingClientRect();
@@ -311,6 +325,4 @@
     <p class="house-line" style="margin-top:16px;font-size:11px">Also from our house — <a href="https://onejobkits.com" style="color:#C9A227">OneJobKits: practical kits for every job →</a></p>
   </div>
 </footer>
-<script src="../design/shared.js"></script><script src="../catalogue/delivered-media.js"></script><script src="../catalogue/media.js"></script><script src="../design/vendor/gsap.min.js"></script><script src="../design/vendor/ScrollTrigger.min.js"></script><script src="../design/vendor/three.min.js"></script><script src="../design/space.js"></script><script type="application/json" id="nexus-share-manifest">{"title": "PROVADIA \u2014 The Keeper", "text": "The Keeper of PROVADIA \u2014 a standing watch over your house's answers, kept by Solnik's discipline: six instruments, one honest scope, $5 to begin.", "url": "https://provadiacoin.com/listings/keeper.html", "media": "https://provadiacoin.com/marks/front-published.webp"}</script>
-<script src="../nexus.js"></script>
-</body></html>
+<script src="../design/shared.js"></script><script src="../catalogue/delivered-media.js"></script><script src="../catalogue/media.js"></script><script src="../design/vendor/gsap.min.js"></script><script src="../design/vendor/ScrollTrigger.min.js"></script><script src="../design/vendor/three.min.js"></script><script src="../design/space.js"></script></body></html>
