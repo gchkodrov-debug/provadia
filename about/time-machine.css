@@ -1,0 +1,87 @@
+/* PROVADIA — /about/ THE TIME MACHINE (T4-C builder seat)
+   Salt-to-Gold Monolith: pinned centrepiece + scrolling epoch cards.
+   Palette law: field/gold/pale from pages.css vars; bone + deep brown local;
+   bright gold reserved for the ignition moment (active tip dot / lit stratum). */
+:root{--bone:#E9DDC6;--brown:#30251B;--bright:#E4C65B}
+
+/* ---- epoch scrubber (Layer 3 functionality) ---- */
+.epoch-scrubber{border:1px solid rgba(201,162,39,.4);background:rgba(20,18,16,.9);padding:14px 16px;margin:0 0 18px}
+.scrubber-label{font-family:Cinzel,serif;letter-spacing:.22em;font-size:.64rem;text-transform:uppercase;color:var(--gold);margin:0 0 .6rem}
+.scrubber-row{display:flex;flex-wrap:wrap;gap:8px}
+.scrub-btn{font-family:Cinzel,serif;letter-spacing:.1em;font-size:.72rem;text-transform:uppercase;color:var(--pale);background:rgba(201,162,39,.07);border:1px solid rgba(201,162,39,.45);padding:.55rem .8rem;cursor:pointer}
+.scrub-btn:hover,.scrub-btn:focus-visible{background:rgba(201,162,39,.18);border-color:var(--gold);outline:none}
+.scrub-btn[aria-pressed="true"]{background:var(--gold);color:var(--ink);border-color:var(--gold);font-weight:700}
+
+/* ---- pinned-centre layout ---- */
+.tm-layout{display:grid;grid-template-columns:minmax(230px,320px) 1fr;gap:26px;align-items:start;margin:0 0 18px}
+.tm-centre{position:sticky;top:104px}
+.monolith-frame{border:1px solid rgba(201,162,39,.55);background:var(--brown);padding:10px;display:flex;flex-direction:column;gap:6px}
+.stratum{border:1px solid rgba(201,162,39,.28);padding:12px 10px;text-align:center;transition:box-shadow .5s ease,border-color .5s ease,background .5s ease}
+.stratum-name{font-family:Cinzel,serif;letter-spacing:.16em;font-size:.62rem;text-transform:uppercase;color:var(--bone)}
+.stratum-crown{background:rgba(20,18,16,.92)}
+.crown-coin{display:block;width:92px;height:92px;object-fit:contain;margin:0 auto 8px}
+.stratum-gold{background:linear-gradient(180deg,rgba(201,162,39,.34),rgba(201,162,39,.14));min-height:58px;display:flex;align-items:center;justify-content:center}
+.stratum-brick{background:repeating-linear-gradient(0deg,rgba(233,221,198,.16) 0 12px,rgba(48,37,27,.9) 12px 14px),var(--brown);min-height:52px;display:flex;align-items:center;justify-content:center}
+.stratum-halite{background:repeating-linear-gradient(45deg,rgba(244,239,230,.13) 0 9px,rgba(20,18,16,.85) 9px 18px);min-height:64px;display:flex;align-items:center;justify-content:center}
+/* ignition: the lit stratum — bright gold lives here and at the tip dot only */
+.stratum.is-lit{border-color:var(--bright);box-shadow:0 0 0 1px var(--bright),0 0 22px rgba(228,198,91,.35)}
+.stratum.is-lit .stratum-name{color:var(--pale)}
+.monolith-caption{font-size:.8rem;line-height:1.5;color:rgba(244,239,230,.62);margin:.6rem 0 0;text-align:center}
+
+/* film aperture — an intentional dark frame, empty until the captain's shoot */
+.film-slot{border:1px dashed rgba(201,162,39,.4);background:#0c0a08;min-height:86px;margin-top:2px}
+
+/* ---- epoch cards + leader lines ---- */
+.tm-parts{display:flex;flex-direction:column;gap:18px;min-width:0}
+.epoch-card{position:relative;border:1px solid rgba(201,162,39,.4);background:rgba(20,18,16,.92);padding:20px 22px 8px 30px}
+.epoch-card:focus{outline:2px solid var(--gold);outline-offset:2px}
+.leader{position:absolute;left:-27px;top:34px;width:26px;height:2px;display:block}
+.leader-line{display:block;height:2px;background:rgba(201,162,39,.3);width:100%}
+.leader-dot{position:absolute;right:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:rgba(201,162,39,.4)}
+.epoch-card.is-active{border-color:rgba(228,198,91,.75)}
+.epoch-card.is-active .leader-line{background:var(--bright)}
+.epoch-card.is-active .leader-dot{background:var(--bright);box-shadow:0 0 10px rgba(228,198,91,.8)}
+.epoch-num{font-family:Cinzel,serif;letter-spacing:.3em;font-size:.66rem;color:var(--gold);text-transform:uppercase;margin:0 0 .35rem}
+.epoch-title{font-family:Cinzel,serif;font-size:1.45rem;color:var(--pale);margin:0 0 .3rem;line-height:1.15}
+.epoch-dates{font-size:.82rem;letter-spacing:.06em;color:rgba(233,221,198,.72);margin:0 0 .8rem;text-transform:uppercase}
+.claim-list{margin:0 0 1rem;padding-left:1.1rem}
+.claim-list li{font-size:.94rem;line-height:1.6;color:rgba(244,239,230,.86);margin:.3rem 0}
+.thesis-line{font-family:Cinzel,serif;font-size:1.12rem;line-height:1.5;color:var(--pale);border-left:2px solid var(--gold);padding-left:.9rem;margin:.4rem 0 1rem}
+
+/* ---- strict badges ---- */
+.badge{display:inline-block;font-family:Cinzel,serif;letter-spacing:.18em;font-size:.62rem;text-transform:uppercase;padding:.34rem .7rem;border:1px solid var(--gold);color:var(--pale);margin:.2rem 0 .4rem}
+.badge-proven{background:rgba(201,162,39,.16)}
+.badge-interp{background:transparent;border-style:dashed;color:var(--bone)}
+.badge-philosophy{background:rgba(48,37,27,.9);color:var(--bone)}
+.badge-record{background:rgba(201,162,39,.28);font-weight:700}
+
+/* ---- citation ledger ---- */
+.ledger-wrap{overflow-x:auto}
+.ledger{width:100%;border-collapse:collapse;font-size:.86rem}
+.ledger th{font-family:Cinzel,serif;letter-spacing:.16em;font-size:.64rem;text-transform:uppercase;color:var(--gold);text-align:left;padding:.5rem .6rem;border-bottom:1px solid rgba(201,162,39,.5)}
+.ledger td{padding:.5rem .6rem;border-bottom:1px solid rgba(201,162,39,.18);line-height:1.5;color:rgba(244,239,230,.84);vertical-align:top}
+
+/* ---- mobile: centrepiece stacks above, leaders go vertical ---- */
+@media (max-width:760px){
+  .tm-layout{grid-template-columns:1fr;gap:14px}
+  .tm-centre{position:static}
+  /* compact monolith: the whole stack stays well under one 375px viewport
+     (~360px incl. caption) so Epoch 01 is a short scroll away, not a page */
+  .monolith-frame{padding:8px;gap:4px}
+  .stratum{padding:8px 6px}
+  .crown-coin{width:60px;height:60px;margin-bottom:5px}
+  .stratum-gold{min-height:42px}
+  .stratum-brick{min-height:38px}
+  .stratum-halite{min-height:46px}
+  .film-slot{min-height:48px}
+  .epoch-card{padding-left:22px}
+  .leader{left:8px;top:-15px;width:2px;height:14px}
+  .leader-line{width:2px;height:100%}
+  .leader-dot{right:-3px;top:auto;bottom:-4px}
+}
+
+/* ---- reduced motion: no choreography, everything simply stands ---- */
+@media (prefers-reduced-motion:reduce){
+  .stratum,.scrub-btn{transition:none}
+  html{scroll-behavior:auto}
+}
