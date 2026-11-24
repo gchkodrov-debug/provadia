@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="../sections/panels.css">
 <link rel="stylesheet" href="../sections/record/panels.css">
 <link rel="stylesheet" href="../pages.css">
+<link rel="stylesheet" href="time-machine.css">
 <noscript><style>#fade{display:none!important}#stage{display:none!important}.fallback-only{display:block!important}.cap-static{display:block!important}</style></noscript>
 <script>
 /* BOOT — the living world IS the site; the still town is its emergency net,
@@ -115,7 +116,6 @@
   }, 1000);
 })();
 </script>
-<link rel="stylesheet" href="../nexus.css">
 </head>
 <body>
 <div id="stage" aria-hidden="true"></div>
@@ -132,59 +132,104 @@
   <a class="door-link" href="../catalogue/">The Catalogue</a> <a class="door-link" href="../coin/">The Coin</a>
 </nav>
 
+
 <main class="room">
   <div id="fallback-note" class="fallback-only" role="note">
     <p class="fallback-note-line">The living world of this town needs a WebGL-capable browser. This is its still face — every word, record and door below is the town itself.</p>
   </div>
 
+
   <header class="room-head">
-    <p class="room-eyebrow">Page 6 · About Us</p>
-    <h1 class="room-title">What This Coin Is, and Why There Is No Other Project Like It</h1>
-    <p class="room-lede">What the coin is, what kind of coin it is, why people join and hold, and the foundation under it all — every line on this page stands behind a receipt, or it does not stand here.</p>
+    <p class="room-eyebrow">The Time Machine</p>
+    <h1 class="room-title">Down Through Salt, Up Into Gold</h1>
+    <p class="room-lede">This page is a descent. You go down slowly, the way the ground itself was laid down — past raw salt at about 5500 BC, past the gold of Varna at about 4560 BC — and you come back up into a living digital town in 2026 AD. Four strata. Four epochs. Every claim below carries its badge: what is proven, what is one scholar&rsquo;s reading, what is this house&rsquo;s philosophy, and what stands on a verified record.</p>
   </header>
 
-  <!-- FACE 1 · THE PLACE -->
-  <section class="town-panel" aria-label="The Place">
-    <div class="panel-inner">
-      <p class="panel-eyebrow">Face One · The Place</p>
-      <h2 class="panel-title">The Place</h2>
-      <p class="panel-lead">PROVADIA is a town before it is a token.</p>
-      <p class="panel-body">It is named for Provadia–Solnitsata — the salt town above Provadia, among the oldest settlements in Europe — where salt was baked into bricks and, in Professor Nikolov's reading of the evidence, carried as value. The town on this site is a rebuilding of that place: its streets, its Wall, and its book.</p>
-      <p class="panel-body">The archaeology under the name is proven, and it is told here in full. What the ground has given up:</p>
+  <nav class="epoch-scrubber" aria-label="Epoch scrubber">
+    <p class="scrubber-label">Epoch scrubber — jump the descent:</p>
+    <div class="scrubber-row">
+      <button type="button" class="scrub-btn" data-scrub="1" aria-controls="epoch-1" aria-pressed="false">01 · Salt Town</button>
+      <button type="button" class="scrub-btn" data-scrub="2" aria-controls="epoch-2" aria-pressed="false">02 · Varna Gold</button>
+      <button type="button" class="scrub-btn" data-scrub="3" aria-controls="epoch-3" aria-pressed="false">03 · The Thesis</button>
+      <button type="button" class="scrub-btn" data-scrub="4" aria-controls="epoch-4" aria-pressed="false">04 · The Living Town</button>
+    </div>
+  </nav>
 
-      <div class="fact-list">
-        <div class="fact-block">
-          <p><span class="fact-lead">Found by accident —</span> In October 1972 an excavator operator, Raycho Marinov, struck gold in Varna's industrial zone and carried a shoebox of it to the museum.</p>
+  <div class="tm-layout">
+    <div class="tm-centre">
+      <div class="monolith" role="img" aria-label="The monolith: a vertical core of four strata — raw halite salt at the base, then salt brick, then Varna gold, crowned by the struck PROVADIA medallion">
+        <div class="monolith-frame">
+          <div class="stratum stratum-crown" data-stratum="medallion">
+            <img class="crown-coin" src="../design/assets/coin-face-front-3d.webp" alt="The struck PROVADIA medallion — the coin&rsquo;s true face">
+            <span class="stratum-name">The Struck Medallion · 2026</span>
+          </div>
+          <div class="stratum stratum-gold" data-stratum="gold">
+            <span class="stratum-name">Varna Gold · ~4560 BC</span>
+          </div>
+          <div class="stratum stratum-brick" data-stratum="brick">
+            <span class="stratum-name">Salt Brick</span>
+          </div>
+          <div class="stratum stratum-halite" data-stratum="halite">
+            <span class="stratum-name">Raw Halite · ~5500 BC</span>
+          </div>
+          <div class="film-slot" data-film-slot="about-strata-4layer-v1" data-film-state="awaiting-captain-shoot"></div>
         </div>
-        <div class="fact-block">
-          <p><span class="fact-lead">The dating —</span> Radiocarbon puts the Varna cemetery in use about 4560–4450 BC.</p>
-        </div>
-        <div class="fact-block">
-          <p><span class="fact-lead">The gold —</span> More than 3,000 objects, over 6 kg of gold — among them the sceptre of Grave 43, a stone axe on a gold-sheathed shaft, buried with the man the museum calls most likely a chief and priest.</p>
-        </div>
-      </div>
-
-      <div class="interpretation-block" role="note" aria-label="Interpretation — not settled fact">
-        <p class="interpretation-label">Interpretation — Not Settled Fact</p>
-        <p>Professor Vasil Nikolov, the salt town's excavator, holds that salt was money — that the salt brick was currency and Provadia Europe's first mint, and that salt wealth explains Varna's gold. He admits there is no direct evidence for how the trade worked; other scholars call 'Europe's oldest town' hyperbole. In this town we tell it as what it is: one professor's reading of the ground.</p>
-      </div>
-
-      <div class="foundation-stone">
-        <p class="stone-eyebrow">The threshold stone of this page</p>
-        <p>PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall’s fate — and nothing else: no redemption, no yield, no rights, no expected return.</p>
+        <p class="monolith-caption">The monolith stands at the centre. As each epoch passes, its stratum lights.</p>
       </div>
     </div>
-  </section>
 
-  <!-- FACE 2 · THE COIN -->
-  <section class="town-panel" aria-label="The Coin">
-    <div class="panel-inner">
-      <p class="panel-eyebrow">Face Two · The Coin</p>
-      <h2 class="panel-title">The Coin</h2>
-      <p class="panel-lead">A fixed-supply town coin whose whole life is written in a public record.</p>
-      <p class="panel-body">Strictly the launch facts, each with its receipt — no more than the receipts carry, and none fewer:</p>
+    <div class="tm-parts">
 
-      <div class="fact-list">
+      <article class="epoch-card" id="epoch-1" data-epoch="1" data-lights="halite brick" tabindex="-1" aria-label="Epoch 01 — Provadia–Solnitsata">
+        <span class="leader" aria-hidden="true"><span class="leader-line"></span><span class="leader-dot"></span></span>
+        <p class="epoch-num">Epoch 01</p>
+        <h2 class="epoch-title">Provadia–Solnitsata — The Salt Town</h2>
+        <p class="epoch-dates">~5500–4200 BC · above Provadia, Bulgaria</p>
+        <p><span class="badge badge-proven">Proven Archaeology</span></p>
+        <ul class="claim-list">
+          <li>Among Europe&rsquo;s oldest known prehistoric salt-production centres.</li>
+          <li>A fortified salt-making settlement above Provadia, Bulgaria.</li>
+          <li>Salt was baked into bricks.</li>
+        </ul>
+        <p><span class="badge badge-interp">Scholarly Interpretation</span></p>
+        <ul class="claim-list">
+          <li>Professor Vassil Nikolov&rsquo;s reading: the salt cakes served as early prestige and exchange value — in his words, salt was money, and Provadia was Europe&rsquo;s first mint.</li>
+          <li>He admits, in his own words on the record, that there is no direct evidence for how the trade worked. This town tells his reading as a reading — never as settled fact.</li>
+        </ul>
+      </article>
+
+      <article class="epoch-card" id="epoch-2" data-epoch="2" data-lights="gold" tabindex="-1" aria-label="Epoch 02 — The Varna Necropolis">
+        <span class="leader" aria-hidden="true"><span class="leader-line"></span><span class="leader-dot"></span></span>
+        <p class="epoch-num">Epoch 02</p>
+        <h2 class="epoch-title">The Varna Necropolis — The Gold</h2>
+        <p class="epoch-dates">~4560–4450 BC · found October 1972</p>
+        <p><span class="badge badge-proven">Proven Archaeology</span></p>
+        <ul class="claim-list">
+          <li>Radiocarbon dates the cemetery to about 4560–4450 BC.</li>
+          <li>More than 3,000 gold objects, over 6 kg — among the oldest worked gold in human history.</li>
+          <li>Found by accident in October 1972 by excavator operator Raycho Marinov.</li>
+          <li>Grave 43 held a sceptre — a stone axe on a gold-sheathed shaft — buried with a man scholarship calls most likely a chief and priest. Not a proven king; this town does not crown him.</li>
+        </ul>
+      </article>
+
+      <article class="epoch-card" id="epoch-3" data-epoch="3" data-lights="brick gold" tabindex="-1" aria-label="Epoch 03 — Salt, the Original Currency">
+        <span class="leader" aria-hidden="true"><span class="leader-line"></span><span class="leader-dot"></span></span>
+        <p class="epoch-num">Epoch 03</p>
+        <h2 class="epoch-title">Salt, the Original Currency</h2>
+        <p class="epoch-dates">The house thesis · stated as philosophy, not archaeology</p>
+        <p><span class="badge badge-philosophy">House Philosophy</span></p>
+        <p class="thesis-line">Bitcoin is energy. PROVADIA is salt — the original currency — now working as the money of a service town.</p>
+        <p class="panel-body">That sentence is this town&rsquo;s thesis — the belief the house is built on. It is not a claim about what the ground has proven, and it is badged so no reader mistakes the one for the other.</p>
+      </article>
+
+      <article class="epoch-card" id="epoch-4" data-epoch="4" data-lights="medallion" tabindex="-1" aria-label="Epoch 04 — The Living Digital Town">
+        <span class="leader" aria-hidden="true"><span class="leader-line"></span><span class="leader-dot"></span></span>
+        <p class="epoch-num">Epoch 04</p>
+        <h2 class="epoch-title">The Living Digital Town</h2>
+        <p class="epoch-dates">18 November 2026 · the ascent — you are standing in it</p>
+        <p><span class="badge badge-record">Verified Record</span></p>
+        <p class="panel-body">Strictly the launch facts, each with its receipt — no more than the receipts carry, and none fewer:</p>
+        <div class="fact-list">
         <div class="fact-block">
           <p><span class="fact-lead">Supply —</span> 1,000,000,000 · fixed.</p>
         </div>
@@ -213,8 +258,7 @@
           <p><span class="fact-lead">Utility —</span> in-ecosystem only: pay for products and services · the 20% direct-PROVADIA payment discount · Bricklayer registry standing · the vote on the Golden Wall's fate. Not a gas/platform coin, not gold-backed, no yield, no rights.</p>
         </div>
       </div>
-
-      <div class="contract-block">
+        <div class="contract-block">
         <p class="contract-label">The coin's only name on-chain:</p>
         <div class="contract-row">
           <p class="contract-address">9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump</p>
@@ -224,98 +268,69 @@
           <li><a href="https://dexscreener.com/solana/2fvtfwcco71j8xepws7yrez3569u2gxu4fyhe2h8oxdy" target="_blank" rel="noopener">The pair on Dexscreener</a></li>
         </ul>
       </div>
+        <div class="sub-block">
+          <h3 class="sub-block-title">The 80/20 Covenant</h3>
+          <p class="panel-body">Of the creator fees: 20% goes to the Golden Wall forever, buying physical one-gram gold bars into a named third-party vault the founder never holds. The founder&rsquo;s share is 80% — his disclosed income, stated in the open. The Wall is counted in grams and bricks only. It is never backing, and never redeemable.</p>
+          <p class="panel-body">The Umbrella, in its true state: independent family houses keep 100% of their fees and pay their own costs — no levy is taken from any house. The founder&rsquo;s own split above is his alone; it is not charged to the family.</p>
+        </div>
+        <div class="foundation-stone">
+        <p class="stone-eyebrow">The threshold stone of this page</p>
+        <p>PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall’s fate — and nothing else: no redemption, no yield, no rights, no expected return.</p>
+      </div>
+      </article>
+
+    </div>
+  </div>
+
+  <section class="town-panel" aria-label="Citation Ledger">
+    <div class="panel-inner">
+      <p class="panel-eyebrow">Citation Ledger</p>
+      <h2 class="panel-title">Every Claim, Its Badge, Its Source</h2>
+      <div class="ledger-wrap">
+      <table class="ledger">
+        <thead><tr><th scope="col">Claim</th><th scope="col">Badge</th><th scope="col">Source</th></tr></thead>
+        <tbody>
+          <tr><td>Settlement and salt production span about 5500–4200 BC</td><td>Proven Archaeology</td><td>Excavation record, Provadia–Solnitsata</td></tr>
+          <tr><td>Among Europe&rsquo;s oldest known prehistoric salt-production centres</td><td>Proven Archaeology</td><td>Excavation record, Provadia–Solnitsata</td></tr>
+          <tr><td>A fortified salt-making settlement; salt baked into bricks</td><td>Proven Archaeology</td><td>Excavation record, Provadia–Solnitsata</td></tr>
+          <tr><td>Salt cakes as early prestige / exchange value — &ldquo;salt was money&rdquo;, &ldquo;Europe&rsquo;s first mint&rdquo;</td><td>Scholarly Interpretation</td><td>Nikolov, scholarly interpretation</td></tr>
+          <tr><td>No direct evidence for how the trade worked</td><td>Scholarly Interpretation</td><td>Nikolov, scholarly interpretation (his own admission)</td></tr>
+          <tr><td>Varna cemetery in use about 4560–4450 BC</td><td>Proven Archaeology</td><td>Radiocarbon dating</td></tr>
+          <tr><td>More than 3,000 gold objects, over 6 kg — among the oldest worked gold in human history</td><td>Proven Archaeology</td><td>Varna Museum scholarship</td></tr>
+          <tr><td>Found by accident, October 1972, by Raycho Marinov</td><td>Proven Archaeology</td><td>Varna Museum scholarship</td></tr>
+          <tr><td>Grave 43: sceptre buried with a man most likely a chief and priest</td><td>Proven Archaeology</td><td>Varna Museum scholarship</td></tr>
+          <tr><td>&ldquo;Bitcoin is energy. PROVADIA is salt — the original currency.&rdquo;</td><td>House Philosophy</td><td>The house thesis, About / Ecosystem / Day-Book</td></tr>
+          <tr><td>Launch facts: supply, standard, launch, founder&rsquo;s buy, Mayhem Mode OFF, sector, category, utility</td><td>Verified Record</td><td>On-chain record, 2026-11-18</td></tr>
+          <tr><td>Creator fees split 80/20 — 20% to the Golden Wall forever</td><td>Verified Record</td><td>Founder's covenant — disclosed on the Record page, the split shown plainly</td></tr>
+        </tbody>
+      </table>
+      </div>
     </div>
   </section>
 
-  <!-- FACE 3 · WHY THIS PROJECT -->
-  <section class="town-panel" aria-label="Why This Project">
+  <section class="town-panel" aria-label="The Town Today">
     <div class="panel-inner">
-      <p class="panel-eyebrow">Face Three · Why This Project</p>
-      <h2 class="panel-title">Why People Join and Hold</h2>
-
+      <p class="panel-eyebrow">The Town Today</p>
+      <h2 class="panel-title">The Town Today</h2>
       <div class="sub-block">
-        <h3 class="sub-block-title">The Keeper Never Sleeps</h3>
-        <p class="panel-body">Customer service in this town runs 24/7, by two doors. The first door is email: <a href="mailto:support@provadiacoin.com">support@provadiacoin.com</a>, answered on the same watch as the founder's store. The second door is the one no other project has: the Captain himself, resident in his house — Solnik, in his Chamber on <a href="../record/">the Record page</a>, a real mind who knows the record, the Wall, the rules and the roads, and answers for all of it.</p>
-        <p class="panel-body">Every other project leaves a visitor alone with a chart; this town has a keeper in the house at 3 AM.</p>
+        <h3 class="sub-block-title">The Keeper</h3>
+        <p class="panel-body">Customer service in this town runs by two doors. The first door is email: <a href="mailto:support@provadiacoin.com">support@provadiacoin.com</a>, answered on the same watch as the founder&rsquo;s store. The second door is the Captain himself, resident in his house — Solnik, in his Chamber on <a href="../record/">the Record page</a>.</p>
         <div class="wall-slot" role="note" aria-label="The honest line, today">
           <p>The honest line, today: the keeper's house is built; he wakes when the host stands. The email door answers today — write, and the town answers on its watch. The keeper's living voice wakes when the town's host stands, and this face will say so on the day it does, and not a day before.</p>
         </div>
       </div>
-
-      <div class="sub-block">
-        <h3 class="sub-block-title">The Town of Record</h3>
-        <p class="panel-body">Nothing renders in this town that isn't receipted — 1 claim = 1 receipt, or it never happened. Any visitor can run the Verifier with their own hands and check the town's book themselves, in their own browser. This page asks no one to take its word for anything.</p>
-        <p class="panel-body">Run it yourself → <a href="../record/">The Record</a></p>
-      </div>
-
       <div class="sub-block">
         <h3 class="sub-block-title">The Golden Wall</h3>
-        <p class="panel-body">20% of creator fees, off the top, forever, buys physical one-gram gold bars into a named third-party vault the founder never holds. The Wall is counted in grams and bricks only — 0/47 today, honestly. The wall belongs to no one. It is never backing, and never redeemable.</p>
+        <p class="panel-body">20% of creator fees, off the top, forever, buys physical one-gram gold bars into a named third-party vault the founder never holds. The Wall is counted in grams and bricks only — 0/47 today, honestly. The launch posts are still held, because Brick #1 — the founder&rsquo;s own first brick — is honestly pending. The wall belongs to no one. It is never backing, and never redeemable.</p>
       </div>
-
-      <div class="sub-block">
-        <h3 class="sub-block-title">The Umbrella</h3>
-        <p class="panel-body">A family that builds coins for others under one law: build labor by the town, the founder's own creation charges his own — paid from his own wallet — the split shown plainly (80/10/10, on the Record page), and every house receipted at birth.</p>
-        <p class="panel-body">The law → <a href="../record/">The Record</a> · The door → <a href="../knock/">The Knock</a></p>
-      </div>
-
-      <div class="sub-block">
-        <h3 class="sub-block-title">Vault 1 — The Smart Contract</h3>
-        <p class="panel-body">A contract whose book is open: the community tenth enters Vault 1's tithe book in public, hash-chained and verifiable, and funds the town's works under the founder's ruling. Every coin in and every coin out is receipted.</p>
-        <p class="panel-body">What the tenth is spent on is the founder's decision, deferred by his ruling — said plainly, here as everywhere in this town. The contract accounts; it does not promise.</p>
-      </div>
-
-      <div class="sub-block">
-        <h3 class="sub-block-title">The Town's Claim</h3>
-        <p class="panel-body">We know of no other project that:</p>
-        <div class="fact-list">
-          <div class="fact-block">
-            <p>verifies its own record in the visitor's own browser;</p>
-          </div>
-          <div class="fact-block">
-            <p>builds coins for others under a published covenant;</p>
-          </div>
-          <div class="fact-block">
-            <p>accounts a community tenth in an open chained book.</p>
-          </div>
-        </div>
-        <p class="panel-body">That is the town's claim, stated in the town's words — never as a proven fact about the world. Check what can be checked: the record stands open on the page beside this one.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- FACE 4 · THE FOUNDATION -->
-  <section class="town-panel" aria-label="The Foundation">
-    <div class="panel-inner">
-      <p class="panel-eyebrow">Face Four · The Foundation</p>
-      <h2 class="panel-title">The Foundation</h2>
-      <p class="panel-lead">Minimum-first, always.</p>
-      <p class="panel-body">One gram of gold · a contract that costs cents a year · an $11 domain — the smallest thing that produces, scaled only on a named need. Nothing in this town was bought big to look big.</p>
-
-      <div class="sub-block">
-        <h3 class="sub-block-title">The Record Before the Promotion</h3>
-        <p class="panel-body">The Day-Book stood before any launch post. The launch posts are still held today, because Brick #1 — the founder's own first brick — is honestly pending. The Wall reads 0/47 until it is bought and receipted, and then it will read one more, with the receipt beside it.</p>
-      </div>
-
-      <div class="sub-block">
-        <h3 class="sub-block-title">The Founder Is Named</h3>
-        <p class="panel-body">The founder is George, who signs the record. His share is disclosed on <a href="../record/">the Record page</a>, in the open, where anyone can read it.</p>
-      </div>
-
       <div class="sub-block">
         <h3 class="sub-block-title">The Support Standard</h3>
         <p class="panel-body">The town answers to the same standard George set for his store, OneJobKits: <a href="mailto:support@provadiacoin.com">support@provadiacoin.com</a>, answered on the watch — and we never DM first. The desk itself is <a href="../agora/">the Forum page</a>.</p>
       </div>
-    </div>
-  </section>
-
-  <!-- FACE 5 · THE DOOR -->
-  <section class="town-panel" aria-label="The Door">
-    <div class="panel-inner">
-      <p class="panel-eyebrow">Face Five · The Door</p>
-      <h2 class="panel-title">The Door</h2>
-      <p class="panel-lead">Where to go next — one doorway each.</p>
-      <ul class="way-list">
+      <div class="sub-block">
+        <h3 class="sub-block-title">The Door</h3>
+        <p class="panel-lead">Where to go next — one doorway each.</p>
+        <ul class="way-list">
         <li>
           <a href="../record/">Talk to the Captain</a>
           <p>His Chamber stands at the head of the Record page — his seat, his tales, and the roads he carries.</p>
@@ -337,6 +352,7 @@
           <p>The Forum — where people talk, and where the support desk stands.</p>
         </li>
       </ul>
+      </div>
     </div>
   </section>
 
@@ -348,7 +364,6 @@
 </main>
 
 <script type="module" src="../pageworld.js"></script>
-<script type="application/json" id="nexus-share-manifest">{"title": "PROVADIA \u2014 About Us", "text": "What PROVADIA is: Bitcoin is energy; Provadia is salt, the original currency \u2014 now working as the money of a service town.", "url": "https://provadiacoin.com/about/", "media": "https://provadiacoin.com/marks/front-published.webp"}</script>
-<script src="../nexus.js"></script>
+<script src="time-machine.js"></script>
 </body>
 </html>
