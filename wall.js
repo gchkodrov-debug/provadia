@@ -182,7 +182,7 @@
       el.style.transform = 'translateY(' + (SPREAD[i] * sep) + 'vh)';
     });
     if (plumb) plumb.style.opacity = String(sep * 0.9);
-    if (obelisk) obelisk.style.top = (34 + sep * 8 - smooth((p - 0.88) / 0.10) * 8) + '%';
+    if (obelisk) obelisk.style.top = (30 - sep * 10 + smooth((p - 0.88) / 0.10) * 4) + '%';
 
     /* arrival copy: present at rest, gone by frame ~18 */
     if (arrival) arrival.style.opacity = String(1 - smooth((frame - 6) / 12));
