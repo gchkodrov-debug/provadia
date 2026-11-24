@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://unpkg.com; connect-src https://api.mainnet-beta.solana.com https://api.devnet.solana.com; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<title>PROVADIA — Night Brick Anchor</title>
+<style>
+  :root{--bg:#141210;--gold:#C9A227;--cream:#E9DDC6;--brown:#30251B}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--cream);font-family:Georgia,'Times New Roman',serif;line-height:1.6}
+  main{max-width:760px;margin:0 auto;padding:48px 24px 64px}
+  h1{color:var(--gold);font-weight:normal;letter-spacing:.08em;font-size:28px;margin:0 0 8px}
+  h2{color:var(--gold);font-weight:normal;font-size:18px;margin:32px 0 8px}
+  .rule{border-top:1px solid var(--gold);opacity:.6;margin:20px 0}
+  .memo{background:var(--brown);border:1px solid var(--gold);padding:20px;word-break:break-all;font-size:17px}
+  .meta{font-size:15px}.meta dt{color:var(--gold)}.meta dd{margin:0 0 10px;word-break:break-all}
+  button{background:transparent;color:var(--cream);border:1px solid var(--gold);padding:12px 20px;font:inherit;cursor:pointer;margin:8px 8px 8px 0}
+  button:hover{background:var(--brown)} button:disabled{opacity:.45;cursor:default}
+  #wallet,#result,#verifyVerdict{word-break:break-all;margin-top:12px}
+  #verifyVerdict{font-weight:bold}
+  #verifyVerdict.ok{color:#9fce8a}
+  #verifyVerdict.bad{color:#f2a6a6}
+  #error{display:none;background:#3a1a1a;border:1px solid #a33;color:#f2c6c6;padding:14px;margin-top:16px;white-space:pre-wrap;word-break:break-word}
+  a{color:var(--gold)}
+</style>
+</head>
+<body>
+<main>
+  <h1>PROVADIA</h1>
+  <p>The Night Brick — Day-Book Root Anchor</p>
+  <div class="rule"></div>
+
+  <h2>The memo — in full, before any signing</h2>
+  <p class="memo" id="memoText">PROVADIA · DAYBOOK ROOT v1 · MAINNET · 79e375edd0f466d259366c002088eb666c8e1f55464e615882c202356ec6face · 7 ENTRIES · 2026-11-23</p>
+
+  <dl class="meta">
+    <dt>Day-Book root</dt>
+    <dd>79e375edd0f466d259366c002088eb666c8e1f55464e615882c202356ec6face</dd>
+    <dt>Entries</dt>
+    <dd>7 ENTRIES · 2026-11-23</dd>
+    <dt>Network</dt>
+    <dd><strong>Solana MAINNET-BETA — this is mainnet: real SOL, and a signed anchor is permanent.</strong> It is not devnet and not a rehearsal.</dd>
+    <dt>What this transaction does</dt>
+    <dd>It writes the memo above to Solana via the Memo program — one instruction, no keys, nothing else.</dd>
+    <dt>Cost &amp; what moves</dt>
+    <dd>Expected fee: 0.000005 SOL (5,000 lamports for one signature; no priority fee is added). The fee payer pays that fee and NOTHING else moves — no transfer, no approval.</dd>
+  </dl>
+
+  <div class="rule"></div>
+  <button id="connectBtn">Connect Wallet</button>
+  <button id="signBtn" disabled>Sign the Night Brick</button>
+  <div id="wallet" aria-live="polite"></div>
+  <div id="result" aria-live="polite"></div>
+  <div id="verifyVerdict" aria-live="polite"></div>
+  <div id="error" role="alert"></div>
+</main>
+
+<script src="https://unpkg.com/@solana/web3.js@1.99.0/lib/index.iife.min.js" integrity="sha384-DjHoHg45N+L5RZPO5p+uK874TyHExfoonwFDUKKpozAERZGg+SY8y+ntxvWd672b" crossorigin="anonymous"></script>
+<!-- Construction below mirrors anchor-tx.mjs faithfully: same single Memo instruction, keys [], utf8 data, feePayer + recentBlockhash only. -->
+<script>
+const CLUSTER = 'devnet'; // GO-LIVE: re-verify this constant before any mainnet signing
+const MEMO_PROGRAM_ID = 'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr';
+const RPC = CLUSTER === 'devnet'
+  ? 'https://api.devnet.solana.com'
+  : 'https://api.mainnet-beta.solana.com';
+// FIX 2 (critic 2a): the memo lives in this JS string constant ONLY.
+// The displayed memo is rendered FROM this constant on load (below), signed
+// bytes are built FROM this constant, and at sign time the rendered text is
+// asserted equal to this constant — the DOM is never the source of the memo.
+const MEMO_TEXT = 'PROVADIA · DAYBOOK ROOT v1 · MAINNET · 79e375edd0f466d259366c002088eb666c8e1f55464e615882c202356ec6face · 7 ENTRIES · 2026-11-23';
+
+let provider = null;
+let walletPubkey = null;
+let connecting = false;
+let signing = false;
+let submitted = false;
+// FIX 3 (critic 2b): set when Phantom reports accountChanged. While set,
+// signing stays disabled until the founder explicitly clicks Connect again
+// for the new account — the fee payer is never silently retargeted.
+let accountChangeRequiresReconnect = false;
+const $ = id => document.getElementById(id);
+function showError(e) {
+  const box = $('error');
+  box.style.display = 'block';
+  box.textContent = 'Error: ' + (e && e.message ? e.message : String(e));
+}
+function clearError() { $('error').style.display = 'none'; $('error').textContent = ''; }
+function renderWallet() {
+  // The founder must see WHO pays and WHERE (which cluster) before signing.
+  $('wallet').textContent = walletPubkey
+    ? 'Connected: ' + walletPubkey.toString() +
+      ' · Cluster: ' + CLUSTER + ' (MAINNET)' +
+      ' · Fee payer: ' + walletPubkey.toString() +
+      ' · Expected fee: 0.000005 SOL'
+    : 'Not connected.';
+}
+function setDisconnected(message) {
+  walletPubkey = null;
+  accountChangeRequiresReconnect = false;
+  $('signBtn').disabled = true;
+  renderWallet();
+  if (message) showError(new Error(message));
+}
+function watchWalletEvents(p) {
+  if (!p || typeof p.on !== 'function' || p.__anchorWatched) return;
+  p.__anchorWatched = true;
+  p.on('disconnect', () => {
+    if (signing) return; // an in-flight signAndSend reports its own outcome
+    setDisconnected('Wallet disconnected. Nothing was signed — reconnect to continue.');
+  });
+  p.on('accountChanged', (newPubkey) => {
+    if (signing) return; // never swap the payer mid-flight; the pre-sign check guards the next attempt
+    if (!newPubkey) {
+      setDisconnected('Wallet account disconnected. Nothing was signed — reconnect to continue.');
+      return;
+    }
+    // FIX 3 (critic 2b): account changed under the page. This handler does
+    // exactly what this comment says: it updates the DISPLAY to the new
+    // account, sets accountChangeRequiresReconnect, and DISABLES signing.
+    // It does NOT adopt the new account as the fee payer for signing — the
+    // founder must explicitly click Connect again for the new account
+    // before Sign is re-enabled. No silent retargeting of the fee payer.
+    walletPubkey = newPubkey;
+    accountChangeRequiresReconnect = true;
+    if (!submitted) $('result').textContent = ''; // never erase a submitted signature from the page
+    showError(new Error('Wallet account changed to ' + newPubkey.toString() + '. Signing is disabled — click Connect again to explicitly connect this account before signing.'));
+    renderWallet();
+    $('signBtn').disabled = true;
+  });
+}
+
+// FIX 2 (critic 2a): render the displayed memo FROM the constant on load.
+document.getElementById('memoText').textContent = MEMO_TEXT;
+renderWallet();
+
+$('connectBtn').addEventListener('click', async () => {
+  if (connecting || signing) return;
+  connecting = true;
+  $('connectBtn').disabled = true;
+  clearError();
+  try {
+    // Phantom only: window.phantom.solana, or window.solana when it identifies as Phantom.
+    // A different wallet injecting window.solana must not be silently used in Phantom's name.
+    provider = window.phantom?.solana ?? (window.solana && window.solana.isPhantom ? window.solana : null);
+    if (!provider) throw new Error('Phantom wallet not found. Install Phantom, unlock it, then reload this page.');
+    const resp = await provider.connect();
+    walletPubkey = resp.publicKey || provider.publicKey;
+    if (!walletPubkey) throw new Error('Wallet connected but returned no public key.');
+    // FIX 3: an explicit Connect click is the only way to clear the
+    // accountChanged lockout and adopt this account as the fee payer.
+    accountChangeRequiresReconnect = false;
+    watchWalletEvents(provider);
+    renderWallet();
+    $('signBtn').disabled = submitted;
+  } catch (e) { showError(e); }
+  finally { connecting = false; $('connectBtn').disabled = false; }
+});
+
+function showResult(sig, statusLine) {
+  // Built with DOM APIs, never innerHTML: a signature string comes from the wallet,
+  // and it is validated as base58 before it is ever placed in a link.
+  const box = $('result');
+  box.textContent = '';
+  const line = document.createElement('div');
+  line.textContent = statusLine;
+  const sigLine = document.createElement('div');
+  sigLine.textContent = 'Signature: ' + sig;
+  const link = document.createElement('a');
+  link.href = 'https://solscan.io/tx/' + sig;
+  link.target = '_blank';
+  link.rel = 'noopener';
+  link.textContent = 'View on Solscan';
+  box.append(line, sigLine, link);
+}
+
+function showVerifyVerdict(ok, line) {
+  const box = $('verifyVerdict');
+  box.textContent = line;
+  box.className = ok ? 'ok' : 'bad';
+}
+// Minimal base58 decoder (Bitcoin/Solana alphabet) — web3.js returns legacy
+// instruction data as a base58 string; the page must decode it itself to
+// byte-compare the landed memo (FIX 6) without any extra dependency.
+function decodeBase58(str) {
+  const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+  const bytes = [0];
+  for (const ch of str) {
+    const v = ALPHABET.indexOf(ch);
+    if (v < 0) throw new Error('invalid base58 in landed transaction data');
+    let carry = v;
+    for (let i = 0; i < bytes.length; i++) { carry += bytes[i] * 58; bytes[i] = carry & 0xff; carry >>= 8; }
+    while (carry > 0) { bytes.push(carry & 0xff); carry >>= 8; }
+  }
+  let zeros = 0;
+  while (zeros < str.length && str[zeros] === '1') zeros++;
+  const out = new Uint8Array(zeros + bytes.length);
+  for (let i = 0; i < bytes.length; i++) out[zeros + bytes.length - 1 - i] = bytes[i];
+  return str.length === 0 ? new Uint8Array(0) : out.slice(zeros === 0 && bytes.length === 1 && bytes[0] === 0 ? 1 : 0);
+}
+// FIX 6 (critic 5b): post-landing verification, ported from rehearse.mjs.
+// Fetches the landed transaction and verifies it against the constant.
+// Returns { ok, line } — the day is anchored only when ok is true.
+async function verifyLandedTransaction(web3, connection, sig) {
+  let landed = null;
+  for (let i = 0; i < 10 && !landed; i++) {
+    landed = await connection.getTransaction(sig, { commitment: 'confirmed', maxSupportedTransactionVersion: 0 });
+    if (!landed) await new Promise(r => setTimeout(r, 1500));
+  }
+  if (!landed) return { ok: false, line: 'MEMO VERIFICATION FAILED — could not fetch the landed transaction (getTransaction returned null). Do NOT treat this day as anchored.' };
+  const fail = (specific) => ({ ok: false, line: 'MEMO VERIFICATION FAILED — ' + specific + ' Do NOT treat this day as anchored.' });
+  const message = landed.transaction && landed.transaction.message;
+  if (!message) return fail('landed transaction has no message.');
+  const accountKeys = message.staticAccountKeys || message.accountKeys || [];
+  const rawIxs = message.compiledInstructions || message.instructions || [];
+  if (rawIxs.length !== 1) return fail('expected exactly 1 instruction, found ' + rawIxs.length + '.');
+  const ix = rawIxs[0];
+  const programId = ix.programId ? ix.programId.toString()
+    : (accountKeys[ix.programIdIndex] ? accountKeys[ix.programIdIndex].toString() : '');
+  if (programId !== MEMO_PROGRAM_ID) return fail('program mismatch: expected Memo program ' + MEMO_PROGRAM_ID + ', found ' + (programId || 'unknown') + '.');
+  const accounts = ix.accountKeyIndexes || ix.accounts || [];
+  if (accounts.length !== 0) return fail('expected 0 instruction accounts, found ' + accounts.length + '.');
+  let dataBytes;
+  try {
+    dataBytes = typeof ix.data === 'string' ? decodeBase58(ix.data) : new Uint8Array(ix.data || []);
+  } catch (e) { return fail('could not decode landed memo data: ' + e.message + '.'); }
+  const expected = new TextEncoder().encode(MEMO_TEXT);
+  const byteEqual = dataBytes.length === expected.length && dataBytes.every((b, i) => b === expected[i]);
+  if (!byteEqual) return fail('memo bytes mismatch: landed ' + dataBytes.length + ' bytes do not byte-equal the MEMO_TEXT constant (' + expected.length + ' bytes).');
+  const fee = landed.meta && landed.meta.fee;
+  if (fee !== 5000) return fail('fee mismatch: expected 5000 lamports, found ' + fee + '.');
+  return { ok: true, line: 'MEMO VERIFIED ON-CHAIN — the anchor is real' };
+}
+
+$('signBtn').addEventListener('click', async () => {
+  // In-flight / already-submitted guard: a second click must never build or send a
+  // second transaction (a duplicate anchor costs a second fee and writes a duplicate memo).
+  if (signing || submitted) return;
+  signing = true;
+  $('signBtn').disabled = true;
+  $('connectBtn').disabled = true;
+  clearError(); $('result').textContent = ''; $('verifyVerdict').textContent = ''; $('verifyVerdict').className = '';
+  let wasSubmitted = false;
+  try {
+    // FIX 2 (critic 2a): assert the rendered memo still equals the constant
+    // before anything is signed. Signed bytes below come from MEMO_TEXT
+    // (the constant), never from the DOM.
+    const renderedMemo = document.getElementById('memoText').textContent;
+    if (renderedMemo !== MEMO_TEXT) {
+      throw new Error('Displayed memo does not match the memo constant — aborting, nothing was signed. Reload this page and compare the memo before trying again.');
+    }
+    // FIX 3 (critic 2b): an accountChanged lockout is cleared only by an
+    // explicit Connect click, never by a Sign click.
+    if (accountChangeRequiresReconnect) {
+      throw new Error('Wallet account changed — signing is disabled until you click Connect again for the new account. Nothing was signed.');
+    }
+    if (!provider || !walletPubkey) throw new Error('Connect a wallet first.');
+    // Re-validate the payer at signing time: the account Phantom holds NOW must be the
+    // account this page displayed when the button was clicked. If it changed, stop,
+    // show the new account, and let the founder click again with eyes open.
+    const currentPubkey = provider.publicKey;
+    if (!currentPubkey) throw new Error('Wallet is no longer connected. Reconnect, then sign again.');
+    if (currentPubkey.toString() !== walletPubkey.toString()) {
+      // Same rule as accountChanged (FIX 3): update the display, disable
+      // signing, and require an explicit Connect click for the new account.
+      walletPubkey = currentPubkey;
+      accountChangeRequiresReconnect = true;
+      renderWallet();
+      throw new Error('Wallet account changed to ' + currentPubkey.toString() + '. Signing is disabled — click Connect again to explicitly connect this account before signing.');
+    }
+    const web3 = window.solanaWeb3;
+    if (!web3) throw new Error('@solana/web3.js failed to load.');
+    const connection = new web3.Connection(RPC, 'confirmed');
+    // Mirror of buildAnchorTransaction in anchor-tx.mjs:
+    const { blockhash } = await connection.getLatestBlockhash('finalized');
+    const data = typeof Buffer !== 'undefined'
+      ? Buffer.from(MEMO_TEXT, 'utf8')
+      : new TextEncoder().encode(MEMO_TEXT);
+    const instruction = new web3.TransactionInstruction({
+      programId: new web3.PublicKey(MEMO_PROGRAM_ID),
+      keys: [],
+      data,
+    });
+    const tx = new web3.Transaction();
+    tx.feePayer = walletPubkey;
+    tx.recentBlockhash = blockhash;
+    tx.add(instruction);
+    const result = await provider.signAndSendTransaction(tx);
+    const sig = typeof result === 'string' ? result : result.signature;
+    if (!sig || !/^[1-9A-HJ-NP-Za-km-z]{87,88}$/.test(sig)) {
+      throw new Error('Wallet returned no valid signature. Treat the transaction as NOT submitted and check the wallet before retrying.');
+    }
+    wasSubmitted = true;
+    submitted = true;
+    showResult(sig, 'Submitted to ' + CLUSTER + ' — waiting for on-chain confirmation…');
+    // A returned signature means SUBMITTED, not confirmed. Poll the RPC (same pattern
+    // as rehearse.mjs) and report the chain's verdict, not an assumed success.
+    let verdict = null;
+    for (let i = 0; i < 30 && !verdict; i++) {
+      const { value } = await connection.getSignatureStatuses([sig]);
+      const st = value && value[0];
+      if (st && st.err) verdict = 'failed';
+      else if (st && (st.confirmationStatus === 'confirmed' || st.confirmationStatus === 'finalized')) verdict = 'confirmed';
+      else await new Promise(r => setTimeout(r, 2000));
+    }
+    if (verdict === 'confirmed') {
+      // FIX 6 (critic 5b): confirmation alone does NOT anchor the day.
+      // Fetch the landed transaction, decode it, and verify it on-chain
+      // before any "anchored" verdict is shown.
+      showResult(sig, 'Confirmed on-chain (' + CLUSTER + ') — verifying the landed memo on-chain…');
+      const v = await verifyLandedTransaction(web3, connection, sig);
+      if (v.ok) {
+        showVerifyVerdict(true, v.line);
+        showResult(sig, 'Confirmed on-chain (' + CLUSTER + ') and verified below. The Night Brick is anchored.');
+      } else {
+        showVerifyVerdict(false, v.line);
+        showResult(sig, 'Confirmed on-chain (' + CLUSTER + ') but NOT verified — see the verification verdict below. The day is NOT anchored.');
+        showError(new Error(v.line));
+      }
+    } else if (verdict === 'failed') {
+      submitted = false; // it landed and failed — nothing was anchored, so a retry is safe
+      showError(new Error('Transaction failed on-chain. Nothing was anchored. You may sign again.'));
+      showResult(sig, 'Submitted but FAILED on-chain (' + CLUSTER + ').');
+    } else {
+      showResult(sig, 'Submitted to ' + CLUSTER + ' but not confirmed within ~60 seconds. Do NOT sign again — check Solscan first; the transaction may still land.');
+    }
+  } catch (e) {
+    // A stale blockhash (slow Phantom approval) fails honestly here: nothing was sent,
+    // the button is re-enabled below, and the next click fetches a FRESH blockhash.
+    if (!wasSubmitted && e && /blockhash/i.test(e.message || '')) {
+      showError(new Error('The blockhash expired before signing (approval took too long) — nothing was sent and no fee was paid. Click Sign again; a fresh blockhash is fetched on every click.'));
+    } else {
+      showError(e);
+    }
+  } finally {
+    signing = false;
+    $('connectBtn').disabled = false;
+    // Stay disabled after a submission (confirmed or still pending) so the same memo
+    // cannot be anchored twice by accident; re-enable only when nothing was submitted
+    // or the submitted transaction provably failed on-chain.
+    $('signBtn').disabled = submitted || !walletPubkey || accountChangeRequiresReconnect;
+  }
+});
+</script>
+</body>
+</html>
