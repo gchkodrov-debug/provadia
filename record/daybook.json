@@ -47,6 +47,14 @@
       "text": "The town files its coin, in the same words on its Coin, Ecosystem and About pages and here in its book. Sector: Ecosystem & Services. Category: Community Currency / Ecosystem Token. Bitcoin is energy. PROVADIA is salt — the original currency — now working as the money of a service town. In-ecosystem only: pay for products and services · the 20% direct-PROVADIA payment discount · Bricklayer registry standing · the vote on the Golden Wall's fate. Not a gas/platform coin, not gold-backed, no yield, no rights.",
       "prev": "6d9c277767e807e45c84ba33a40010d521cd74b63f169db69e687a06f04257b7",
       "hash": "85a19121a25fccb49b37f0e7e266e421204e3b0163489e8dc46a41110aad9ad2"
+    },
+    {
+      "n": 7,
+      "date": "2026-11-23",
+      "title": "The Wall takes its seal",
+      "text": "The Golden Wall's ledger (data/golden-wall.json) is sealed with a SHA-256 digest of its own fields — 86011a778d4dd33ca9b031e8329a1c223e2ee244d11b98a86d2cb5c4f01d99c8 — and from tonight the Wall's pages recompute that seal before rendering any figure, hold it against the value pinned in the Wall's script and anchored here, and render nothing when the seal does not hold. The ledger tonight stands as it has since the Wall was raised: 0 grams · 0 of 47 bricks · the receipt locked, awaiting Brick #1.",
+      "prev": "85a19121a25fccb49b37f0e7e266e421204e3b0163489e8dc46a41110aad9ad2",
+      "hash": "4af3a7c96a5878d37cf2e95b6f2e8a00be46a87116cba42d3ca5bddccf272761"
     }
   ],
   "vaults": {
