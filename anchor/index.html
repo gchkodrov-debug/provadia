@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://unpkg.com; connect-src https://api.mainnet-beta.solana.com https://api.devnet.solana.com; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<!-- Amendment 4 (Addendum 11): best-effort in-page cache hints ONLY. The real
+     cache discipline is the visible Build badge + the ?v=4 fresh-load route —
+     the hosting platform sets the actual response Cache-Control header and
+     this page cannot override it (see Addendum 11). -->
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>PROVADIA — Night Brick Anchor</title>
 <style>
   :root{--bg:#141210;--gold:#C9A227;--cream:#E9DDC6;--brown:#30251B}
@@ -22,6 +29,11 @@
   #verifyVerdict.ok{color:#9fce8a}
   #verifyVerdict.bad{color:#f2a6a6}
   #error{display:none;background:#3a1a1a;border:1px solid #a33;color:#f2c6c6;padding:14px;margin-top:16px;white-space:pre-wrap;word-break:break-word}
+  #buildBadge{display:inline-block;color:var(--gold);border:1px solid var(--gold);padding:6px 12px;margin:12px 0 4px;font-size:16px;letter-spacing:.05em}
+  #reissue{display:none;border:2px solid var(--gold);background:var(--brown);padding:18px;margin-top:16px}
+  #reissue p{margin:0 0 10px}
+  #reissueBtn{min-height:56px;width:100%;font-size:19px;background:var(--gold);color:#141210;border:none;padding:14px 20px;margin:8px 0 0;cursor:pointer}
+  #reissueBtn:disabled{opacity:.45;cursor:default}
   a{color:var(--gold)}
 </style>
 </head>
@@ -48,11 +60,19 @@
   </dl>
 
   <div class="rule"></div>
+  <div id="buildBadge" aria-live="polite"></div>
+  <p class="meta">Always open this page fresh at <strong>provadiacoin.com/anchor/?v=4</strong> and check that the badge above reads <strong>Build: v4</strong> before signing. If it reads anything else, you are looking at an old copy — close the tab and open the ?v=4 address.</p>
   <button id="connectBtn">Connect Wallet</button>
   <button id="signBtn" disabled>Sign the Night Brick</button>
   <div id="wallet" aria-live="polite"></div>
   <div id="result" aria-live="polite"></div>
   <div id="verifyVerdict" aria-live="polite"></div>
+  <div id="reissue" role="alert">
+    <p id="reissueMsg"></p>
+    <p id="reissueTele"></p>
+    <p>Tap the button below — it builds a fresh stamp and asks Phantom to sign it. The new sheet opens because YOU tapped: on the phone, that fresh tap is what the wallet requires.</p>
+    <button id="reissueBtn" disabled>RE-ISSUE FRESH STAMP &amp; SIGN</button>
+  </div>
   <div id="error" role="alert"></div>
 </main>
 
@@ -81,6 +101,24 @@ let submitted = false;
 // signing stays disabled until the founder explicitly clicks Connect again
 // for the new account — the fee payer is never silently retargeted.
 let accountChangeRequiresReconnect = false;
+// AMENDMENT 4 (Addendum 11): the build badge. BUILD_LABEL is rendered into
+// #buildBadge at load; the founder reads it aloud from any screenshot so the
+// house can prove WHICH build his phone is showing (the stale-tab failure of
+// 2026-11-24 was invisible precisely because the page carried no build mark).
+// The 8-hex token is a checksum field: it equals the first 8 hex of the
+// SHA-256 of this file with the token itself zeroed ('00000000') —
+// rehearse.mjs re-verifies that on every run, so the badge cannot drift
+// from the bytes it labels.
+const BUILD_LABEL = 'Build: v4 · 3d84f8b0';
+// Flow state shared by the Sign tap and the re-issue tap (Amendment 4): the
+// connection is created once per flow, on the Sign tap.
+let flowWeb3 = null;
+let flowConnection = null;
+// True while the re-issue plaque is on screen: the only road forward is the
+// founder's tap on it (a wallet event can still lock the flow — see
+// watchWalletEvents, which hides the plaque via hideReissue()).
+let awaitingReissue = false;
+let nextAttempt = 0;
 const $ = id => document.getElementById(id);
 function showError(e) {
   const box = $('error');
@@ -100,6 +138,7 @@ function renderWallet() {
 function setDisconnected(message) {
   walletPubkey = null;
   accountChangeRequiresReconnect = false;
+  hideReissue();
   $('signBtn').disabled = true;
   renderWallet();
   if (message) showError(new Error(message));
@@ -128,12 +167,15 @@ function watchWalletEvents(p) {
     if (!submitted) $('result').textContent = ''; // never erase a submitted signature from the page
     showError(new Error('Wallet account changed to ' + newPubkey.toString() + '. Signing is disabled — click Connect again to explicitly connect this account before signing.'));
     renderWallet();
+    hideReissue();
     $('signBtn').disabled = true;
   });
 }
 
 // FIX 2 (critic 2a): render the displayed memo FROM the constant on load.
 document.getElementById('memoText').textContent = MEMO_TEXT;
+// AMENDMENT 4: render the build badge FROM its constant, the same discipline.
+$('buildBadge').textContent = BUILD_LABEL;
 renderWallet();
 
 $('connectBtn').addEventListener('click', async () => {
@@ -267,190 +309,235 @@ async function verifyLandedTransaction(web3, connection, sig) {
   return { ok: true, line: 'MEMO VERIFIED ON-CHAIN — the anchor is real' };
 }
 
-$('signBtn').addEventListener('click', async () => {
-  // In-flight / already-submitted guard: a second click must never build or send a
-  // second transaction (a duplicate anchor costs a second fee and writes a duplicate memo).
-  if (signing || submitted) return;
+// AMENDMENT 4 (Addendum 11) — EXPIRY IS A FOUNDER-TAP STATE, NEVER AN
+// AUTO-RE-INVOKE. Amendment 3's bounded rebuild loop re-invoked the wallet
+// programmatically inside the one Sign click; on the founder's iPhone that
+// second request is gesture-gated by Phantom iOS (Gemini #80, hypothesis
+// H2, captain-adjudicated): a sign request that does not ride a fresh OS
+// user gesture is silently dropped, so the loop's second sheet can never
+// appear on the phone — while the desktop extension, which enforces no
+// such rule, passed every gate. The flow is therefore a state machine
+// driven by the founder's taps:
+//   Sign tap → attempt 1. On a blockhash expiry with nothing submitted,
+//   the page renders the re-issue plaque (plain words + telemetry + one
+//   large tap target) and WAITS. The founder's tap on the plaque runs the
+//   next attempt: a fresh confirmed blockhash fetched inside that tap,
+//   the identical §3.1 transaction, the wallet invoked on the gesture.
+//   Cap: MAX_SIGN_ATTEMPTS attempts total; after the last one ages out
+//   the page fails closed with the honest message, as it always has.
+// Only expiry reaches the plaque: a wallet rejection, a shape mismatch,
+// or any other error stops the flow instantly, exactly as before — the
+// page never re-prompts after a founder's "no", and it never re-prompts
+// at all without his tap.
+const MAX_SIGN_ATTEMPTS = 3;
+const isBlockhashExpiry = (e) => !!e && /blockhash/i.test((e && e.message) || '');
+
+function telemetryLine(t) {
+  // Plain words ride in the plaque/error text itself; this formats the
+  // numbers line that accompanies them (Amendment 4 telemetry): the
+  // elapsed fetch→expiry time, and — when the chain heights are known —
+  // how far past the stamp's last valid block height the chain had run.
+  let s = 'Elapsed: ' + (t.elapsedMs / 1000).toFixed(1) + 's';
+  if (typeof t.slotsPastExpiry === 'number' && t.slotsPastExpiry > 0) {
+    s += ' · +' + t.slotsPastExpiry + ' slots past expiry';
+  }
+  return s;
+}
+function hideReissue() {
+  awaitingReissue = false;
+  nextAttempt = 0;
+  const box = $('reissue');
+  if (box) box.style.display = 'none';
+  const btn = $('reissueBtn');
+  if (btn) btn.disabled = true;
+}
+function offerReissue(attemptsUsed, t) {
+  awaitingReissue = true;
+  nextAttempt = attemptsUsed + 1;
+  $('reissueMsg').textContent = (attemptsUsed === 1 ? 'The first stamp' : 'The second stamp') +
+    ' aged out before the approval finished — nothing was sent and no fee was paid.';
+  $('reissueTele').textContent = telemetryLine(t);
+  $('reissue').style.display = 'block';
+  $('reissueBtn').disabled = false;
+  $('signBtn').disabled = true;
+  $('connectBtn').disabled = true;
+}
+
+// ONE sign attempt, run only from a founder tap (the Sign button or the
+// re-issue plaque). Returns { outcome: 'signed', sig } or
+// { outcome: 'expired', telemetry }; throws on any stop condition.
+async function driveAttempt(attempt) {
+  const web3 = flowWeb3;
+  const connection = flowConnection;
+  // The Sign click's stop rules, re-checked on EVERY tap: the memo
+  // constant, the accountChanged lockout, and the payer Phantom holds NOW
+  // — the fee payer can never drift between attempts.
+  const renderedMemo = document.getElementById('memoText').textContent;
+  if (renderedMemo !== MEMO_TEXT) {
+    throw new Error('Displayed memo does not match the memo constant — aborting, nothing was signed. Reload this page and compare the memo before trying again.');
+  }
+  if (accountChangeRequiresReconnect) {
+    throw new Error('Wallet account changed — signing is disabled until you click Connect again for the new account. Nothing was signed.');
+  }
+  if (!provider || !walletPubkey) throw new Error('Connect a wallet first.');
+  const currentPubkey = provider.publicKey;
+  if (!currentPubkey) throw new Error('Wallet is no longer connected. Reconnect, then sign again.');
+  if (currentPubkey.toString() !== walletPubkey.toString()) {
+    walletPubkey = currentPubkey;
+    accountChangeRequiresReconnect = true;
+    renderWallet();
+    throw new Error('Wallet account changed to ' + currentPubkey.toString() + '. Signing is disabled — click Connect again to explicitly connect this account before signing.');
+  }
+  // STEP 0 LOCK (captain's Mark 1 on Gemini #80): the blockhash is fetched
+  // HERE — inside the founder's tap, at 'confirmed', fresh for this
+  // attempt; it is never fetched at page load and never at 'finalized'.
+  // (Verified against the pre-Amendment-4 source in Addendum 11: this was
+  // already the instrument's behavior; Amendment 4 locks it in rehearsal.)
+  const tFetch = performance.now();
+  const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
+  const expiryTelemetry = async (heightKnown) => {
+    const t = { elapsedMs: performance.now() - tFetch, slotsPastExpiry: null };
+    let h = heightKnown;
+    if (typeof h !== 'number') {
+      try { h = await connection.getBlockHeight('confirmed'); } catch (e) { h = null; }
+    }
+    if (typeof h === 'number' && typeof lastValidBlockHeight === 'number' && h > lastValidBlockHeight) {
+      t.slotsPastExpiry = h - lastValidBlockHeight;
+    }
+    return t;
+  };
+  // Mirror of buildAnchorTransaction in anchor-tx.mjs:
+  const data = typeof Buffer !== 'undefined'
+    ? Buffer.from(MEMO_TEXT, 'utf8')
+    : new TextEncoder().encode(MEMO_TEXT);
+  const instruction = new web3.TransactionInstruction({
+    programId: new web3.PublicKey(MEMO_PROGRAM_ID),
+    keys: [],
+    data,
+  });
+  const tx = new web3.Transaction();
+  tx.feePayer = walletPubkey;
+  tx.recentBlockhash = blockhash;
+  tx.lastValidBlockHeight = lastValidBlockHeight;
+  // The §3.1 shape (Addendum 8, founder ruling 2026-11-24): our own
+  // ComputeBudget pair first — price, then limit, the gate10 diagnostic's
+  // proven construction order — then the Memo. Mirror of anchor-tx.mjs.
+  tx.add(web3.ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 0 }));
+  tx.add(web3.ComputeBudgetProgram.setComputeUnitLimit({ units: COMPUTE_UNIT_LIMIT }));
+  tx.add(instruction);
+  // SEND PATH (Addendum 7 — Option 1: amend the instrument, never the
+  // standard). Phantom's combined sign-and-send call AUGMENTED this
+  // transaction on the Addendum 6 gate run: it prepended its own
+  // ComputeBudget SetComputeUnitPrice (375,000 µL/CU) + SetComputeUnitLimit
+  // (200,000) instructions, and the landed transaction had 3 instructions
+  // and an 80,000-lamport fee instead of 1 instruction and 5,000. So the
+  // wallet now SIGNS ONLY: signTransaction returns the signed transaction
+  // to this page, the page asserts below that what was signed is still
+  // exactly the instrument's transaction, and the PAGE broadcasts the raw
+  // bytes itself. The wallet never gets a send path to augment.
+  let signedTx = null;
+  try {
+    signedTx = await provider.signTransaction(tx);
+  } catch (e) {
+    // A stamp can age out inside Phantom's own simulation: that is an
+    // expiry — hand it to the plaque, never to an automatic retry. A
+    // founder rejection or any other wallet error stops the flow.
+    if (isBlockhashExpiry(e)) return { outcome: 'expired', telemetry: await expiryTelemetry(null) };
+    throw e;
+  }
+  // Fail closed BEFORE broadcast: if the returned transaction is not still
+  // exactly the §3.1 shape — our ComputeBudget pair (price 0, limit
+  // 210,000) then the Memo instruction, zero keys, the constant's exact
+  // bytes, and this wallet as fee payer — refuse to broadcast it. A
+  // transaction that does not match the published shape must never leave
+  // this page wearing the instrument's name.
+  const signedIxs = signedTx.instructions || [];
+  if (signedIxs.length !== 3) {
+    throw new Error('Wallet returned a transaction with ' + signedIxs.length + ' instructions (expected exactly 3) — refusing to broadcast a transaction that does not match the published shape. Nothing was sent.');
+  }
+  const cbPrice = decodeComputeBudget(signedIxs[0].data || []);
+  if (!signedIxs[0].programId || signedIxs[0].programId.toString() !== COMPUTE_BUDGET_PROGRAM_ID || !cbPrice || cbPrice.kind !== 'price' || cbPrice.value !== 0) {
+    throw new Error('Wallet returned a transaction whose instruction[0] is not our ComputeBudget SetComputeUnitPrice at price 0 — refusing to broadcast. Nothing was sent.');
+  }
+  const cbLimit = decodeComputeBudget(signedIxs[1].data || []);
+  if (!signedIxs[1].programId || signedIxs[1].programId.toString() !== COMPUTE_BUDGET_PROGRAM_ID || !cbLimit || cbLimit.kind !== 'limit' || cbLimit.value !== COMPUTE_UNIT_LIMIT) {
+    throw new Error('Wallet returned a transaction whose instruction[1] is not our ComputeBudget SetComputeUnitLimit at ' + COMPUTE_UNIT_LIMIT + ' — refusing to broadcast. Nothing was sent.');
+  }
+  const six = signedIxs[2];
+  if (!six.programId || six.programId.toString() !== MEMO_PROGRAM_ID) {
+    throw new Error('Wallet returned a transaction whose instruction[2] is not the Memo program — refusing to broadcast. Nothing was sent.');
+  }
+  if ((six.keys || []).length !== 0) {
+    throw new Error('Wallet returned a Memo instruction with accounts attached — refusing to broadcast. Nothing was sent.');
+  }
+  const signedData = six.data || [];
+  const expectedData = new TextEncoder().encode(MEMO_TEXT);
+  const dataEqual = signedData.length === expectedData.length &&
+    Array.prototype.every.call(signedData, (b, i) => b === expectedData[i]);
+  if (!dataEqual) {
+    throw new Error('Wallet returned a Memo instruction whose bytes differ from the memo constant — refusing to broadcast. Nothing was sent.');
+  }
+  if (!signedTx.feePayer || signedTx.feePayer.toString() !== walletPubkey.toString()) {
+    throw new Error('Wallet returned a transaction with a different fee payer — refusing to broadcast. Nothing was sent.');
+  }
+  // FRESHNESS CHECK (Amendment 3, carried into the tap-driven flow by
+  // Amendment 4): if this stamp's blockhash already expired while the
+  // approval was open, do NOT broadcast a doomed transaction — hand the
+  // expiry to the plaque instead. The check is advisory: if the height
+  // read itself fails, fall through to the broadcast, whose preflight
+  // performs the same expiry test authoritatively (an expired stamp is
+  // rejected there, never lands, and costs no fee — and the broadcast
+  // catch below hands that expiry to the plaque the same way).
+  let heightNow = null;
+  if (typeof lastValidBlockHeight === 'number') {
+    try { heightNow = await connection.getBlockHeight('confirmed'); } catch (heightErr) { heightNow = null; }
+    if (typeof heightNow === 'number' && heightNow > lastValidBlockHeight) {
+      return { outcome: 'expired', telemetry: await expiryTelemetry(heightNow) };
+    }
+  }
+  const rawTx = signedTx.serialize();
+  let sig = null;
+  try {
+    sig = await connection.sendRawTransaction(rawTx, { skipPreflight: false });
+  } catch (e) {
+    // A blockhash rejection at preflight means the stamp was NOT
+    // submitted — an expiry, handed to the plaque. Anything else keeps
+    // the standing behavior: stop and report.
+    if (isBlockhashExpiry(e)) return { outcome: 'expired', telemetry: await expiryTelemetry(null) };
+    throw e;
+  }
+  if (!sig || !/^[1-9A-HJ-NP-Za-km-z]{87,88}$/.test(sig)) {
+    throw new Error('Wallet returned no valid signature. Treat the transaction as NOT submitted and check the wallet before retrying.');
+  }
+  return { outcome: 'signed', sig };
+}
+
+async function runAttempt(attempt) {
   signing = true;
   $('signBtn').disabled = true;
   $('connectBtn').disabled = true;
-  clearError(); $('result').textContent = ''; $('verifyVerdict').textContent = ''; $('verifyVerdict').className = '';
-  let wasSubmitted = false;
-  // Amendment 3 (Addendum 10): the sign flow retries a blockhash expiry with
-  // a freshly built stamp, up to this many attempts inside the one click.
-  const MAX_SIGN_ATTEMPTS = 3;
+  $('reissueBtn').disabled = true;
   try {
-    // FIX 2 (critic 2a): assert the rendered memo still equals the constant
-    // before anything is signed. Signed bytes below come from MEMO_TEXT
-    // (the constant), never from the DOM.
-    const renderedMemo = document.getElementById('memoText').textContent;
-    if (renderedMemo !== MEMO_TEXT) {
-      throw new Error('Displayed memo does not match the memo constant — aborting, nothing was signed. Reload this page and compare the memo before trying again.');
+    const res = await driveAttempt(attempt);
+    if (res.outcome === 'expired') {
+      if (attempt < MAX_SIGN_ATTEMPTS) {
+        // Park the flow on the plaque: the finally block leaves the
+        // buttons exactly as offerReissue set them, and the founder's
+        // tap on the plaque is the only way forward.
+        offerReissue(attempt, res.telemetry);
+        return;
+      }
+      // Every founder-tapped attempt aged out. Fail closed and honest,
+      // as the instrument always has: nothing was sent, no fee was paid.
+      throw new Error('The blockhash expired before signing (approval took too long) — nothing was sent and no fee was paid. ' +
+        telemetryLine(res.telemetry) + ' — the stamp was rebuilt fresh on every founder-tapped attempt (' +
+        MAX_SIGN_ATTEMPTS + ' tries) and each one aged out. Click Sign again to start over.');
     }
-    // FIX 3 (critic 2b): an accountChanged lockout is cleared only by an
-    // explicit Connect click, never by a Sign click.
-    if (accountChangeRequiresReconnect) {
-      throw new Error('Wallet account changed — signing is disabled until you click Connect again for the new account. Nothing was signed.');
-    }
-    if (!provider || !walletPubkey) throw new Error('Connect a wallet first.');
-    // Re-validate the payer at signing time: the account Phantom holds NOW must be the
-    // account this page displayed when the button was clicked. If it changed, stop,
-    // show the new account, and let the founder click again with eyes open.
-    const currentPubkey = provider.publicKey;
-    if (!currentPubkey) throw new Error('Wallet is no longer connected. Reconnect, then sign again.');
-    if (currentPubkey.toString() !== walletPubkey.toString()) {
-      // Same rule as accountChanged (FIX 3): update the display, disable
-      // signing, and require an explicit Connect click for the new account.
-      walletPubkey = currentPubkey;
-      accountChangeRequiresReconnect = true;
-      renderWallet();
-      throw new Error('Wallet account changed to ' + currentPubkey.toString() + '. Signing is disabled — click Connect again to explicitly connect this account before signing.');
-    }
-    const web3 = window.solanaWeb3;
-    if (!web3) throw new Error('@solana/web3.js failed to load.');
-    const connection = new web3.Connection(RPC, 'confirmed');
-    // AMENDMENT 3 (Addendum 10) — SURVIVE A SLOW APPROVAL. A blockhash
-    // fetched at Sign-click carries ~150 blocks of life (~60 s), and that
-    // window must cover Phantom's simulation, the founder's careful
-    // check-and-confirm, and the broadcast — on the founder's phone the
-    // approval legitimately outlived it four times on 2026-11-24 (every
-    // attempt failed closed and free, but the day stayed unanchored). The
-    // sign flow is therefore a BOUNDED REBUILD LOOP: up to MAX_SIGN_ATTEMPTS
-    // attempts inside this one click. Each attempt fetches a FRESH
-    // blockhash, rebuilds the IDENTICAL §3.1 transaction, and asks the
-    // wallet to sign again; each returned transaction passes the FULL
-    // pre-broadcast assert below before any broadcast; and a signed
-    // transaction whose blockhash has already expired is never broadcast
-    // at all (the freshness check after the assert). Only a blockhash-
-    // expiry failure retries — a wallet rejection, a shape mismatch, or
-    // any other error stops the flow at once, exactly as before.
-    const isBlockhashExpiry = (e) => !!e && /blockhash/i.test((e && e.message) || '');
-    let sig = null;
-    let lastExpiryError = null;
-    for (let attempt = 1; attempt <= MAX_SIGN_ATTEMPTS && !sig; attempt++) {
-      if (attempt > 1) {
-        // Tell the founder plainly why another Phantom sheet is about to
-        // appear — expected, not alarming.
-        $('result').textContent = attempt === 2
-          ? 'The first stamp aged out before the approval finished — a fresh one is ready. Confirm the new sheet when Phantom shows it.'
-          : 'The second stamp aged out too — a fresh one is ready (attempt ' + attempt + ' of ' + MAX_SIGN_ATTEMPTS + ', the last). Confirm the new sheet when Phantom shows it.';
-      }
-      // Mirror of buildAnchorTransaction in anchor-tx.mjs:
-      const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
-      const data = typeof Buffer !== 'undefined'
-        ? Buffer.from(MEMO_TEXT, 'utf8')
-        : new TextEncoder().encode(MEMO_TEXT);
-      const instruction = new web3.TransactionInstruction({
-        programId: new web3.PublicKey(MEMO_PROGRAM_ID),
-        keys: [],
-        data,
-      });
-      const tx = new web3.Transaction();
-      tx.feePayer = walletPubkey;
-      tx.recentBlockhash = blockhash;
-      tx.lastValidBlockHeight = lastValidBlockHeight;
-      // The §3.1 shape (Addendum 8, founder ruling 2026-11-24): our own
-      // ComputeBudget pair first — price, then limit, the gate10 diagnostic's
-      // proven construction order — then the Memo. Mirror of anchor-tx.mjs.
-      tx.add(web3.ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 0 }));
-      tx.add(web3.ComputeBudgetProgram.setComputeUnitLimit({ units: COMPUTE_UNIT_LIMIT }));
-      tx.add(instruction);
-      // SEND PATH (Addendum 7 — Option 1: amend the instrument, never the
-      // standard). Phantom's combined sign-and-send call AUGMENTED this
-      // transaction on the Addendum 6 gate run: it prepended its own
-      // ComputeBudget SetComputeUnitPrice (375,000 µL/CU) + SetComputeUnitLimit
-      // (200,000) instructions, and the landed transaction had 3 instructions
-      // and an 80,000-lamport fee instead of 1 instruction and 5,000. So the
-      // wallet now SIGNS ONLY: signTransaction returns the signed transaction
-      // to this page, the page asserts below that what was signed is still
-      // exactly the instrument's transaction, and the PAGE broadcasts the raw
-      // bytes itself. The wallet never gets a send path to augment.
-      let signedTx = null;
-      try {
-        signedTx = await provider.signTransaction(tx);
-      } catch (e) {
-        // Only an expiry retries (a stamp can age out inside Phantom's own
-        // simulation). A founder rejection or any other wallet error stops
-        // the flow — the page never re-prompts unasked.
-        if (isBlockhashExpiry(e) && attempt < MAX_SIGN_ATTEMPTS) { lastExpiryError = e; continue; }
-        throw e;
-      }
-      // Fail closed BEFORE broadcast: if the returned transaction is not still
-      // exactly the §3.1 shape — our ComputeBudget pair (price 0, limit
-      // 210,000) then the Memo instruction, zero keys, the constant's exact
-      // bytes, and this wallet as fee payer — refuse to broadcast it. A
-      // transaction that does not match the published shape must never leave
-      // this page wearing the instrument's name.
-      const signedIxs = signedTx.instructions || [];
-      if (signedIxs.length !== 3) {
-        throw new Error('Wallet returned a transaction with ' + signedIxs.length + ' instructions (expected exactly 3) — refusing to broadcast a transaction that does not match the published shape. Nothing was sent.');
-      }
-      const cbPrice = decodeComputeBudget(signedIxs[0].data || []);
-      if (!signedIxs[0].programId || signedIxs[0].programId.toString() !== COMPUTE_BUDGET_PROGRAM_ID || !cbPrice || cbPrice.kind !== 'price' || cbPrice.value !== 0) {
-        throw new Error('Wallet returned a transaction whose instruction[0] is not our ComputeBudget SetComputeUnitPrice at price 0 — refusing to broadcast. Nothing was sent.');
-      }
-      const cbLimit = decodeComputeBudget(signedIxs[1].data || []);
-      if (!signedIxs[1].programId || signedIxs[1].programId.toString() !== COMPUTE_BUDGET_PROGRAM_ID || !cbLimit || cbLimit.kind !== 'limit' || cbLimit.value !== COMPUTE_UNIT_LIMIT) {
-        throw new Error('Wallet returned a transaction whose instruction[1] is not our ComputeBudget SetComputeUnitLimit at ' + COMPUTE_UNIT_LIMIT + ' — refusing to broadcast. Nothing was sent.');
-      }
-      const six = signedIxs[2];
-      if (!six.programId || six.programId.toString() !== MEMO_PROGRAM_ID) {
-        throw new Error('Wallet returned a transaction whose instruction[2] is not the Memo program — refusing to broadcast. Nothing was sent.');
-      }
-      if ((six.keys || []).length !== 0) {
-        throw new Error('Wallet returned a Memo instruction with accounts attached — refusing to broadcast. Nothing was sent.');
-      }
-      const signedData = six.data || [];
-      const expectedData = new TextEncoder().encode(MEMO_TEXT);
-      const dataEqual = signedData.length === expectedData.length &&
-        Array.prototype.every.call(signedData, (b, i) => b === expectedData[i]);
-      if (!dataEqual) {
-        throw new Error('Wallet returned a Memo instruction whose bytes differ from the memo constant — refusing to broadcast. Nothing was sent.');
-      }
-      if (!signedTx.feePayer || signedTx.feePayer.toString() !== walletPubkey.toString()) {
-        throw new Error('Wallet returned a transaction with a different fee payer — refusing to broadcast. Nothing was sent.');
-      }
-      // FRESHNESS CHECK (Amendment 3): if this stamp's blockhash already
-      // expired while the approval was open, do NOT broadcast a doomed
-      // transaction — rebuild with a fresh stamp instead. The check is
-      // advisory: if the height read itself fails, fall through to the
-      // broadcast, whose preflight performs the same expiry test
-      // authoritatively (an expired stamp is rejected there, never lands,
-      // and costs no fee — and the broadcast catch below then rebuilds).
-      let stampExpired = false;
-      if (typeof lastValidBlockHeight === 'number') {
-        try {
-          const heightNow = await connection.getBlockHeight('confirmed');
-          stampExpired = heightNow > lastValidBlockHeight;
-        } catch (heightErr) { stampExpired = false; }
-      }
-      if (stampExpired) {
-        lastExpiryError = new Error('Blockhash expired before broadcast — the signed stamp aged out during the approval.');
-        continue;
-      }
-      const rawTx = signedTx.serialize();
-      try {
-        sig = await connection.sendRawTransaction(rawTx, { skipPreflight: false });
-      } catch (e) {
-        // A blockhash rejection at preflight means the stamp was NOT
-        // submitted — safe to rebuild with a fresh one. Anything else keeps
-        // the standing behavior: stop and report.
-        if (isBlockhashExpiry(e) && attempt < MAX_SIGN_ATTEMPTS) { lastExpiryError = e; sig = null; continue; }
-        throw e;
-      }
-      if (!sig || !/^[1-9A-HJ-NP-Za-km-z]{87,88}$/.test(sig)) {
-        throw new Error('Wallet returned no valid signature. Treat the transaction as NOT submitted and check the wallet before retrying.');
-      }
-    }
-    if (!sig) {
-      // Every attempt aged out. Fail closed and honest, as the instrument
-      // always has: nothing was sent, no fee was paid.
-      throw lastExpiryError && /blockhash/i.test(lastExpiryError.message || '')
-        ? lastExpiryError
-        : new Error('Blockhash expired before signing on every attempt — nothing was sent and no fee was paid.');
-    }
-    wasSubmitted = true;
+    const sig = res.sig;
     submitted = true;
+    hideReissue();
+    const web3 = flowWeb3;
+    const connection = flowConnection;
     showResult(sig, 'Submitted to ' + CLUSTER + ' — waiting for on-chain confirmation…');
     // A returned signature means SUBMITTED, not confirmed. Poll the RPC (same pattern
     // as rehearse.mjs) and report the chain's verdict, not an assumed success.
@@ -484,24 +571,53 @@ $('signBtn').addEventListener('click', async () => {
       showResult(sig, 'Submitted to ' + CLUSTER + ' but not confirmed within ~60 seconds. Do NOT sign again — check Solscan first; the transaction may still land.');
     }
   } catch (e) {
-    // A stale blockhash fails honestly here. Since Amendment 3 the flow above
-    // already rebuilt the stamp with a fresh blockhash on every attempt
-    // (up to MAX_SIGN_ATTEMPTS) before reaching this catch — so a blockhash
-    // error shown here means every attempt aged out: nothing was sent, no
-    // fee was paid, and the button is re-enabled below for a fresh click.
-    if (!wasSubmitted && e && /blockhash/i.test(e.message || '')) {
-      showError(new Error('The blockhash expired before signing (approval took too long) — nothing was sent and no fee was paid. The page rebuilt the stamp with a fresh blockhash on every attempt (' + MAX_SIGN_ATTEMPTS + ' tries) and each one aged out. Click Sign again to start over.'));
-    } else {
-      showError(e);
-    }
+    // Expiry never reaches this catch as a raw error — driveAttempt hands
+    // it back as an outcome — so anything caught here is a stop condition
+    // (a rejection, a shape mismatch, the cap message built above) and is
+    // shown as-is. Nothing was submitted when this catch runs.
+    hideReissue();
+    showError(e);
   } finally {
     signing = false;
-    $('connectBtn').disabled = false;
-    // Stay disabled after a submission (confirmed or still pending) so the same memo
-    // cannot be anchored twice by accident; re-enable only when nothing was submitted
-    // or the submitted transaction provably failed on-chain.
-    $('signBtn').disabled = submitted || !walletPubkey || accountChangeRequiresReconnect;
+    // While the plaque is up it owns the buttons; otherwise restore the
+    // standing states: Sign stays disabled after a submission (confirmed
+    // or still pending) so the same memo cannot be anchored twice by
+    // accident, and re-enables only when nothing was submitted or the
+    // submitted transaction provably failed on-chain (the tail above
+    // resets `submitted` in that case).
+    if (!awaitingReissue) {
+      $('connectBtn').disabled = false;
+      $('signBtn').disabled = submitted || !walletPubkey || accountChangeRequiresReconnect;
+    }
   }
+}
+
+$('signBtn').addEventListener('click', async () => {
+  // In-flight / already-submitted / plaque-up guard: a second click must
+  // never build or send a second transaction (a duplicate anchor costs a
+  // second fee and writes a duplicate memo).
+  if (signing || submitted || awaitingReissue) return;
+  clearError(); $('result').textContent = ''; $('verifyVerdict').textContent = ''; $('verifyVerdict').className = '';
+  hideReissue();
+  const web3 = window.solanaWeb3;
+  if (!web3) { showError(new Error('@solana/web3.js failed to load.')); return; }
+  flowWeb3 = web3;
+  flowConnection = new web3.Connection(RPC, 'confirmed');
+  await runAttempt(1);
+});
+
+$('reissueBtn').addEventListener('click', async () => {
+  // The founder's fresh tap IS the mechanism (Amendment 4): this click is
+  // a new OS user gesture, and the attempt it drives fetches its blockhash
+  // inside the tap and invokes the wallet on that gesture — the shape
+  // Phantom iOS requires before it will present another sheet.
+  if (signing || submitted || !awaitingReissue) return;
+  clearError();
+  const attempt = nextAttempt;
+  awaitingReissue = false;
+  $('reissue').style.display = 'none';
+  $('reissueBtn').disabled = true;
+  await runAttempt(attempt);
 });
 </script>
 </body>
