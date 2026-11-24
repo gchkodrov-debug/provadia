@@ -8,7 +8,7 @@
 <meta property="og:image" content="https://provadiacoin.com/design/assets/coin-front.webp"><meta property="og:image:alt" content="The front of the PROVADIA coin: a Fortress P built of salt bricks, ringed with beads.">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="The Coin — The Price, the Chart, the Facts · PROVADIA"><meta name="twitter:description" content="Live price, live chart, and the on-chain facts of the town's coin."><meta name="twitter:image" content="https://provadiacoin.com/design/assets/coin-front.webp"><meta name="twitter:image:alt" content="The front of the PROVADIA coin.">
 <link rel="icon" href="../design/assets/favicon-provisional.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../design/shared.css?v=shell-v1-final"><link rel="stylesheet" href="../design/page-coin.css?v=coin-v1"><link rel="stylesheet" href="../design/space.css">
+<link rel="stylesheet" href="../design/shared.css?v=shell-v1-final"><link rel="stylesheet" href="../design/page-coin.css?v=coin-v1"><link rel="stylesheet" href="../design/pulse.css?v=pulse-s123-1"><link rel="stylesheet" href="../design/space.css">
 <script defer src="../design/shared.js?v=witness-fix2"></script>
 <link rel="stylesheet" href="../design/vendor/driver.css">
 <link rel="stylesheet" href="../design/guide.css">
@@ -68,16 +68,76 @@
       <div class="coin-stat"><p class="coin-stat-label">Volume · 24h</p><p class="coin-stat-value number" data-stat="volume">—</p></div>
       <div class="coin-stat"><p class="coin-stat-label">Pool Opened</p><p class="coin-stat-value number" data-stat="created">—</p></div>
     </div>
-    <p class="source-line">Numbers: GeckoTerminal · live, read from the coin's pump.fun pool. <span data-stats-status>Last updated <time data-stats-time>—</time>.</span> This page re-reads them every minute; if the source cannot be reached, the tiles say so rather than guess.</p>
+    <p class="source-line">Numbers: GeckoTerminal · live, read from the coin's pump.fun pool. <span data-stats-status>Last updated <time data-stats-time>—</time>.</span> This page re-reads them every 15 seconds; if the source cannot be reached, the tiles say so rather than guess.</p>
   </section>
   <section class="coin-section wrap" aria-labelledby="coin-chart">
-    <p class="eyebrow">The Coin · The Chart</p>
-    <h2 id="coin-chart">The Chart</h2>
-    <p>The same chart the trading platforms draw — the coin against SOL, on its pump.fun curve. The coin has not graduated to a DEX pool yet, so the curve is the whole market: every trade so far stands in this one pool.</p>
-    <div class="coin-chart">
-      <iframe src="https://www.geckoterminal.com/solana/pools/2fvtfwCco71J8XePws7yREZ3569U2GxU4FYHE2H8oxDY?embed=1&amp;info=1&amp;swaps=1&amp;grayscale=0&amp;light=0" title="PROVADIA / SOL — live chart, GeckoTerminal" loading="lazy" allowfullscreen></iframe>
+    <p class="eyebrow">The Coin · The Pulse of Provadia</p>
+    <h2 id="coin-chart">The Pulse</h2>
+    <p>The town&rsquo;s own instrument — no borrowed chart, nothing embedded from anywhere else. Two views of one verified record: a precision chart, and the living observatory, where the coin hangs at the centre of its constellation and every real swap fires a wave of gold. Both are fed by the pool&rsquo;s public record, read every fifteen seconds. When the market is quiet, this page says so and rests. When the feed breaks, it shows its last verified snapshot — and says that too.</p>
+    <div class="pulse-status" data-pulse-pill data-state="BOOT" role="status">
+      <span class="pulse-dot" aria-hidden="true"></span>
+      <div>
+        <p class="pulse-badge" data-pill-badge>○ READING THE POOL · FIRST CONTACT</p>
+        <p class="pulse-line" data-pill-line>Reading the pool&rsquo;s public record…</p>
+      </div>
     </div>
-    <p class="source-line">Chart: GeckoTerminal · the coin's pump.fun pool. DexScreener does not list this pair yet.</p>
+    <div class="pulse-telemetry" aria-label="Live pool telemetry">
+      <div class="pulse-metric"><p class="pulse-metric-label">Price · USD</p><p class="pulse-metric-value" data-pulse="price-usd">—</p></div>
+      <div class="pulse-metric"><p class="pulse-metric-label">Price · SOL</p><p class="pulse-metric-value" data-pulse="price-sol">—</p></div>
+      <div class="pulse-metric"><p class="pulse-metric-label">Volume · 24h</p><p class="pulse-metric-value" data-pulse="volume">—</p></div>
+      <div class="pulse-metric"><p class="pulse-metric-label">Liquidity · Pool Reserve</p><p class="pulse-metric-value" data-pulse="liquidity">—</p></div>
+      <details class="pulse-contract">
+        <summary>Contract · 1B fixed supply · mint / freeze none</summary>
+        <div class="pulse-contract-body">
+          <p class="coin-ca">9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump</p>
+          <p>1,000,000,000 PROVADIA — fixed at creation. Mint authority: none. Freeze authority: none. The copy button in the Facts below copies this exact address; check any address against it before you trade. <a href="https://solscan.io/token/9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump" target="_blank" rel="noopener noreferrer">Inspect the mint on Solscan →</a></p>
+        </div>
+      </details>
+    </div>
+    <div class="pulse-modes" role="group" aria-label="Observatory views">
+      <button type="button" class="pulse-mode-btn" data-mode-btn="chart" aria-pressed="true">Functional Chart</button>
+      <button type="button" class="pulse-mode-btn" data-mode-btn="observatory" aria-pressed="false">3D Observatory</button>
+    </div>
+    <div class="pulse-stage">
+      <div data-pane="chart">
+        <div class="pulse-tfs" role="group" aria-label="Chart timeframe">
+          <button type="button" class="pulse-tf-btn" data-tf-btn="15M" aria-pressed="false">15M</button>
+          <button type="button" class="pulse-tf-btn" data-tf-btn="1H" aria-pressed="true">1H</button>
+          <button type="button" class="pulse-tf-btn" data-tf-btn="4H" aria-pressed="false">4H</button>
+          <button type="button" class="pulse-tf-btn" data-tf-btn="1D" aria-pressed="false">1D</button>
+        </div>
+        <div class="pulse-chart-box" data-chart-box>
+          <span class="pulse-snapshot-tag" data-snapshot-tag hidden>Snapshot</span>
+        </div>
+        <p class="pulse-readout" data-chart-readout>Crosshair readout — move across the candles.</p>
+        <div data-sr-table></div>
+      </div>
+      <div data-pane="observatory" hidden>
+        <div class="pulse-observatory" data-observatory-stage>
+          <div class="pulse-entrance-slot" data-entrance-slot hidden aria-hidden="true"></div>
+          <p class="pulse-obs-note" data-obs-note hidden></p>
+          <p class="pulse-obs-badge">3D Observatory · The Heart · The Heartbeat · Genesis Constellation — Specimen · 0 / 470 Minted<br>Entrance film pulse-entrance-v1 — not yet shot · this stage opens without it</p>
+        </div>
+      </div>
+    </div>
+    <div class="pulse-specimen" aria-labelledby="pulse-specimen-title">
+      <p class="eyebrow">Genesis Constellation · Specimen State</p>
+      <h3 id="pulse-specimen-title" class="sr-only">Genesis Constellation specimen strip</h3>
+      <p class="pulse-specimen-counter">0 / 470 MINTED</p>
+      <p class="pulse-specimen-sub">Mainnet sealed until devnet rehearsal passes &amp; founder deploys</p>
+      <p>Four hundred and seventy positions ring the coin — one for each Genesis Bricklayer collectible. Every one stands unminted today, and no slot lights until its real Metaplex Core NFT is minted on-chain. Inspect any slot, here or by tapping its star in the observatory:</p>
+      <form class="pulse-inspect" data-inspect-form>
+        <label for="pulse-inspect-input">Serial</label>
+        <input id="pulse-inspect-input" data-inspect-input type="number" min="1" max="470" step="1" inputmode="numeric" placeholder="1 – 470">
+        <button type="submit">Inspect</button>
+        <button type="button" class="pulse-chip" data-inspect-chip="1">#001</button>
+        <button type="button" class="pulse-chip" data-inspect-chip="100">#100</button>
+        <button type="button" class="pulse-chip" data-inspect-chip="270">#270</button>
+        <button type="button" class="pulse-chip" data-inspect-chip="470">#470</button>
+      </form>
+      <p class="pulse-inspect-out" data-inspect-out aria-live="polite">No slot inspected yet — all 470 stand as unminted specimens.</p>
+    </div>
+    <p class="source-line">Numbers, candles and swaps: read from the coin&rsquo;s pump.fun pool through GeckoTerminal&rsquo;s public API and from the Solana chain itself, every fifteen seconds. Nothing here is typed by hand, and nothing is simulated.</p>
   </section>
   <section class="coin-section wrap" aria-labelledby="coin-facts">
     <p class="eyebrow">The Coin · The Facts</p>
@@ -123,68 +183,22 @@
     <p class="house-line" style="margin-top:16px;font-size:11px">Also from our house — <a href="https://onejobkits.com" style="color:#C9A227">OneJobKits: practical kits for every job →</a></p>
   </div>
 </footer>
+<div class="pulse-dock" data-pulse-dock>
+  <div class="pulse-dock-row">
+    <button class="coin-btn coin-btn--gold" type="button" data-dock-connect>Connect Wallet</button>
+    <a class="coin-btn" href="https://pump.fun/coin/9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump" target="_blank" rel="noopener noreferrer">Trade PROVADIA</a>
+    <span class="pulse-dock-note" data-dock-note>Read-only — this page never asks you to sign anything.</span>
+  </div>
+  <p class="pulse-dock-law">PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall's fate — and nothing else: no redemption, no yield, no rights, no expected return.</p>
+</div>
+<div class="pulse-dock-spacer" aria-hidden="true"></div>
 <script>
 (function () {
   "use strict";
   var CA = "9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump";
-  var API = "https://api.geckoterminal.com/api/v2/networks/solana/tokens/" + CA + "/pools";
 
-  /* ---------- live numbers ---------- */
-  function setStat(name, text) {
-    var el = document.querySelector('[data-stat="' + name + '"]');
-    if (el) el.textContent = text;
-  }
-  function fmtMoney(v) {
-    var n = Number(v);
-    if (!isFinite(n)) return "—";
-    return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
-  function fmtPrice(v) {
-    var n = Number(v);
-    if (!isFinite(n) || n <= 0) return "—";
-    if (n >= 1) return fmtMoney(n);
-    if (n >= 0.01) return "$" + n.toFixed(4);
-    var s = n.toFixed(20), m = s.match(/^0\.0*/), zeros = m[0].length - 2;
-    var digits = s.slice(m[0].length).slice(0, 4);
-    var subs = "₀₁₂₃₄₅₆₇₈₉", sub = String(zeros).split("").map(function (d) { return subs[+d]; }).join("");
-    return "$0.0" + sub + digits;
-  }
-  function fmtChange(v) {
-    var n = Number(v);
-    if (!isFinite(n)) return "—";
-    var arrow = n > 0 ? "▲ " : (n < 0 ? "▼ " : "");
-    return arrow + (n > 0 ? "+" : "") + n.toFixed(2) + "%";
-  }
-  function fmtDate(iso) {
-    var d = new Date(iso);
-    if (isNaN(d.getTime())) return "—";
-    return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
-  }
-  function failStats() {
-    ["price", "change", "fdv", "liquidity", "volume", "created"].forEach(function (k) { setStat(k, "—"); });
-    var st = document.querySelector("[data-stats-status]");
-    if (st) st.textContent = "Temporarily unavailable — the source could not be reached; nothing here is guessed.";
-  }
-  function loadStats() {
-    fetch(API, { headers: { "Accept": "application/json" } })
-      .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
-      .then(function (j) {
-        var pool = j && j.data && j.data[0];
-        if (!pool) throw new Error("no pool");
-        var a = pool.attributes;
-        setStat("price", fmtPrice(a.token_price_usd));
-        setStat("change", fmtChange(a.price_change_percentage && a.price_change_percentage.h24));
-        setStat("fdv", fmtMoney(a.fdv_usd));
-        setStat("liquidity", fmtMoney(a.reserve_in_usd));
-        setStat("volume", fmtMoney(a.volume_usd && a.volume_usd.h24));
-        setStat("created", fmtDate(a.pool_created_at));
-        var t = document.querySelector("[data-stats-time]");
-        if (t) { var now = new Date(); t.textContent = now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) + " · " + now.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }); t.setAttribute("datetime", now.toISOString()); }
-      })
-      .catch(failStats);
-  }
-  loadStats();
-  setInterval(loadStats, 60000);
+  /* Live numbers are driven by the Pulse engine (design/pulse.js):
+     the same verified pool read feeds the tiles above and the Pulse below. */
 
   /* ---------- the coin: flip + tilt ---------- */
   var coin = document.querySelector("[data-coin3d]");
@@ -282,6 +296,7 @@
 
 <script src="../design/vendor/gsap.min.js"></script><script src="../design/vendor/ScrollTrigger.min.js"></script><script src="../design/vendor/three.min.js"></script><script src="../design/space.js"></script><script src="../design/coin3d.js"></script><script src="../design/vendor/driver.js"></script>
 <script src="../design/guide.js"></script>
+<script src="../design/vendor/lightweight-charts.standalone.production.js"></script><script src="../design/pulse.js?v=pulse-s123-1"></script><script src="../design/pulse3d.js?v=pulse-s123-1"></script>
 <script type="application/json" id="nexus-share-manifest">{"title": "PROVADIA \u2014 The Coin", "text": "PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall's fate \u2014 and nothing else: no redemption, no yield, no rights, no expected return. Contract: 9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump", "url": "https://provadiacoin.com/coin/", "media": "https://provadiacoin.com/marks/front-published.webp"}</script>
 <script src="../nexus.js"></script>
 </body></html>
