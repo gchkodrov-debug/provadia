@@ -4,13 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PROVADIA — The Ecosystem · Every Coin Under the Family</title>
-<meta name="description" content="The Ecosystem of PROVADIA — every coin under the family, rendered from the town's chained registry of houses: the counts always shown, the roll of houses, and the tithe thread. Genesis: an empty street, honestly empty.">
+<meta name="description" content="The Ecosystem of PROVADIA — the Connected Galaxy: the town at the centre, its sister store in its own lens, the verified rails it stands on, and the family protocol — rendered from the town's chained registry of houses.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../sections/panels.css">
 <link rel="stylesheet" href="../sections/record/panels.css">
 <link rel="stylesheet" href="../pages.css">
+<link rel="stylesheet" href="orrery.css">
 <noscript><style>#fade{display:none!important}#stage{display:none!important}.fallback-only{display:block!important}.cap-static{display:block!important}</style></noscript>
 <script>
 /* BOOT — the living world IS the site; the still town is its emergency net,
@@ -115,7 +116,6 @@
   }, 1000);
 })();
 </script>
-<link rel="stylesheet" href="../nexus.css">
 </head>
 <body>
 <div id="stage" aria-hidden="true"></div>
@@ -132,10 +132,12 @@
   <a class="door-link" href="../catalogue/">The Catalogue</a> <a class="door-link" href="../coin/">The Coin</a>
 </nav>
 
+
 <main class="room">
   <div id="fallback-note" class="fallback-only" role="note">
     <p class="fallback-note-line">The living world of this town needs a WebGL-capable browser. This is its still face — every word, record and door below is the town itself.</p>
   </div>
+
 
   <header class="room-head">
     <p class="room-eyebrow">Page 5 · The Ecosystem</p>
@@ -153,13 +155,82 @@
     </div>
   </section>
 
-  <section class="town-panel" aria-label="The Family Square">
+  <section class="town-panel galaxy-panel" aria-label="The Connected Galaxy">
     <div class="panel-inner">
-      <p class="panel-eyebrow">The Family Square</p>
-      <h2 class="panel-title">A Street of Houses</h2>
-      <p class="panel-body">The ecosystem is not a chart, and not a list drawn up for show. It is a street in this town, and every house of the family stands on it. When a house is born under the town's covenant, it is built here — a real house on a real plot, with its registry number on the door and its receipts in the book below.</p>
-      <p class="panel-body">Today the street stands as it truly is: the plots are laid out, and the plots are unbuilt — shown unbuilt. That is not a shortage to hide. It is the town's honesty about its own size, drawn the same way the town draws everything else: only what has happened.</p>
-      <p class="panel-body">Nothing on this street is decoration. There are no sample houses, no borrowed names, and no counts of the hopeful. A plot fills when a house is born into the record — and not one hour before.</p>
+      <p class="panel-eyebrow">The Connected Galaxy</p>
+      <h2 class="panel-title">The Civic Orrery</h2>
+      <p class="panel-body">The town drawn as what it is: a working orrery. PROVADIA turns at the centre; four rings turn around it — the town&rsquo;s own core, its sister store seen through its own lens, the verified rails the town stands on, and the protocol by which new houses join. Scroll, and each ring lights in turn. Select any node for its Verified Identity &amp; Gateway Card.</p>
+
+      <div class="orrery-layout">
+        <div class="orrery-centre">
+          <div class="orrery" role="img" aria-label="The civic orrery: PROVADIA at the centre, ringed by the town core, the sister store, the verified rails, and the family protocol">
+            <div class="orrery-stage">
+            <svg class="orrery-svg" viewBox="0 0 320 320" aria-hidden="true" focusable="false">
+              <circle class="oring oring-4" data-ring-visual="4" cx="160" cy="160" r="150"/>
+              <circle class="oring oring-3" data-ring-visual="3" cx="160" cy="160" r="118"/>
+              <circle class="oring oring-2" data-ring-visual="2" cx="160" cy="160" r="86"/>
+              <circle class="oring oring-1" data-ring-visual="1" cx="160" cy="160" r="56"/>
+              <circle class="onode" data-ring-visual="1" cx="216" cy="160" r="5"/>
+              <circle class="onode" data-ring-visual="2" cx="160" cy="74" r="5"/>
+              <circle class="onode" data-ring-visual="3" cx="42" cy="160" r="5"/>
+              <circle class="onode" data-ring-visual="4" cx="160" cy="310" r="5"/>
+            </svg>
+            <img class="orrery-hub" src="../design/assets/coin-face-front-3d.webp" alt="PROVADIA — the hub of the orrery">
+            </div>
+            <div class="film-slot" data-film-slot="ecosystem-orrery-4layer-v1" data-film-state="awaiting-captain-shoot"></div>
+          </div>
+          <p class="orrery-caption">The orrery stands at the centre. As each ring passes, it lights.</p>
+        </div>
+
+        <div class="orrery-parts">
+
+          <article class="ring-card" id="ring-1" data-ring="1" aria-label="Ring 01 — The PROVADIA Core">
+            <span class="leader" aria-hidden="true"><span class="leader-line"></span><span class="leader-dot"></span></span>
+            <p class="ring-num">Ring 01</p>
+            <h3 class="ring-title">The PROVADIA Core</h3>
+            <p class="panel-body">What it is: the town itself and its working organs. What it does: everything on this ring is the town&rsquo;s own — its doors, its mint, its wall, its book, its square.</p>
+            <ul class="node-list"><li class="node-item"><details class="node-details"><summary class="node-btn">The Town</summary><div class="gateway-card" role="group" aria-label="Verified Identity and Gateway Card — The Town"><p><span class="gw-label">What it is</span> The town itself — provadiacoin.com, the living world every door opens into.</p><p><span class="gw-label">Relationship to PROVADIA</span> The hub. PROVADIA is its coin and its name.</p><p><span class="gw-label">Sovereign door</span> <a href="../">provadiacoin.com</a></p></div></details></li><li class="node-item"><details class="node-details"><summary class="node-btn">The Mint</summary><div class="gateway-card" role="group" aria-label="Verified Identity and Gateway Card — The Mint"><p><span class="gw-label">What it is</span> The town&rsquo;s coin-creation service — the first full-service mint: idea, design, contract, mint, launch, with a Keeper.</p><p><span class="gw-label">Relationship to PROVADIA</span> A service of the town, sold from its own listing.</p><p><span class="gw-label">Sovereign door</span> <a href="../listings/mint.html">The Mint listing</a></p></div></details></li><li class="node-item"><details class="node-details"><summary class="node-btn">The Golden Wall</summary><div class="gateway-card" role="group" aria-label="Verified Identity and Gateway Card — The Golden Wall"><p><span class="gw-label">What it is</span> The town&rsquo;s wall of physical one-gram gold bars, bought with 20% of creator fees into a named third-party vault.</p><p><span class="gw-label">Relationship to PROVADIA</span> The covenant&rsquo;s monument. 0 of 47 bricks today — honestly unlit. Never backing, never redeemable.</p><p><span class="gw-label">Sovereign door</span> <a href="../record/">The Record — the Wall&rsquo;s book</a></p></div></details></li><li class="node-item"><details class="node-details"><summary class="node-btn">The Record</summary><div class="gateway-card" role="group" aria-label="Verified Identity and Gateway Card — The Record"><p><span class="gw-label">What it is</span> The town&rsquo;s Day-Book, Verifier and registry — every claim receipted, recomputed in the visitor&rsquo;s own browser.</p><p><span class="gw-label">Relationship to PROVADIA</span> The town&rsquo;s book of truth; this page&rsquo;s counts are drawn from it.</p><p><span class="gw-label">Sovereign door</span> <a href="../record/">The Record</a></p></div></details></li><li class="node-item"><details class="node-details"><summary class="node-btn">The Agora</summary><div class="gateway-card" role="group" aria-label="Verified Identity and Gateway Card — The Agora"><p><span class="gw-label">What it is</span> The town&rsquo;s forum — where people talk, and where the support desk stands.</p><p><span class="gw-label">Relationship to PROVADIA</span> The town&rsquo;s public square.</p><p><span class="gw-label">Sovereign door</span> <a href="../agora/">The Agora</a></p></div></details></li></ul>
+          </article>
+
+          <article class="ring-card ring-lens" id="ring-2" data-ring="2" aria-label="Ring 02 — The Sister Store">
+            <span class="leader" aria-hidden="true"><span class="leader-line"></span><span class="leader-dot"></span></span>
+            <div class="ojk-lens">
+              <p class="ring-num">Ring 02</p>
+              <h3 class="ring-title">The Sister Store — Seen Through Its Own Lens</h3>
+              <p>What it is: OneJobKits, the founder&rsquo;s other house — a store of practical kits for every job. What it does: it sells its own goods through its own till, behind its own doors.</p>
+              <p>The sister store stands at 394 live kits, with done-for-you systems beside them. It is family — and it is a separate house: its own palette, its own shop, its own book. This lens is a window, not a door into its products; the one road to it is its own front door.</p>
+              <p><a class="ojk-door" href="https://onejobkits.com">OneJobKits — its own front door →</a></p>
+            </div>
+          </article>
+
+          <article class="ring-card" id="ring-3" data-ring="3" aria-label="Ring 03 — Verified Infrastructure and Rails">
+            <span class="leader" aria-hidden="true"><span class="leader-line"></span><span class="leader-dot"></span></span>
+            <p class="ring-num">Ring 03</p>
+            <h3 class="ring-title">Verified Infrastructure &amp; Rails</h3>
+            <p class="panel-body">What it is: the outside machinery the town verifiably stands on. What it does: each rail does one named job — the chain, the telemetry, the ear, the archive, the vault. None of it is the town&rsquo;s property, and none of it is dressed as such.</p>
+            <ul class="node-list"><li class="node-item"><details class="node-details"><summary class="node-btn">Solana</summary><div class="gateway-card" role="group" aria-label="Verified Identity and Gateway Card — Solana"><p><span class="gw-label">What it is</span> The chain the town stands on. The coin was launched on the pump.fun bonding curve.</p><p><span class="gw-label">Relationship to PROVADIA</span> The ground under the town — not the town&rsquo;s property, and never presented as such.</p><p><span class="gw-label">Sovereign door</span> <a href="https://pump.fun/coin/9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump" target="_blank" rel="noopener">The coin on pump.fun</a></p></div></details></li><li class="node-item"><details class="node-details"><summary class="node-btn">GeckoTerminal</summary><div class="gateway-card" role="group" aria-label="Verified Identity and Gateway Card — GeckoTerminal"><p><span class="gw-label">What it is</span> The town&rsquo;s market telemetry — the pool the Coin page reads for its live numbers.</p><p><span class="gw-label">Relationship to PROVADIA</span> An outside instrument the town reads; the town does not control it.</p><p><span class="gw-label">Sovereign door</span> No public door from this page — read on the Coin page.</p></div></details></li><li class="node-item"><details class="node-details"><summary class="node-btn">Helius</summary><div class="gateway-card" role="group" aria-label="Verified Identity and Gateway Card — Helius"><p><span class="gw-label">What it is</span> RPC — the town&rsquo;s chain ear: how the town&rsquo;s machinery listens to Solana.</p><p><span class="gw-label">Relationship to PROVADIA</span> Infrastructure the town uses. No public door.</p><p><span class="gw-label">Sovereign door</span> No public door.</p></div></details></li><li class="node-item"><details class="node-details"><summary class="node-btn">Arweave</summary><div class="gateway-card" role="group" aria-label="Verified Identity and Gateway Card — Arweave"><p><span class="gw-label">What it is</span> Permanent storage for the town&rsquo;s records.</p><p><span class="gw-label">Relationship to PROVADIA</span> The town&rsquo;s deep archive. No public door.</p><p><span class="gw-label">Sovereign door</span> No public door.</p></div></details></li><li class="node-item"><details class="node-details"><summary class="node-btn">BullionStar / Wyoming Reserve</summary><div class="gateway-card" role="group" aria-label="Verified Identity and Gateway Card — BullionStar / Wyoming Reserve"><p><span class="gw-label">What it is</span> Allocated vault custody for the Golden Wall&rsquo;s gold — a named third-party vault.</p><p><span class="gw-label">Relationship to PROVADIA</span> The gold&rsquo;s keeper. The founder never holds the gold.</p><p><span class="gw-label">Sovereign door</span> No public door.</p></div></details></li></ul>
+          </article>
+
+          <article class="ring-card" id="ring-4" data-ring="4" aria-label="Ring 04 — The Umbrella V2 Family Protocol">
+            <span class="leader" aria-hidden="true"><span class="leader-line"></span><span class="leader-dot"></span></span>
+            <p class="ring-num">Ring 04</p>
+            <h3 class="ring-title">The Umbrella V2 — The Family Protocol</h3>
+            <p class="panel-body">What it is: the law by which future independent houses join the family. What it does: it states the ticket plainly, so no founder joins under a misunderstanding.</p>
+            <ul class="claim-list">
+              <li><strong>The ticket, in its true state:</strong> there is no tithe — independent houses keep 100% of their fees and pay their own costs.</li>
+              <li>The ticket is free.</li>
+              <li>The ticket is sequential — houses are taken in order.</li>
+              <li>The ticket is non-transferable.</li>
+              <li>2 starts per month.</li>
+              <li>5 active houses.</li>
+              <li>Intake closes at 12 waiting.</li>
+            </ul>
+            <p class="gate-state"><span class="gw-label">Gate state</span> Off watch · gate closed · checkout not connected.</p>
+            <p class="panel-body">The one door in stands below, in The Way In — a house begins with a knock.</p>
+          </article>
+
+        </div>
+      </div>
     </div>
   </section>
 
@@ -196,16 +267,6 @@
     </div>
   </section>
 
-  <section class="town-panel" aria-label="The Tithe Thread">
-    <div class="panel-inner">
-      <p class="panel-eyebrow">The Tithe Thread</p>
-      <h2 class="panel-title">The Forwarding Record</h2>
-      <p class="panel-body">Every standing house forwards what its covenant assigns, by honor, and every forward is receipted. This thread is drawn from Vault I's tithe book — the contract's own ledger, which stands open on <a href="../record/">the Record page</a> — and it shows, house by house, the statements posted and the forwards receipted: public math that anyone can check, because the claims a house makes are visible to all.</p>
-      <p class="panel-body">It is rendered as record, never as a leaderboard: no totals ranked, and no house praised or shamed beyond its own receipts.</p>
-      <p class="panel-body">The thread is empty, and it says why: no house has traded, no statement has been posted, and no forward has been receipted — the thread is empty because the family is unborn. It fills when the book does, and not before.</p>
-    </div>
-  </section>
-
   <section class="town-panel" aria-label="The Way In">
     <div class="panel-inner">
       <p class="panel-eyebrow">The Way In</p>
@@ -230,7 +291,6 @@
 
 <script type="module" src="../pageworld.js"></script>
 <script type="module" src="../sections/record/registry.js"></script>
-<script type="application/json" id="nexus-share-manifest">{"title": "PROVADIA \u2014 The Ecosystem", "text": "The Ecosystem of PROVADIA \u2014 every house of the family, standing on its own street, with its standing shown.", "url": "https://provadiacoin.com/ecosystem/", "media": "https://provadiacoin.com/marks/front-published.webp"}</script>
-<script src="../nexus.js"></script>
+<script src="orrery.js"></script>
 </body>
 </html>
