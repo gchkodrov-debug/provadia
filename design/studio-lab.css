@@ -1,0 +1,95 @@
+/* ============================================================
+   PROVADIA — The Studio · The Sealed Creation Laboratory
+   design/studio-lab.css — extends the canonical shell
+   (design/shared.css vars) and page-studio.css; never forks them.
+   The bays are sealed and dark by design: smoked glass, a locking
+   bar, an honest stamp. Nothing in this file animates, so
+   reduced-motion needs no overrides beyond the shell's own.
+   ============================================================ */
+
+/* Section rhythm matches .studio-section exactly. */
+.studio-lab{
+  padding-block:clamp(40px,6vw,72px);
+  border-top:1px solid var(--quiet-line);
+}
+.studio-lab h2{margin-top:14px}
+.lab-lede{max-width:var(--measure);margin-top:20px}
+.lab-close{max-width:var(--measure);margin-top:30px}
+
+/* Status line: the prominent stamp + the plain facts beside it. */
+.lab-status{
+  display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px;
+  margin-top:26px;max-width:none;
+}
+.lab-stamp{
+  font-size:13px;letter-spacing:.15em;text-transform:uppercase;
+  border:1px solid var(--bronze);
+  padding:8px 14px;white-space:nowrap;
+}
+.lab-status-line{font-size:13px;letter-spacing:.04em}
+
+/* Hidden film slot: the captain's Flow clip lands here later
+   without rework; it occupies no space while hidden. */
+.lab-film{display:none}
+
+/* ---------- The four sealed bays ---------- */
+.lab-bays{
+  display:grid;grid-template-columns:1fr;
+  gap:28px;margin-top:38px;
+}
+@media (min-width:900px){
+  .lab-bays{grid-template-columns:1fr 1fr}
+}
+.lab-bay{
+  position:relative;
+  border:1px solid var(--quiet-line);
+  border-top:5px double var(--bronze);
+  /* Smoked glass: deep brown washing into the field. */
+  background:linear-gradient(160deg, rgba(48,37,27,.55), rgba(20,18,16,.92) 55%);
+  padding:30px 28px 26px;
+}
+/* Locking bar: a solid deep-brown block across the bay's head,
+   with a single gold hairline along its underside. */
+.lab-bay::before{
+  content:"";
+  position:absolute;top:12px;left:14px;right:14px;
+  height:10px;
+  background:#30251B;
+  border-bottom:1px solid rgba(201,162,39,.5);
+}
+.bay-num{
+  margin-top:16px;
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;line-height:1.7;
+}
+.lab-bay h3{margin-block:16px 14px}
+.lab-bay p{font-size:14px;max-width:52ch}
+.lab-bay .specimen-stamp{display:inline-block;margin-top:18px}
+
+/* The smoked slit: a thin horizontal window into the dark bay —
+   bone-cream and antique-gold light, dimmed behind smoked glass. */
+.bay-slit{
+  height:54px;
+  margin:0 0 18px;
+  background:linear-gradient(180deg, rgba(233,221,198,.10), rgba(201,162,39,.14) 50%, rgba(20,18,16,.6));
+  border:1px solid rgba(201,162,39,.25);
+  box-shadow:inset 0 6px 14px rgba(20,18,16,.65), inset 0 -8px 16px rgba(20,18,16,.8);
+}
+
+/* ---------- Reduced motion ---------- */
+/* Nothing in this file animates or transitions; stated explicitly
+   so a future edit cannot quietly break the sealed stillness. */
+@media (prefers-reduced-motion:reduce){
+  .studio-lab,.lab-bay,.bay-slit{animation:none!important;transition:none!important}
+}
+
+/* ---------- Print: bays readable, black on white ---------- */
+@media print{
+  .studio-lab{border-top-color:#000}
+  .lab-bay{
+    background:#fff!important;color:#000!important;
+    border-color:#000!important;page-break-inside:avoid;
+  }
+  .lab-bay::before{background:#fff;border-bottom-color:#000}
+  .bay-slit{background:#fff!important;border-color:#000;box-shadow:none}
+  .lab-stamp,.lab-bay .specimen-stamp{border-color:#000;color:#000}
+}
