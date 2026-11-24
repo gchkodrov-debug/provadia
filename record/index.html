@@ -345,7 +345,66 @@
   <div class="rec-card">
     <p class="rec-verdict" data-verify-verdict data-state="working">Recomputing every entry in your browser…</p>
     <p class="rec-note fallback-only">In this still face the chain cannot be recomputed — that proof needs JavaScript. The book itself, and every entry in it, stands in the living town.</p>
-    <ol class="rec-list" data-daybook-list></ol>
+    <div class="ledger-tools" role="group" aria-label="Ledger views">
+      <button type="button" class="ledger-view-btn" data-ledger-view="astrolabe" aria-pressed="true">The Astrolabe Ledger</button>
+      <button type="button" class="ledger-view-btn" data-ledger-view="plain" aria-pressed="false">Plain Ledger Table</button>
+    </div>
+    <div data-ledger-astrolabe>
+      <figure class="astrolabe" aria-label="The Chrono-Astrolabe — four rings for the book's four strata">
+        <svg class="astrolabe-svg" viewBox="0 0 260 260" role="img" aria-label="Four concentric rings: the Founding Acts, the Rulings and Amendments, the Receipts and the Day-Book, and Crystallized Agora Decisions">
+          <!-- 4 concentric rings (radii 40/62/84/106), bronze strokes; ring 4 dashed (awaiting) -->
+          <g class="astrolabe-spin">
+          <circle cx="130" cy="130" r="40" fill="none" stroke="#6B4A12" stroke-width="1.5"></circle>
+          <circle cx="130" cy="130" r="62" fill="none" stroke="#6B4A12" stroke-width="1.5"></circle>
+          <circle cx="130" cy="130" r="84" fill="none" stroke="#C9A227" stroke-width="1.5"></circle>
+          <circle cx="130" cy="130" r="106" fill="none" stroke="#6B4A12" stroke-width="1.5" stroke-dasharray="4 6"></circle>
+          <g data-astrolabe-nodes></g>
+          </g>
+          <!-- centre: small salt-crystal polygon + the book's name -->
+          <polygon points="130,116 142,130 130,144 118,130" fill="none" stroke="#C9A227" stroke-width="1.5"></polygon>
+          <text x="130" y="163" text-anchor="middle" fill="#E9DDC6" font-family="Cinzel, serif" font-size="8.5" letter-spacing="2">THE CHAINED BOOK</text>
+        </svg>
+        <figcaption class="rec-note" data-astrolabe-caption>The book, recomputed in your browser.</figcaption>
+      </figure>
+      <section class="stratum" data-stratum="founding" aria-label="Stratum 1 — The Founding Acts">
+        <h3 class="stratum-title"><span class="stratum-num">01 / 04</span> The Founding Acts</h3>
+        <p class="rec-note stratum-duty">The acts that struck the coin and stood the town up — the launch, the founder's disclosed buy, the town's name, the one-world rebuild.</p>
+        <ol class="rec-list" data-strata-list="founding"></ol>
+      </section>
+      <section class="stratum" data-stratum="rulings" aria-label="Stratum 2 — The Rulings and Amendments">
+        <h3 class="stratum-title"><span class="stratum-num">02 / 04</span> The Rulings &amp; Amendments</h3>
+        <p class="rec-note stratum-duty">The founder's public rulings, signed into the book — the Golden Wall Covenant and the coin's filing among them.</p>
+        <ol class="rec-list" data-strata-list="rulings"></ol>
+      </section>
+      <section class="stratum" data-stratum="receipts" aria-label="Stratum 3 — The Receipts and the Day-Book">
+        <h3 class="stratum-title"><span class="stratum-num">03 / 04</span> The Receipts &amp; The Day-Book</h3>
+        <p class="rec-note stratum-duty">The whole book in chain order — every entry's hash linked to the one before it — with the receipt counters that ride with it. The Daily Anchor stands below.</p>
+        <p class="rec-note" data-strata-receipts>Receipt counters load with the book.</p>
+        <ol class="chain-strip" data-chain-strip></ol>
+      </section>
+      <section class="stratum" data-stratum="crystallized" aria-label="Stratum 4 — Crystallized Agora Decisions">
+        <h3 class="stratum-title"><span class="stratum-num">04 / 04</span> Crystallized Agora Decisions</h3>
+        <p class="rec-note stratum-duty">Agora decisions the town has promoted into permanent record, encased here as archive nodes.</p>
+        <ol class="rec-list" data-strata-list="crystallized"></ol>
+        <p class="rec-note" data-crystallized-empty>No Agora decision has crystallized into the Record yet. When one does, it will stand here — receipted, dated, and chained like everything else in this book.</p>
+      </section>
+      <div class="film-slot" data-film-slot="record-astrolabe-4layer-v1"></div>
+    </div>
+    <div data-ledger-plain hidden>
+      <table class="rec-table">
+        <thead><tr><th scope="col">#</th><th scope="col">Date</th><th scope="col">Record</th><th scope="col">SHA-256</th><th scope="col">Chain</th></tr></thead>
+        <tbody data-ledger-table-body></tbody>
+      </table>
+    </div>
+    <form class="hash-explorer" data-hash-explorer>
+      <label class="rec-k" for="hash-input">Hash Explorer</label>
+      <p class="rec-note">Paste any entry's hash — or the book's current root — and the book will show you where it stands.</p>
+      <div class="hash-explorer-row">
+        <input id="hash-input" data-hash-input type="text" autocomplete="off" spellcheck="false" placeholder="a 64-character hash from this book">
+        <button type="submit" class="ledger-view-btn">Look it up</button>
+      </div>
+      <p class="rec-note" data-hash-result role="status" aria-live="polite"></p>
+    </form>
   </div>
 
   <div class="rec-card">
