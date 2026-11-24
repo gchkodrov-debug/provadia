@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../sections/panels.css">
 <link rel="stylesheet" href="../pages.css">
-<link rel="stylesheet" href="../nexus.css">
+<link rel="stylesheet" href="../design/trust.css">
 </head>
 <body>
 <nav class="doors" aria-label="The doors of the town">
@@ -31,7 +31,99 @@
 <p class="room-lede">The standing law of this town, in plain words. By standing in these rooms you accept it as written here. If it ever changes, the change is printed on this page and noted in the Day-Book before it binds anyone.</p>
 </header>
 
-<section class="town-panel" aria-label="What this place is">
+<section class="trust-chamber" aria-label="The Chamber of Trust">
+  <p class="trust-eyebrow">The Chamber of Trust</p>
+  <svg class="trust-scales" viewBox="0 0 400 300" role="img" aria-label="Twin balance scales suspended above an open sealed codex" xmlns="http://www.w3.org/2000/svg">
+  <!-- Open codex: two facing pages, ruled lines, gold seal at the spine base -->
+  <g class="codex" fill="none" stroke="#C9A227" stroke-width="1.6">
+    <path d="M200 238 C 168 222, 128 214, 92 220 L 92 268 C 128 262, 168 270, 200 286 Z" fill="#30251B" fill-opacity="0.55"/>
+    <path d="M200 238 C 232 222, 272 214, 308 220 L 308 268 C 272 262, 232 270, 200 286 Z" fill="#30251B" fill-opacity="0.55"/>
+    <path d="M112 232 C 138 229, 164 234, 188 244" stroke="#E9DDC6" stroke-opacity="0.45" stroke-width="1.1"/>
+    <path d="M112 244 C 138 241, 164 246, 188 256" stroke="#E9DDC6" stroke-opacity="0.35" stroke-width="1.1"/>
+    <path d="M112 256 C 138 253, 164 258, 188 268" stroke="#E9DDC6" stroke-opacity="0.25" stroke-width="1.1"/>
+    <path d="M212 244 C 236 234, 262 229, 288 232" stroke="#E9DDC6" stroke-opacity="0.45" stroke-width="1.1"/>
+    <path d="M212 256 C 236 246, 262 241, 288 244" stroke="#E9DDC6" stroke-opacity="0.35" stroke-width="1.1"/>
+    <path d="M212 268 C 236 258, 262 253, 288 256" stroke="#E9DDC6" stroke-opacity="0.25" stroke-width="1.1"/>
+    <line x1="200" y1="238" x2="200" y2="286"/>
+    <circle cx="200" cy="272" r="13" fill="#C9A227" fill-opacity="0.9" stroke="#E9DDC6" stroke-opacity="0.6"/>
+    <circle cx="200" cy="272" r="7.5" fill="none" stroke="#30251B" stroke-width="1.2"/>
+  </g>
+  <!-- Central pillar and finial (static; the beam settles above it) -->
+  <g class="pillar" fill="none" stroke="#C9A227" stroke-width="1.8">
+    <line x1="200" y1="43" x2="200" y2="238"/>
+    <line x1="188" y1="238" x2="212" y2="238"/>
+    <path d="M182 238 L218 238 L210 226 L190 226 Z" fill="#30251B" fill-opacity="0.7"/>
+    <circle cx="200" cy="34" r="9" fill="#30251B" fill-opacity="0.7"/>
+    <path d="M200 18 L206 28 L200 25 L194 28 Z" fill="#C9A227" fill-opacity="0.85" stroke="none"/>
+    <path d="M191 62 L200 50 L209 62 L200 70 Z" fill="#30251B" fill-opacity="0.7"/>
+  </g>
+  <!-- Beam group: beam, chains and both pans; starts at -2.5deg, settles to level (see trust.css) -->
+  <g class="beam" fill="none" stroke="#C9A227" stroke-width="1.8">
+    <line x1="64" y1="62" x2="336" y2="62"/>
+    <circle cx="64" cy="62" r="3" fill="#C9A227" fill-opacity="0.9" stroke="none"/>
+    <circle cx="336" cy="62" r="3" fill="#C9A227" fill-opacity="0.9" stroke="none"/>
+    <circle cx="200" cy="62" r="5" fill="#C9A227" fill-opacity="0.9" stroke="none"/>
+    <g stroke-width="1.2">
+      <line x1="70" y1="62" x2="46" y2="128"/>
+      <line x1="70" y1="62" x2="94" y2="128"/>
+      <line x1="70" y1="62" x2="70" y2="132"/>
+    </g>
+    <path d="M40 128 C 52 148, 88 148, 100 128 C 84 138, 56 138, 40 128 Z" fill="#30251B" fill-opacity="0.65"/>
+    <g stroke-width="1.2">
+      <line x1="330" y1="62" x2="306" y2="128"/>
+      <line x1="330" y1="62" x2="354" y2="128"/>
+      <line x1="330" y1="62" x2="330" y2="132"/>
+    </g>
+    <path d="M300 128 C 312 148, 348 148, 360 128 C 344 138, 316 138, 300 128 Z" fill="#30251B" fill-opacity="0.65"/>
+  </g>
+</svg>
+  <h2 class="trust-title">The Twin Scales &amp; the Sealed Codex</h2>
+  <p class="trust-lede">Four commitments stand over the full text of the town's law. The text beneath them is the law itself — all of it, in order, readable by anyone. Nothing is summarized away, and nothing hides behind the pictures.</p>
+  <!-- FILM SLOT: chamber-of-trust clip (captain's Flow shoot) lands here without rework -->
+  <div class="trust-film" data-film-slot="chamber-of-trust" hidden></div>
+  <div class="trust-vows">
+  <article class="trust-vow" data-vow="1">
+    <span class="vow-dot" aria-hidden="true"></span>
+    <p class="vow-num">01 / 04</p>
+    <h3 class="vow-name">THE NON-INVESTMENT BOUNDARY</h3>
+    <p class="vow-body">PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall's fate — and nothing else: no redemption, no yield, no rights, no expected return.</p>
+  </article>
+  <article class="trust-vow" data-vow="2">
+    <span class="vow-dot" aria-hidden="true"></span>
+    <p class="vow-num">02 / 04</p>
+    <h3 class="vow-name">DATA MINIMIZATION &amp; PRIVACY SHIELD</h3>
+    <p class="vow-body">An account stores only what it needs to work: an email address, a salted hash in place of your password, a display name if you choose one, a wallet address if you choose to connect one. The town never holds your keys, your seed phrase, or custody of anything — and nothing from a private conversation is ever printed in the public record. Genesis serials are drawn unlinked from membership and carry no personal information on-chain.</p>
+  </article>
+  <article class="trust-vow" data-vow="3">
+    <span class="vow-dot" aria-hidden="true"></span>
+    <p class="vow-num">03 / 04</p>
+    <h3 class="vow-name">THE NO-LOSS &amp; COMPLETION LAW</h3>
+    <p class="vow-body">Services are charged at completion only — completion means a handover test the customer can check unaided — with a thirty-day support window and narrow, deliverable-based refund rules printed before any money moves. The no-loss side of that law is the house's own discipline — the house does not lose money on a build — and neither side is asked to trust the other's word, because the receipt is the proof.</p>
+  </article>
+  <article class="trust-vow" data-vow="4">
+    <span class="vow-dot" aria-hidden="true"></span>
+    <p class="vow-num">04 / 04</p>
+    <h3 class="vow-name">CONDUCT &amp; SPEECH PROTECTION</h3>
+    <p class="vow-body">Criticism, disagreement, and hard questions — of the project, of the Captain, of the founder — are protected speech in every room of this town, always. Profanity and abuse draw one calm warning; a second offense is removal, logged in the open — and money paid through a returnable rail is returned through that rail.</p>
+  </article>
+  </div>
+</section>
+
+<div class="trust-fulltext-head">
+  <h2 class="trust-fulltext-title">The Full Text</h2>
+  <p class="trust-fulltext-note">Every word of the town's law on this page, in order. Use the index to jump; use print to keep a copy. If words anywhere else on this site ever disagree with this text, this text governs.</p>
+  <nav class="trust-index" aria-label="Index of the full text">
+    <ul>
+    <li><a href="#text-place">What This Place Is</a></li>
+    <li><a href="#text-keeper">The Keeper and the Record</a></li>
+    <li><a href="#text-conduct">Accounts and Conduct</a></li>
+    <li><a href="#text-limits">The Town's Limits</a></li>
+    </ul>
+  </nav>
+  <button class="trust-print" type="button" data-print>Print / save as PDF</button>
+</div>
+
+<section class="town-panel" id="text-place" aria-label="What this place is">
 <div class="panel-inner">
 <p class="panel-eyebrow">Terms · The Place</p>
 <h2 class="panel-title">What This Place Is</h2>
@@ -40,7 +132,7 @@
 </div>
 </section>
 
-<section class="town-panel" aria-label="The Keeper and the record">
+<section class="town-panel" id="text-keeper" aria-label="The Keeper and the record">
 <div class="panel-inner">
 <p class="panel-eyebrow">Terms · The Keeper</p>
 <h2 class="panel-title">The Keeper and the Record</h2>
@@ -49,7 +141,7 @@
 </div>
 </section>
 
-<section class="town-panel" aria-label="Accounts and conduct">
+<section class="town-panel" id="text-conduct" aria-label="Accounts and conduct">
 <div class="panel-inner">
 <p class="panel-eyebrow">Terms · Accounts and Conduct</p>
 <h2 class="panel-title">Accounts and Conduct</h2>
@@ -59,7 +151,7 @@
 </div>
 </section>
 
-<section class="town-panel" aria-label="The town's limits">
+<section class="town-panel" id="text-limits" aria-label="The town's limits">
 <div class="panel-inner">
 <p class="panel-eyebrow">Terms · The Limits</p>
 <h2 class="panel-title">The Town's Limits</h2>
@@ -76,7 +168,6 @@
 <p class="house-line" style="margin-top:16px;font-size:11px">Also from our house — <a href="https://onejobkits.com" style="color:#C9A227">OneJobKits: practical kits for every job →</a></p>
 </footer>
 </main>
-<script type="application/json" id="nexus-share-manifest">{"title": "PROVADIA \u2014 Terms", "text": "The Terms of PROVADIA \u2014 the town's covenant, written plainly and standing in the open.", "url": "https://provadiacoin.com/terms/", "media": "https://provadiacoin.com/marks/front-published.webp"}</script>
-<script src="../nexus.js"></script>
+<script defer src="../design/trust.js"></script>
 </body>
 </html>
