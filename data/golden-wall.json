@@ -1,0 +1,15 @@
+{
+  "schema": "golden-wall-ledger",
+  "version": 1,
+  "bricksLaid": 0,
+  "bricksTarget": 47,
+  "gramsTotal": 0,
+  "birthdayDeadlineUtc": "2027-11-18T19:52:00Z",
+  "status": "AWAITING_BRICK_1",
+  "bricks": [],
+  "signature": {
+    "algorithm": "SHA-256",
+    "scope": "all fields above, canonical JSON (sorted keys, compact separators)",
+    "digest": "86011a778d4dd33ca9b031e8329a1c223e2ee244d11b98a86d2cb5c4f01d99c8"
+  }
+}
