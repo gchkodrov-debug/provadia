@@ -307,7 +307,7 @@ $('signBtn').addEventListener('click', async () => {
     if (!web3) throw new Error('@solana/web3.js failed to load.');
     const connection = new web3.Connection(RPC, 'confirmed');
     // Mirror of buildAnchorTransaction in anchor-tx.mjs:
-    const { blockhash } = await connection.getLatestBlockhash('finalized');
+    const { blockhash } = await connection.getLatestBlockhash('confirmed');
     const data = typeof Buffer !== 'undefined'
       ? Buffer.from(MEMO_TEXT, 'utf8')
       : new TextEncoder().encode(MEMO_TEXT);
