@@ -1,0 +1,17 @@
+/* PROVADIA — THE BREATHING RING · the Threshold Layer's unified loading component.
+   Design: Gemini's Complete-Universe Blueprint, Part II item 14 (Loading Screens).
+   One thin #C9A227 ring expanding softly on the #141210 void.
+   Rules: never blocks LCP · no generic SaaS spinner · reduced-motion = instant render.
+   Markup: <div class="pv-boot" aria-hidden="true"><svg class="pv-ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46"/></svg></div>
+   The veil renders only under html.pv-on (a one-line head script sets it), so a
+   no-JS visitor never meets it; the hide script's timers clear it even where CSS
+   animation is disabled, and the CSS life animation is the final fallback.
+   The ring also stands alone (class pv-ring on any svg) wherever a world is loading. */
+.pv-boot{position:fixed;inset:0;z-index:90;background:#141210;display:none;align-items:center;justify-content:center;pointer-events:none;transition:opacity .6s ease;animation:pvBootLife .8s ease 3.4s forwards}
+html.pv-on .pv-boot{display:flex}
+.pv-boot.pv-done{opacity:0;visibility:hidden}
+.pv-ring{width:84px;height:84px;flex:none;transform-origin:50% 50%;animation:pvBreathe 2.6s ease-in-out infinite}
+.pv-ring circle{fill:none;stroke:#C9A227;stroke-width:1.5}
+@keyframes pvBreathe{0%,100%{transform:scale(.92);opacity:.55}50%{transform:scale(1.05);opacity:1}}
+@keyframes pvBootLife{to{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion:reduce){html.pv-on .pv-boot,.pv-boot{display:none}.pv-ring{animation:none}}
