@@ -1,0 +1,93 @@
+/* THE LIVING MINT — Tranche T4-A (entrance + creation chamber).
+   Every selector is prefixed .lm- / #lm- / #creation-chamber.
+   Town palette only: #141210 vault, #C9A227 antique gold,
+   #E9DDC6 bone cream, #30251B deep brown,
+   #E4C65B bright gold (reserved: conduit, ignite glow, CONCEPT badge). */
+
+/* ---------- shared ---------- */
+.lm-wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.lm-eyebrow{font-family:Inter,sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#C9A227;margin:0 0 .6rem}
+.lm-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border:1px solid #C9A227;background:#141210;color:#E9DDC6;font-family:Inter,sans-serif;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;border-radius:2px}
+.lm-btn:hover{background:#30251B}
+.lm-btn:focus-visible{outline:2px solid #C9A227;outline-offset:2px}
+
+/* ---------- SEAM 2 · ENTRANCE — The Great Striking Press ---------- */
+.lm-entrance{position:relative;overflow:hidden;background:#141210;border-bottom:1px solid rgba(201,162,39,.25);padding:3rem 0 2.6rem;font-family:Inter,sans-serif;color:#E9DDC6}
+.lm-filmslot{display:block;width:100%}
+.lm-filmslot video{width:100%;height:auto;display:block}
+.lm-ambient{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.lm-ember{position:absolute;bottom:-12px;width:4px;height:4px;border-radius:50%;background:#E4C65B;opacity:0;animation-name:lm-ember-rise;animation-timing-function:linear;animation-iteration-count:infinite}
+@keyframes lm-ember-rise{
+  0%{transform:translateY(0);opacity:0}
+  10%{opacity:.85}
+  88%{opacity:.45}
+  100%{transform:translateY(-560px);opacity:0}
+}
+.lm-entrance-inner{position:relative;z-index:1;text-align:center}
+.lm-press{display:block;width:min(300px,72vw);height:auto;margin:0 auto 1.4rem}
+.lm-press-die{animation:lm-die-breathe 6.5s ease-in-out infinite}
+@keyframes lm-die-breathe{
+  0%,100%{transform:translateY(-6px)}
+  50%{transform:translateY(6px)}
+}
+.lm-press-conduit{animation:lm-conduit-pulse 2.8s ease-in-out infinite}
+.lm-press-glow{animation:lm-conduit-pulse 2.8s ease-in-out infinite}
+@keyframes lm-conduit-pulse{
+  0%,100%{opacity:.55}
+  50%{opacity:1}
+}
+.lm-entrance-title{font-family:Cinzel,serif;font-weight:500;font-size:clamp(26px,6vw,40px);line-height:1.15;color:#E9DDC6;margin:0}
+.lm-entrance-sub{font-size:15px;line-height:1.55;color:rgba(233,221,198,.88);max-width:56ch;margin:.8rem auto 0}
+.lm-chips{list-style:none;display:flex;flex-direction:column;align-items:stretch;gap:.45rem;padding:0;margin:1.4rem auto 0;max-width:560px}
+.lm-chips li{border:1px solid #30251B;background:rgba(20,18,16,.85);color:#E9DDC6;font-size:11px;letter-spacing:.05em;padding:8px 12px;border-radius:2px;text-align:center}
+@media (min-width:720px){
+  .lm-chips{flex-direction:row;flex-wrap:wrap;justify-content:center;max-width:900px}
+  .lm-chips li{text-align:left}
+}
+
+/* ---------- SEAM 3 · THE INTERACTIVE CREATION CHAMBER ---------- */
+.lm-chamber{background:#141210;border-top:1px solid rgba(201,162,39,.25);border-bottom:1px solid rgba(201,162,39,.25);padding:3rem 0 3.2rem;font-family:Inter,sans-serif;color:#E9DDC6;margin-bottom:2.5rem}
+.lm-chamber-title{font-family:Cinzel,serif;font-weight:500;font-size:clamp(24px,5.4vw,34px);line-height:1.2;color:#E9DDC6;margin:0}
+.lm-chamber-intro{font-size:14px;line-height:1.55;color:rgba(233,221,198,.88);max-width:62ch;margin:.7rem 0 0}
+.lm-lantern{display:flex;align-items:center;gap:.65rem;border:1px solid #30251B;background:rgba(48,37,27,.35);padding:.75rem .95rem;margin:1.4rem 0 0;border-radius:2px}
+.lm-lantern-dot{flex:none;width:10px;height:10px;border-radius:50%;background:#30251B;border:1px solid #C9A227}
+.lm-lantern-text{font-size:10.5px;font-weight:600;letter-spacing:.14em;line-height:1.6;color:#C9A227;margin:0}
+.lm-step{border:1px solid #30251B;border-left:3px solid #C9A227;border-radius:2px;padding:1.3rem 1.1rem;margin-top:1.6rem;background:rgba(48,37,27,.18)}
+.lm-step-title{font-family:Cinzel,serif;font-weight:500;font-size:19px;line-height:1.25;color:#E9DDC6;margin:0 0 .4rem}
+.lm-step-note{font-size:13px;line-height:1.5;color:rgba(233,221,198,.8);margin:0 0 1rem}
+.lm-field{margin:0 0 1rem}
+.lm-field:last-child{margin-bottom:0}
+.lm-field label{display:block;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#C9A227;margin:0 0 .4rem}
+.lm-field input[type="text"],.lm-field input[type="email"]{width:100%;box-sizing:border-box;background:#141210;border:1px solid #30251B;color:#E9DDC6;font-family:Inter,sans-serif;font-size:15px;padding:11px 12px;border-radius:2px}
+.lm-field input[type="text"]:focus,.lm-field input[type="email"]:focus{border-color:#C9A227;outline:2px solid rgba(201,162,39,.55);outline-offset:1px}
+.lm-field input[type="text"]:focus-visible,.lm-field input[type="email"]:focus-visible{outline:2px solid #C9A227;outline-offset:1px}
+.lm-field input::placeholder{color:rgba(233,221,198,.4)}
+.lm-radio-group{border:1px solid #30251B;border-radius:2px;padding:1rem;margin:0 0 1rem}
+.lm-radio-group:last-child{margin-bottom:0}
+.lm-radio-group legend{font-family:Cinzel,serif;font-size:14px;color:#E9DDC6;padding:0 .4rem}
+.lm-radio-options{display:flex;flex-direction:column;gap:.5rem;margin-top:.4rem}
+.lm-radio-option{display:flex;align-items:center;gap:.6rem;border:1px solid #30251B;border-radius:2px;padding:10px 12px;font-size:14px;color:#E9DDC6;cursor:pointer}
+.lm-radio-option:hover{border-color:#C9A227}
+.lm-radio-option input[type="radio"]{accent-color:#C9A227;width:18px;height:18px;flex:none;margin:0}
+.lm-radio-option:focus-within{border-color:#C9A227;outline:2px solid #C9A227;outline-offset:1px}
+.lm-radio-option input[type="radio"]:focus-visible{outline:2px solid #C9A227;outline-offset:2px}
+@media (min-width:720px){
+  .lm-radio-options{flex-direction:row;flex-wrap:wrap}
+  .lm-radio-option{flex:1 1 42%}
+  .lm-step{padding:1.6rem 1.5rem}
+}
+.lm-preview-card{position:relative;max-width:560px;margin:0 auto;border:1px solid #C9A227;background:#141210;border-radius:2px;overflow:hidden}
+#lm-preview{display:block;width:100%;height:auto}
+.lm-concept-badge{position:absolute;left:-2%;right:-2%;bottom:11%;transform:rotate(-4deg);background:#E4C65B;color:#141210;font-family:Inter,sans-serif;font-size:clamp(10px,2.6vw,14px);font-weight:700;letter-spacing:.08em;text-align:center;padding:.55rem .4rem;z-index:5;pointer-events:none}
+.lm-explode-row{text-align:center;margin-top:1.1rem}
+.lm-explode-caption{font-size:12.5px;line-height:1.6;letter-spacing:.04em;color:rgba(233,221,198,.82);max-width:64ch;margin:.8rem auto 0;text-align:center}
+.lm-terms{font-size:13.5px;line-height:1.55;color:#E9DDC6;border-left:2px solid #C9A227;padding-left:12px;margin:0 0 1.2rem}
+.lm-hash-line{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;letter-spacing:.06em;color:#C9A227;margin:0 0 1.1rem}
+.lm-status{font-size:13.5px;line-height:1.55;color:#E9DDC6;margin:1rem 0 0;min-height:1.2em}
+.lm-submit-note{font-size:12.5px;line-height:1.55;color:rgba(233,221,198,.75);margin:.7rem 0 0;max-width:62ch}
+
+/* ---------- reduced motion: every lm animation off ---------- */
+@media (prefers-reduced-motion:reduce){
+  .lm-entrance *,.lm-chamber *{animation:none!important;transition:none!important}
+  .lm-ember{display:none}
+}
