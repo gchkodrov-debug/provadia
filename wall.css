@@ -1,0 +1,97 @@
+/* PROVADIA — THE GOLDEN WALL (golden-wall-obelisk-v1, Slice 1).
+   The 47-slot monument on /record/ today, architected to split to its own
+   route (/wall/) with zero manifest rebuild: every path in this sheet and
+   in wall.js resolves against the component's own home (the town root),
+   never against the host page. Palette law: vault #141210 · antique gold
+   #C9A227 · bone cream #E9DDC6 · deep brown #30251B · bright gold #E4C65B
+   reserved strictly for receipted lit bricks and portal threshold light.
+   The scroll journey separates the obelisk into its four genuine Covenant
+   strata at the spec's frame locks (038 · 082 · 126 · 162 of 200) and
+   reassembles it whole above the live registry. */
+
+.wall-journey{position:relative}
+.wall-stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#141210}
+.wall-scrim{position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(to top,#141210 48%,rgba(20,18,16,.88) 68%,transparent 92%);pointer-events:none;z-index:3}
+
+/* ---- the obelisk: pinned centre, four strata ---- */
+.wall-obelisk{position:absolute;left:50%;top:34%;transform:translate(-50%,-50%);width:min(300px,62vw);z-index:2}
+.wall-stratum{position:relative;border:1px solid rgba(201,162,39,.38);background:linear-gradient(180deg,#241b12,#171208);padding:10px 12px;margin:0 0 6px;will-change:transform,opacity}
+.wall-stratum .wall-stratum-tag{font-family:Cinzel,serif;letter-spacing:.22em;font-size:.56rem;color:#C9A227;text-transform:uppercase;margin:0 0 4px}
+.wall-stratum .wall-stratum-name{font-family:Cinzel,serif;font-size:.92rem;color:#E9DDC6;margin:0;line-height:1.25}
+.wall-plumb{position:absolute;left:50%;top:-14px;bottom:-14px;width:2px;margin-left:-1px;background:linear-gradient(180deg,transparent,#C9A227 18%,#C9A227 82%,transparent);opacity:0;z-index:1}
+
+/* the 47 sockets: 4 x 11 + 3 crown, all unlit tonight */
+.wall-sockets{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}
+.wall-socket{aspect-ratio:1.5;border:1px solid rgba(201,162,39,.28);background:#30251B;box-shadow:inset 0 2px 6px rgba(0,0,0,.65)}
+.wall-socket.lit{background:#E4C65B;border-color:#E4C65B;box-shadow:0 0 14px rgba(228,198,91,.55)}
+.wall-crown{display:flex;justify-content:center;gap:5px;margin-top:5px}
+.wall-crown .wall-socket{width:calc((100% - 15px)/4);flex:none}
+
+/* ---- arrival + closing copy ---- */
+.wall-arrival{position:absolute;left:0;right:0;bottom:7%;z-index:4;text-align:center;padding:0 20px}
+.wall-eyebrow{font-family:Cinzel,serif;letter-spacing:.18em;font-size:10px;color:#C9A227;text-transform:uppercase;margin:0 0 8px}
+.wall-title{font-family:Cinzel,serif;font-size:26px;color:#E9DDC6;margin:0 0 8px;line-height:1.15}
+.wall-sub{font-size:14px;line-height:1.55;color:rgba(233,221,198,.88);max-width:34ch;margin:0 auto 14px}
+.wall-chips{display:flex;flex-direction:column;gap:6px;align-items:center;margin:0 0 14px}
+.wall-chip{font-family:Cinzel,serif;letter-spacing:.14em;font-size:.6rem;text-transform:uppercase;color:#E9DDC6;border:1px solid rgba(201,162,39,.45);background:rgba(20,18,16,.85);padding:.45rem .8rem}
+.wall-prompt{font-family:Cinzel,serif;letter-spacing:.18em;font-size:10px;color:#C9A227;text-transform:uppercase;margin:0}
+
+/* ---- stratum bullets: leader line + tip dot at the lock ---- */
+.wall-bullet{position:absolute;top:50%;width:min(300px,34vw);z-index:4;opacity:0;pointer-events:none}
+.wall-bullet .wall-b-tag{font-family:Cinzel,serif;letter-spacing:.2em;font-size:.6rem;color:#C9A227;text-transform:uppercase;margin:0 0 5px}
+.wall-bullet .wall-b-title{font-family:Cinzel,serif;font-size:1.06rem;color:#E9DDC6;margin:0 0 6px}
+.wall-bullet .wall-b-body{font-size:.86rem;line-height:1.6;color:rgba(233,221,198,.85);margin:0}
+.wall-bullet .wall-leader{position:absolute;top:14px;height:1px;background:#C9A227;width:56px}
+.wall-bullet .wall-tip{position:absolute;top:11px;width:7px;height:7px;border-radius:50%;background:#E4C65B;box-shadow:0 0 8px rgba(228,198,91,.7)}
+.wall-bullet.side-l{left:4%;text-align:left}
+.wall-bullet.side-l .wall-leader{right:-56px}
+.wall-bullet.side-l .wall-tip{right:-66px}
+.wall-bullet.side-r{right:4%;text-align:left}
+.wall-bullet.side-r .wall-leader{left:-56px}
+.wall-bullet.side-r .wall-tip{left:-66px}
+@media (max-width:760px){
+  .wall-bullet{width:44vw}
+  .wall-bullet .wall-b-body{font-size:.78rem;line-height:1.5}
+  .wall-obelisk{top:30%}
+}
+
+/* ---- closing ledger ---- */
+.wall-closing{position:absolute;left:0;right:0;bottom:0;top:auto;max-height:88%;overflow:auto;z-index:4;background:rgba(20,18,16,.9);border-top:1px solid rgba(201,162,39,.4);padding:22px 20px 26px;opacity:0;pointer-events:none}
+.wall-closing.on{pointer-events:auto}
+.wall-ledger{max-width:640px;margin:0 auto}
+.wall-ledger .wall-eyebrow{text-align:left}
+.wall-ledger h3{font-family:Cinzel,serif;font-size:1.3rem;color:#E9DDC6;margin:0 0 12px}
+.wall-fact{border-top:1px solid #30251B;padding:9px 0;font-size:.9rem;line-height:1.55;color:rgba(233,221,198,.88)}
+.wall-fact b{font-family:Cinzel,serif;letter-spacing:.12em;font-size:.66rem;text-transform:uppercase;color:#C9A227;display:block;margin-bottom:3px;font-weight:600}
+.wall-countdown{font-family:Cinzel,serif;color:#E9DDC6;letter-spacing:.06em}
+.wall-detent{display:inline-block;margin-top:14px;font-family:Cinzel,serif;letter-spacing:.16em;font-size:.68rem;text-transform:uppercase;color:#cfc6ae;background:#30251B;border:1px solid rgba(160,150,125,.55);padding:.6rem 1rem;cursor:not-allowed}
+.wall-return{display:inline-block;margin-top:14px;margin-left:10px;font-family:Cinzel,serif;letter-spacing:.14em;font-size:.72rem;text-transform:uppercase;color:#C9A227;text-decoration:none;border:1px solid rgba(201,162,39,.5);padding:.6rem 1rem}
+.wall-return:hover{color:#E9DDC6;border-color:#C9A227}
+
+/* ---- the live 47-slot registry ---- */
+.wall-registry{position:relative;background:#141210;padding:34px 18px 44px;border-top:1px solid rgba(201,162,39,.25)}
+.wall-registry-inner{max-width:900px;margin:0 auto}
+.wall-registry h3{font-family:Cinzel,serif;font-size:1.25rem;color:#E9DDC6;margin:0 0 6px}
+.wall-registry .wall-reg-sub{font-size:.9rem;line-height:1.6;color:rgba(233,221,198,.75);margin:0 0 16px;max-width:62ch}
+.wall-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
+.wall-tile{border:1px solid rgba(201,162,39,.3);background:#1b1409;padding:10px;text-align:left;cursor:pointer;color:#E9DDC6;font-family:Inter,system-ui,sans-serif}
+.wall-tile .wall-tile-n{font-family:Cinzel,serif;font-size:.78rem;letter-spacing:.1em;display:block}
+.wall-tile .wall-tile-s{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(233,221,198,.4);display:block;margin-top:4px}
+.wall-tile.lit{background:#E4C65B;color:#141210;border-color:#E4C65B}
+.wall-tile.lit .wall-tile-s{color:rgba(20,18,16,.75)}
+.wall-tile:focus-visible{outline:2px solid #C9A227;outline-offset:2px}
+.wall-note{margin-top:14px;font-size:.88rem;line-height:1.6;color:rgba(233,221,198,.8);border-left:2px solid #C9A227;padding-left:.8rem;min-height:1.4em}
+
+/* reduced motion + no-JS: the still monument — whole obelisk, stacked
+   callouts, the registry below; every word stands */
+.wall-static{display:none}
+html.wall-still .wall-stage{display:none}
+html.wall-still .wall-static{display:block}
+.wall-static .wall-obelisk{position:static;transform:none;margin:26px auto}
+.wall-static .wall-bullet{position:static;opacity:1;width:auto;max-width:640px;margin:0 auto 14px;padding:0 18px;pointer-events:auto}
+.wall-static .wall-bullet .wall-leader,.wall-static .wall-bullet .wall-tip{display:none}
+.wall-static .wall-closing{position:static;opacity:1;pointer-events:auto;max-height:none}
+@media (prefers-reduced-motion:reduce){
+  .wall-stage{display:none}
+  .wall-static{display:block}
+}
