@@ -1,0 +1,85 @@
+/* THE PULSE OF PROVADIA — /coin/ instrument styles (pulse-coin-world-v1, Slices 1–3).
+   Palette law: vault #141210 · antique gold #C9A227 · bone cream #E9DDC6 ·
+   deep brown #30251B · bright gold #E4C65B reserved for the live pulse dot,
+   live trade particles and threshold light only. */
+
+.pulse-status{display:flex;align-items:flex-start;gap:14px;margin-top:36px;padding:16px 18px;
+  background:#141210;border:1px solid #30251B;max-width:1120px}
+.pulse-status[data-state="LIVE"]{border-color:#C9A227}
+.pulse-dot{flex:none;width:11px;height:11px;border-radius:50%;margin-top:5px;background:#E9DDC6}
+.pulse-status[data-state="LIVE"] .pulse-dot{background:#E4C65B;animation:pulse-beat 1.6s ease-in-out infinite}
+.pulse-status[data-state="QUIET"] .pulse-dot{background:#C9A227}
+.pulse-status[data-state="DELAYED"] .pulse-dot,.pulse-status[data-state="BOOT"] .pulse-dot{background:#E9DDC6;opacity:.55}
+@keyframes pulse-beat{0%,100%{box-shadow:0 0 0 0 rgba(228,198,91,.45)}50%{box-shadow:0 0 0 7px rgba(228,198,91,0)}}
+.pulse-badge{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#E9DDC6;line-height:1.6}
+.pulse-line{font-size:13px;color:#E9DDC6;font-variant-numeric:tabular-nums;line-height:1.6;min-height:1.6em}
+@media(max-width:900px){.pulse-line{min-height:3.2em}}
+
+.pulse-telemetry{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#30251B;
+  border:1px solid #30251B;margin-top:1px;max-width:1120px}
+.pulse-metric{background:#141210;padding:18px 20px 14px}
+.pulse-metric-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#E9DDC6;line-height:1.6}
+.pulse-metric-value{font:500 clamp(19px,1.9vw,27px)/1.3 var(--display);color:#E9DDC6;
+  font-variant-numeric:tabular-nums;margin-top:6px}
+.pulse-contract{grid-column:1/-1;background:#141210;padding:14px 20px}
+.pulse-contract summary{cursor:pointer;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#E9DDC6}
+.pulse-contract-body{margin-top:12px;font-size:13px;color:#E9DDC6}
+.pulse-contract-body .coin-ca{margin-top:6px}
+@media(max-width:900px){.pulse-telemetry{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:460px){.pulse-telemetry{grid-template-columns:1fr}}
+
+.pulse-modes{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.pulse-mode-btn,.pulse-tf-btn{padding:10px 18px;border:1px solid #30251B;background:transparent;
+  color:#E9DDC6;font-size:12px;letter-spacing:.14em;text-transform:uppercase;min-height:44px;cursor:pointer}
+.pulse-mode-btn[aria-pressed="true"],.pulse-tf-btn[aria-pressed="true"]{border-color:#C9A227;color:#E4C65B}
+.pulse-mode-btn:hover,.pulse-tf-btn:hover{border-color:#C9A227}
+
+.pulse-stage{margin-top:14px;border:1px solid #30251B;border-top-color:#C9A227;background:#141210;
+  max-width:1120px;position:relative}
+.pulse-tfs{display:flex;gap:8px;flex-wrap:wrap;padding:12px 14px 0}
+.pulse-tf-btn{padding:7px 13px;min-height:38px;font-size:11px}
+.pulse-chart-box{height:440px;position:relative}
+.pulse-chart-box.is-snapshot canvas{opacity:.45}
+.pulse-snapshot-tag{position:absolute;top:12px;right:12px;z-index:3;padding:5px 10px;
+  border:1px solid #C9A227;background:#141210;color:#E4C65B;font-size:10px;
+  letter-spacing:.2em;text-transform:uppercase}
+.pulse-readout{padding:10px 16px 14px;font-size:12.5px;color:#E9DDC6;font-variant-numeric:tabular-nums;min-height:38px}
+@media(max-width:620px){.pulse-chart-box{height:360px}}
+
+.pulse-observatory{height:440px;position:relative;background:#141210;overflow:hidden}
+.pulse-observatory canvas{display:block}
+@media(max-width:620px){.pulse-observatory{height:360px}}
+.pulse-obs-badge{position:absolute;left:12px;bottom:12px;z-index:3;padding:6px 11px;
+  background:rgba(20,18,16,.88);border:1px solid #30251B;color:#E9DDC6;
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;line-height:1.7;max-width:min(92%,560px)}
+.pulse-obs-note{position:absolute;left:12px;top:12px;z-index:3;padding:8px 12px;max-width:min(92%,480px);
+  background:rgba(20,18,16,.92);border:1px solid #C9A227;color:#E9DDC6;font-size:12.5px;line-height:1.6}
+.pulse-obs-fallback-img{width:min(300px,70%);margin:56px auto 10px}
+.pulse-entrance-slot{position:absolute;inset:0;z-index:2;pointer-events:none}
+.pulse-entrance-slot video,.pulse-entrance-slot img{width:100%;height:100%;object-fit:cover}
+
+.pulse-specimen{margin-top:28px;border:1px solid #30251B;padding:22px;max-width:1120px;background:#141210}
+.pulse-specimen-counter{font:500 clamp(19px,2vw,26px)/1.35 var(--display);color:#E9DDC6;margin-top:10px}
+.pulse-specimen-sub{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#E9DDC6;margin-top:6px}
+.pulse-inspect{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:18px}
+.pulse-inspect label{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#E9DDC6}
+.pulse-inspect input{width:110px;background:#141210;border:1px solid #30251B;color:#E9DDC6;
+  padding:11px 12px;min-height:44px;font-variant-numeric:tabular-nums}
+.pulse-inspect button{padding:10px 16px;border:1px solid #C9A227;background:transparent;color:#E9DDC6;min-height:44px;cursor:pointer}
+.pulse-inspect .pulse-chip{border-color:#30251B}
+.pulse-inspect-out{margin-top:16px;font-size:14px;color:#E9DDC6;max-width:75ch;line-height:1.7}
+
+/* The always-visible action dock (z-index 40, never obscured). */
+.pulse-dock{position:fixed;left:0;right:0;bottom:0;z-index:40;
+  background:rgba(20,18,16,.97);border-top:1px solid #C9A227;
+  padding:10px var(--gutter) calc(10px + env(safe-area-inset-bottom))}
+.pulse-dock-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;max-width:1520px;margin-inline:auto}
+.pulse-dock .coin-btn{min-height:48px;padding:10px 20px}
+.pulse-dock-note{font-size:12px;color:#E9DDC6;font-variant-numeric:tabular-nums}
+.pulse-dock-law{max-width:1520px;margin:8px auto 0;font-size:11.5px;line-height:1.55;color:#E9DDC6}
+.pulse-dock-spacer{height:158px}
+@media(max-width:620px){.pulse-dock-spacer{height:196px}.pulse-dock-note{flex-basis:100%}}
+
+/* The house calm / reduced-motion law stills the pulse dot. */
+html[data-calm="true"] .pulse-dot,html[data-still="true"] .pulse-dot{animation:none!important}
+@media (prefers-reduced-motion: reduce){.pulse-dot{animation:none!important}}
