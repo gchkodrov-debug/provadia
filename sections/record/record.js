@@ -163,6 +163,12 @@ async function verifyDaybook() {
     let ok = Array.isArray(entries) && entries.length > 0;
     let anchorRoot = null;
     let entryNo = 0;
+    // Every checked entry is kept: the Chrono-Astrolabe Ledger renders all
+    // of its views (strata, chain strip, plain table, astrolabe) from this
+    // one pass, so no hash is ever recomputed twice or rendered from text
+    // hardcoded anywhere — the book's JSON is the only source.
+    const checked = [];
+    const ledgerMode = !!$("[data-ledger-astrolabe]");
     if (listEl) listEl.innerHTML = "";
     for (const e of entries) {
       const recomputed = await sha256Hex(`${e.prev}|${e.date}|${e.title}|${e.text}`);
@@ -173,7 +179,10 @@ async function verifyDaybook() {
       if (book && book.vaults && entryNo === book.vaults.anchorEntries) {
         anchorRoot = await sha256Hex(prev);
       }
-      if (listEl) {
+      checked.push({ e, entryOk });
+      // Defensive fallback: on a face without the ledger containers, the
+      // old single list renders exactly as it always has.
+      if (listEl && !ledgerMode) {
         const li = document.createElement("li");
         li.className = "rec-entry";
         const head = document.createElement("div");
@@ -195,6 +204,7 @@ async function verifyDaybook() {
         listEl.appendChild(li);
       }
     }
+    const computedRoot = await sha256Hex(prev);
 
     // The vault ledgers (Vault I's tithe book, Vault II's gold book) are
     // verified and rendered with the book — a broken vault breaks the record.
@@ -210,7 +220,7 @@ async function verifyDaybook() {
     if (ok && rootDoc && rootDoc.root) {
       root = rootDoc.root;
       rootDate = rootDoc.date || rootDate;
-      rootOk = (await sha256Hex(prev)) === rootDoc.root;
+      rootOk = computedRoot === rootDoc.root;
     }
 
     if (ok && rootOk) {
@@ -224,13 +234,311 @@ async function verifyDaybook() {
       verdictEl.dataset.state = "fail";
     }
 
+    // The ledger views and the Hash Explorer read the book from this one
+    // verified pass — nothing is fetched or recomputed a second time.
+    const verdictOk = (ok && rootOk) || (ok && !rootDoc);
+    bookState = { loaded: true, ok, verdictOk, checked, book, computedRoot, rootDoc };
+    if (ledgerMode) renderLedger(checked, book, verdictOk);
+
     if (rootEl && root) rootEl.textContent = root;
     if (payloadEl && root) {
       payloadEl.textContent = `PROVADIA DAYBOOK ROOT · ${rootDate} · ${root}`;
     }
   } catch {
+    bookState = { loaded: false, ok: false, verdictOk: false, checked: [], book: null, computedRoot: null, rootDoc: null };
     verdictEl.textContent = "The record could not be loaded, so nothing was verified. No verdict is shown rather than a false one.";
     verdictEl.dataset.state = "fail";
+  }
+}
+
+/* ---------------- 2b · THE CHRONO-ASTROLABE LEDGER ----------------
+   The Day-Book card's second face: the same verified entries, laid out
+   in the book's four strata around the astrolabe, in a plain table, and
+   behind a hash explorer. Everything here renders from the single
+   checked pass verifyDaybook() already made — no second fetch, no
+   hardcoded entry text, no invented fact. An entry's stratum is a
+   standing classification of the book (below); an entry not named in
+   the map stands in the Receipts, the book's whole chain. */
+
+// The verified book, kept for the Hash Explorer. null until the first
+// verification pass settles; { loaded: false } when the book failed.
+let bookState = null;
+
+const STRATA_OF = { 1: "founding", 2: "founding", 3: "rulings", 4: "founding", 5: "founding", 6: "rulings" };
+const STRATUM_NAMES = {
+  founding: "The Founding Acts",
+  rulings: "The Rulings & Amendments",
+  receipts: "The Receipts & The Day-Book",
+  crystallized: "Crystallized Agora Decisions",
+};
+// Ring radii in the astrolabe's 260-unit viewBox, outer in reading order.
+const STRATUM_RINGS = { founding: 40, rulings: 62, receipts: 84, crystallized: 106 };
+
+function stratumOf(e) {
+  return STRATA_OF[e.n] || "receipts";
+}
+
+// One proof row: a small-caps label and its value, both plain text.
+function proofRow(label, value) {
+  const row = document.createElement("div");
+  row.className = "rec-proof-row";
+  const k = document.createElement("span");
+  k.className = "rec-k";
+  k.textContent = label;
+  const v = document.createElement("span");
+  v.className = "rec-v";
+  v.textContent = value;
+  row.append(k, v);
+  return row;
+}
+
+// The full entry node, in the same DOM shape the Day-Book list has
+// always used, plus its anchor id and its proof panel. The panel shows
+// only what the entry and the recomputation themselves carry — there
+// are no receipt crops for Day-Book entries, so no such button exists.
+function ledgerEntryNode(e, entryOk, total) {
+  const li = document.createElement("li");
+  li.className = "rec-entry";
+  li.id = `entry-${e.n}`;
+  const head = document.createElement("div");
+  head.className = "rec-entry-head";
+  const t = document.createElement("span");
+  t.className = "rec-entry-title";
+  t.textContent = `#${e.n} · ${e.title}`;
+  const d = document.createElement("span");
+  d.className = "rec-entry-date";
+  d.textContent = e.date;
+  head.append(t, d);
+  const body = document.createElement("p");
+  body.className = "rec-entry-text";
+  body.textContent = e.text;
+  const hash = document.createElement("code");
+  hash.className = "rec-hash";
+  hash.textContent = `hash ${e.hash} ${entryOk ? "✓ recomputed match" : "✗ MISMATCH"}`;
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "rec-proof-btn";
+  btn.dataset.proofFor = String(e.n);
+  btn.setAttribute("aria-expanded", "false");
+  btn.textContent = "Inspect proof";
+  const panel = document.createElement("div");
+  panel.className = "rec-proof";
+  panel.dataset.proofPanel = String(e.n);
+  panel.hidden = true;
+  panel.append(
+    proofRow("Entry", `#${e.n} of ${total}`),
+    proofRow("Date as recorded", e.date),
+    proofRow("Stratum", STRATUM_NAMES[stratumOf(e)]),
+    proofRow("SHA-256", e.hash),
+    proofRow("Previous hash", e.prev),
+    proofRow("Recomputed in your browser", entryOk ? "match" : "MISMATCH")
+  );
+  li.append(head, body, hash, btn, panel);
+  return li;
+}
+
+// One compact chain-strip row: the whole book in chain order.
+function chainStripItem(e, entryOk) {
+  const li = document.createElement("li");
+  li.className = "chain-item";
+  const label = document.createElement("span");
+  label.textContent = `#${e.n} · ${e.date} · ${e.title}`;
+  const hash = document.createElement("code");
+  hash.className = "rec-hash chain-hash";
+  hash.textContent = `${e.hash.slice(0, 12)}… ${entryOk ? "✓" : "✗"}`;
+  li.append(label, hash);
+  return li;
+}
+
+// One plain-table row: number, date, record, full hash, chain mark.
+function ledgerTableRow(e, entryOk) {
+  const tr = document.createElement("tr");
+  const n = document.createElement("td");
+  n.textContent = String(e.n);
+  const date = document.createElement("td");
+  date.textContent = e.date;
+  const rec = document.createElement("td");
+  const strong = document.createElement("strong");
+  strong.textContent = e.title;
+  rec.append(strong, document.createTextNode(` — ${e.text}`));
+  const hashCell = document.createElement("td");
+  const hash = document.createElement("code");
+  hash.className = "rec-hash";
+  hash.textContent = e.hash;
+  hashCell.appendChild(hash);
+  const chain = document.createElement("td");
+  chain.textContent = entryOk ? "✓ recomputed" : "✗ MISMATCH";
+  tr.append(n, date, rec, hashCell, chain);
+  return tr;
+}
+
+// One astrolabe node: a circle on a ring, evenly spaced from the top.
+function astrolabeNode(cx, cy, r, angleDeg, bright) {
+  const a = ((angleDeg - 90) * Math.PI) / 180;
+  const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  c.setAttribute("cx", (cx + r * Math.cos(a)).toFixed(1));
+  c.setAttribute("cy", (cy + r * Math.sin(a)).toFixed(1));
+  c.setAttribute("r", "4");
+  // Antique gold for the strata; bright gold is reserved to the
+  // receipts ring — the one ring that carries every entry.
+  c.setAttribute("fill", bright ? "#E4C65B" : "#C9A227");
+  return c;
+}
+
+function renderLedger(checked, book, chainOk) {
+  const total = checked.length;
+
+  // Strata lists — founding, rulings, crystallized (the receipts
+  // stratum carries the chain strip instead: the whole book, in order).
+  for (const name of ["founding", "rulings", "crystallized"]) {
+    const list = $(`[data-strata-list="${name}"]`);
+    if (!list) continue;
+    list.innerHTML = "";
+    for (const { e, entryOk } of checked) {
+      if (stratumOf(e) === name) list.appendChild(ledgerEntryNode(e, entryOk, total));
+    }
+  }
+  const emptyNote = $("[data-crystallized-empty]");
+  const crysList = $("[data-strata-list=\"crystallized\"]");
+  if (emptyNote && crysList && crysList.children.length) emptyNote.hidden = true;
+
+  // Chain strip — every entry, in chain order, under stratum 03.
+  const strip = $("[data-chain-strip]");
+  if (strip) {
+    strip.innerHTML = "";
+    for (const { e, entryOk } of checked) strip.appendChild(chainStripItem(e, entryOk));
+  }
+
+  // Receipt counters — counted from the book's own vault ledgers, the
+  // same figures the Three Vaults below verify. Nothing else is claimed.
+  const receiptsEl = $("[data-strata-receipts]");
+  if (receiptsEl) {
+    if (book && !Array.isArray(book) && book.vaults) {
+      const goldCount = Array.isArray(book.vaults.gold?.entries) ? book.vaults.gold.entries.length : 0;
+      const titheCount = Array.isArray(book.vaults.tithe?.entries) ? book.vaults.tithe.entries.length : 0;
+      receiptsEl.textContent = `Golden Wall brick receipts: ${goldCount} · Tithe-book entries: ${titheCount} · Batch conversion receipts: none stand in the book.`;
+    } else {
+      receiptsEl.textContent = "The receipt counters ride in the book's vault ledgers, below.";
+    }
+  }
+
+  // Plain Ledger Table — the same entries, unadorned.
+  const tbody = $("[data-ledger-table-body]");
+  if (tbody) {
+    tbody.innerHTML = "";
+    for (const { e, entryOk } of checked) tbody.appendChild(ledgerTableRow(e, entryOk));
+  }
+
+  // Astrolabe nodes — one per entry on its stratum's ring, and one per
+  // entry again on the receipts ring, which carries the whole book.
+  const nodes = $("[data-astrolabe-nodes]");
+  if (nodes) {
+    nodes.innerHTML = "";
+    const onRing = { founding: [], rulings: [], receipts: [], crystallized: [] };
+    for (const item of checked) {
+      onRing.receipts.push(item);
+      const s = stratumOf(item.e);
+      if (s !== "receipts") onRing[s].push(item);
+    }
+    for (const name of Object.keys(onRing)) {
+      const ring = onRing[name];
+      ring.forEach((item, i) => {
+        nodes.appendChild(astrolabeNode(130, 130, STRATUM_RINGS[name], (360 * i) / ring.length, name === "receipts"));
+      });
+    }
+  }
+  const caption = $("[data-astrolabe-caption]");
+  if (caption) {
+    caption.textContent = chainOk
+      ? `${total} entries across the four strata — every hash recomputed in your browser below.`
+      : "The chain did not recompute — see the verdict above.";
+  }
+}
+
+// The Hash Explorer: a pasted hash is answered from the verified pass
+// only — an entry's seal, the book's root, a chain link, or an honest
+// "does not stand in this book".
+function lookupHash(raw) {
+  const resultEl = $("[data-hash-result]");
+  if (!resultEl) return;
+  if (!bookState || !bookState.loaded) {
+    resultEl.textContent = "The book could not be loaded, so there is nothing to look up.";
+    return;
+  }
+  const q = (raw || "").trim().toLowerCase();
+  if (!q) {
+    resultEl.textContent = "Enter a hash to look it up.";
+    return;
+  }
+  const warn = bookState.ok ? "" : "CHAIN BROKEN — an entry did not recompute. ";
+  const hit = bookState.checked.find(({ e }) => e.hash === q);
+  if (hit) {
+    const { e } = hit;
+    resultEl.textContent = `${warn}That hash seals entry #${e.n} — “${e.title}” (${e.date}), stratum ${STRATUM_NAMES[stratumOf(e)]}.`;
+    // Open the entry's proof panel and bring the entry into view.
+    const panel = $(`[data-proof-panel="${e.n}"]`);
+    const btn = $(`[data-proof-for="${e.n}"]`);
+    if (panel) panel.hidden = false;
+    if (btn) btn.setAttribute("aria-expanded", "true");
+    const node = document.getElementById(`entry-${e.n}`);
+    if (node) node.scrollIntoView({ block: "center" });
+    return;
+  }
+  if (q === bookState.computedRoot || (bookState.rootDoc && q === bookState.rootDoc.root)) {
+    resultEl.textContent = `${warn}That is the book's current root — the fingerprint of all ${bookState.checked.length} entries. It stands at the Daily Anchor, below.`;
+    return;
+  }
+  const link = bookState.checked.find(({ e }) => e.prev === q);
+  if (link && q !== "0".repeat(64)) {
+    resultEl.textContent = `${warn}That hash is a link in the chain: entry #${link.e.n} builds on it.`;
+    return;
+  }
+  resultEl.textContent = `${warn}That hash does not stand in this book.`;
+}
+
+// The ledger's own controls: the view toggle, the proof toggles and the
+// Hash Explorer form. Wired once at boot; harmless on a face without
+// the ledger (every lookup guards on its element existing).
+function initLedgerTools() {
+  // Guard against double-binding: boot can only wire these controls
+  // once — a second call returns early instead of stacking listeners.
+  const station = $("#station-record");
+  if (station) {
+    if (station.dataset.ledgerToolsBound) return;
+    station.dataset.ledgerToolsBound = "1";
+  }
+  const astro = $("[data-ledger-astrolabe]");
+  const plain = $("[data-ledger-plain]");
+  const viewBtns = [...document.querySelectorAll("[data-ledger-view]")];
+  if (astro && plain && viewBtns.length) {
+    const setView = (view) => {
+      astro.hidden = view !== "astrolabe";
+      plain.hidden = view !== "plain";
+      viewBtns.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.ledgerView === view)));
+    };
+    viewBtns.forEach((b) => b.addEventListener("click", () => setView(b.dataset.ledgerView)));
+    // Stillness by default: a reduced-motion visitor opens on the table.
+    setView(window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "plain" : "astrolabe");
+  }
+
+  if (station) {
+    station.addEventListener("click", (ev) => {
+      const btn = ev.target.closest("[data-proof-for]");
+      if (!btn) return;
+      const panel = $(`[data-proof-panel="${btn.dataset.proofFor}"]`);
+      if (!panel) return;
+      panel.hidden = !panel.hidden;
+      btn.setAttribute("aria-expanded", String(!panel.hidden));
+    });
+  }
+
+  const form = $("[data-hash-explorer]");
+  if (form) {
+    form.addEventListener("submit", (ev) => {
+      ev.preventDefault();
+      const input = $("[data-hash-input]", form);
+      lookupHash(input ? input.value : "");
+    });
   }
 }
 
@@ -239,6 +547,7 @@ async function verifyDaybook() {
 function boot() {
   startPriceFace();
   verifyDaybook();
+  initLedgerTools();
 }
 // Works both as a static <script> and when injected after DOMContentLoaded
 // (the proof page mounts the fragments first, then loads this module).
