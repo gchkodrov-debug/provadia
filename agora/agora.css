@@ -1,0 +1,244 @@
+/* ============================================================
+   PROVADIA — The Living Agora (/agora/) · Slices 1–3
+   Town palette ONLY: vault #141210 · antique gold #C9A227 ·
+   bone cream #E9DDC6 · deep brown #30251B · bright gold #E4C65B
+   reserved for the one live portal threshold (the Discord gate).
+   Components ride the shared town sheets (panels.css, pages.css);
+   this sheet carries only what the Agora adds.
+   ============================================================ */
+
+:root{
+  --agora-bone:#E9DDC6;
+  --agora-brown:#30251B;
+  --agora-bright:#E4C65B;
+}
+
+/* ---------- arrival fact chips ---------- */
+.fact-chips{list-style:none;margin:1.4rem 0 0;padding:0;display:grid;gap:.55rem}
+.fact-chip{
+  border:1px solid var(--hairline-soft,rgba(201,162,39,.18));
+  background:rgba(20,18,16,.85);
+  padding:.7rem .95rem;
+  display:flex;flex-wrap:wrap;gap:.3rem .9rem;align-items:baseline;
+}
+.fact-chip-label{
+  font-family:'Cinzel',serif;font-size:.64rem;font-weight:700;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--gold);
+  min-width:9.5rem;
+}
+.fact-chip-value{font-size:.9rem;color:var(--agora-bone)}
+
+/* ---------- 01 · the registry door ---------- */
+.registry-door{
+  margin-top:1.8rem;padding-top:1.5rem;
+  border-top:1px solid var(--hairline,rgba(201,162,39,.38));
+}
+.registry-door-state{font-size:.92rem;line-height:1.55;color:var(--salt-dim);margin:0 0 1.1rem}
+.registry-door-state.is-live{color:var(--agora-bone)}
+.auth-switch{display:flex;gap:.5rem;margin:0 0 1.2rem;flex-wrap:wrap}
+.auth-switch-btn,.mode-btn{
+  appearance:none;cursor:pointer;
+  background:transparent;border:1px solid var(--hairline,rgba(201,162,39,.38));
+  color:var(--salt-dim);
+  font-family:'Cinzel',serif;font-size:.74rem;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;
+  padding:.7rem 1.05rem;min-height:48px;
+}
+.auth-switch-btn:hover,.mode-btn:hover{color:var(--gold-pale);border-color:var(--gold)}
+.auth-switch-btn.is-active,.mode-btn.is-active{
+  background:rgba(201,162,39,.14);color:var(--gold-pale);border-color:var(--gold);
+}
+.auth-switch-btn:focus-visible,.mode-btn:focus-visible,.auth-submit:focus-visible,
+.auth-input:focus-visible,.gate-action:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.auth-form{margin:0 0 .4rem}
+.auth-label{
+  display:block;margin:.95rem 0 .4rem;
+  font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);
+}
+.auth-input{
+  box-sizing:border-box;
+  width:100%;height:48px;padding:0 .9rem;
+  background:rgba(244,239,230,.05);
+  border:1px solid var(--hairline,rgba(201,162,39,.38));
+  color:var(--salt);font-family:'Inter',sans-serif;font-size:1rem;
+}
+.auth-textarea{height:auto;padding:.8rem .9rem;line-height:1.55;resize:vertical}
+.auth-submit{
+  appearance:none;cursor:pointer;display:inline-block;
+  margin-top:1.1rem;padding:.85rem 1.3rem;min-height:48px;
+  background:rgba(201,162,39,.1);border:1px solid var(--gold);
+  color:var(--gold-pale);text-decoration:none;
+  font-family:'Cinzel',serif;font-size:.78rem;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;
+}
+.auth-submit:hover{background:rgba(201,162,39,.22);color:#fff}
+.auth-submit-quiet{background:transparent;border-color:var(--hairline,rgba(201,162,39,.38));color:var(--salt-dim)}
+.auth-note{margin:.8rem 0 0;font-size:.86rem;line-height:1.55;color:var(--salt-faint)}
+.auth-status{margin:.9rem 0 0;font-size:.92rem;line-height:1.55;color:var(--gold-pale)}
+.auth-status:empty{margin:0}
+.auth-honesty{
+  margin:1.3rem 0 0;padding-top:1rem;
+  border-top:1px solid var(--hairline-soft,rgba(201,162,39,.18));
+  font-size:.8rem;line-height:1.55;color:rgba(233,221,198,.7);
+}
+.social-plates{margin-top:1.4rem}
+.social-plates-label{
+  margin:0 0 .6rem;font-size:.78rem;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--gold);
+}
+.social-plate{
+  box-sizing:border-box;
+  display:block;width:100%;margin:0 0 .5rem;padding:.8rem 1rem;min-height:48px;
+  background:transparent;border:1px dashed rgba(160,150,125,.45);
+  color:var(--salt-faint);font-family:'Inter',sans-serif;font-size:.92rem;
+  text-align:left;cursor:not-allowed;
+}
+
+/* the member's face, once signed in */
+.member-welcome{
+  margin:0 0 .6rem;font-family:'Cinzel',serif;font-size:1.3rem;font-weight:700;
+  letter-spacing:.05em;color:var(--gold-pale);text-transform:uppercase;
+}
+.clock-track{
+  height:8px;margin:.4rem 0 .8rem;
+  border:1px solid var(--hairline,rgba(201,162,39,.38));background:rgba(0,0,0,.3);
+}
+.clock-fill{height:100%;width:0;background:var(--gold)}
+.member-badge-line{margin:1rem 0 0;font-size:.92rem;line-height:1.6;color:var(--salt-dim)}
+.crest{color:var(--gold);margin-right:.35rem}
+.member-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.4rem}
+.member-floor-link{margin-top:1.1rem}
+
+/* ---------- 02 · the floor: two faces ---------- */
+.mode-toggle{display:flex;gap:.5rem;flex-wrap:wrap;margin:0 0 1.4rem}
+.amphitheatre{
+  position:relative;
+  border:1px solid var(--hairline-soft,rgba(201,162,39,.18));
+  background:radial-gradient(ellipse at 50% 42%,rgba(48,37,27,.55),rgba(20,18,16,.9) 75%);
+  padding:1.2rem 1rem 1.4rem;overflow:hidden;
+}
+.amphitheatre-svg{display:block;width:100%;height:auto}
+.glyph-layer,.echo-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.glyph{
+  position:absolute;top:-24px;font-family:'Cinzel',serif;font-size:15px;
+  color:var(--gold);opacity:.85;animation:glyphFall 3.5s linear forwards;
+}
+@keyframes glyphFall{to{transform:translateY(460px);opacity:0}}
+.echo-ring{
+  position:absolute;border:1.5px solid rgba(201,162,39,.65);border-radius:50%;
+  transform:translate(-50%,-50%);animation:echoOut 1.6s ease-out forwards;
+}
+@keyframes echoOut{from{width:12px;height:12px;opacity:.9}to{width:340px;height:340px;opacity:0}}
+.quiet-inscription{text-align:center;margin-top:.6rem;padding:0 .6rem}
+.quiet-line{
+  margin:0;font-family:'Cinzel',serif;font-size:1.12rem;font-weight:600;
+  letter-spacing:.06em;color:var(--agora-bone);text-transform:uppercase;line-height:1.5;
+}
+.quiet-sub{margin:.5rem 0 0;font-size:.9rem;color:var(--salt-faint)}
+.quiet-actions{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:.6rem}
+.quiet-actions .auth-submit{margin-top:.6rem}
+.amphitheatre-note{margin-top:1.1rem}
+
+/* plain ledger */
+.ledger-empty{
+  border:1px solid var(--agora-brown);background:var(--field,#141210);
+  padding:1.4rem 1.3rem;margin:0 0 1.2rem;
+}
+.ledger-empty-title{
+  margin:0 0 .7rem;font-family:'Cinzel',serif;font-size:1.25rem;font-weight:600;
+  letter-spacing:.03em;color:var(--gold-pale);line-height:1.4;
+}
+.thread-list{list-style:none;margin:0 0 1.2rem;padding:0;display:grid;gap:.7rem}
+.thread-item{border:1px solid var(--hairline-soft,rgba(201,162,39,.18));padding:1rem 1.1rem}
+.thread-title{margin:0 0 .35rem;font-size:1rem;font-weight:600;color:var(--agora-bone);line-height:1.5}
+.thread-meta{margin:0;font-size:.82rem;color:var(--salt-faint)}
+.thread-body{margin:.6rem 0 0;font-size:.95rem;line-height:1.6;color:var(--salt-dim)}
+.thread-open{
+  appearance:none;cursor:pointer;background:none;border:none;padding:.4rem 0 0;
+  color:var(--gold);font-family:'Cinzel',serif;font-size:.72rem;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;
+}
+.reply-list{list-style:none;margin:.8rem 0 0;padding:.8rem 0 0;border-top:1px solid var(--hairline-soft,rgba(201,162,39,.18));display:grid;gap:.7rem}
+.reply-item{font-size:.93rem;line-height:1.6;color:var(--salt-dim)}
+.reply-item .thread-meta{display:block;margin-bottom:.2rem}
+.composer{margin-top:1.4rem;padding-top:1.2rem;border-top:1px solid var(--hairline-soft,rgba(201,162,39,.18))}
+
+/* ---------- 03 · hearth & gates ---------- */
+.gate-grid{display:grid;gap:.7rem;margin-top:.4rem}
+.gate-card{
+  border:1px solid var(--agora-brown);background:rgba(20,18,16,.6);
+  padding:1.15rem 1.2rem;
+}
+.gate-card.gate-live{border-color:var(--gold)}
+.gate-card.gate-sealed{opacity:.82}
+.gate-status{
+  margin:0 0 .55rem;font-family:'Cinzel',serif;font-size:.66rem;font-weight:700;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--gold);
+  display:flex;align-items:center;gap:.5rem;
+}
+.gate-dot{width:9px;height:9px;border-radius:50%;background:var(--salt-faint);flex:0 0 auto}
+.gate-dot-live{background:var(--agora-bright);box-shadow:0 0 8px rgba(228,198,91,.8)}
+.gate-dot-sealed{background:var(--agora-brown);border:1px solid rgba(160,150,125,.55);border-radius:2px}
+.gate-dot-watch{background:transparent;border:1.5px solid var(--gold)}
+.gate-name{
+  margin:0 0 .5rem;font-family:'Cinzel',serif;font-size:1.05rem;font-weight:600;
+  letter-spacing:.04em;color:var(--salt);
+}
+.gate-copy{margin:0 0 .9rem;font-size:.93rem;line-height:1.6;color:var(--salt-dim)}
+.gate-action{
+  font-family:'Cinzel',serif;font-size:.74rem;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--gold-pale);
+  text-decoration:underline;text-decoration-color:rgba(201,162,39,.55);text-underline-offset:3px;
+}
+.gate-action-sealed{
+  color:var(--salt-faint);text-decoration:none;cursor:not-allowed;
+  border:1px solid rgba(160,150,125,.5);padding:.5rem .8rem;display:inline-block;
+}
+
+/* ---------- 04 · honors tablet ---------- */
+.honors-tablet{margin-top:1.8rem;padding-top:1.5rem;border-top:1px solid var(--hairline,rgba(201,162,39,.38))}
+.badge-row{list-style:none;margin:1.1rem 0 0;padding:0;display:grid;gap:.7rem}
+.badge-cell{
+  display:grid;grid-template-columns:52px 1fr;gap:.15rem .9rem;align-items:start;
+  border:1px solid var(--hairline-soft,rgba(201,162,39,.18));padding:.9rem 1rem;
+}
+.badge-crest{width:52px;height:52px;grid-row:span 2}
+.badge-name{font-family:'Cinzel',serif;font-size:.95rem;font-weight:700;letter-spacing:.05em;color:var(--gold-pale)}
+.badge-deed{font-size:.88rem;line-height:1.55;color:var(--salt-dim)}
+.badge-caption{margin:1rem 0 0;font-size:.88rem;font-style:italic;color:var(--salt-faint)}
+
+/* ---------- the Genesis alcove ---------- */
+.specimen-card{
+  text-align:center;border:1px solid var(--hairline,rgba(201,162,39,.38));
+  background:rgba(48,37,27,.3);padding:1.6rem 1.2rem 1.4rem;margin:0 0 1.3rem;
+}
+.specimen-seal{width:168px;height:168px;max-width:60vw}
+.specimen-badge{
+  margin:.9rem 0 .4rem;font-family:'Cinzel',serif;font-size:1.05rem;font-weight:700;
+  letter-spacing:.1em;color:var(--gold-pale);text-transform:uppercase;
+}
+.specimen-banner{
+  margin:0;font-family:'Cinzel',serif;font-size:.68rem;font-weight:700;
+  letter-spacing:.2em;text-transform:uppercase;color:#cfc6ae;
+}
+.specimen-plate{
+  margin:1.1rem 0 0;padding:.85rem 1rem;text-align:center;
+  border:1px dashed rgba(160,150,125,.5);color:var(--salt-faint);
+  font-family:'Cinzel',serif;font-size:.74rem;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;
+}
+
+/* ---------- responsive & motion ---------- */
+@media (min-width:760px){
+  .gate-grid{grid-template-columns:1fr 1fr 1fr}
+  .badge-row{grid-template-columns:1fr 1fr}
+  .fact-chips{grid-template-columns:1fr 1fr}
+}
+@media (max-width:640px){
+  .fact-chip-label{min-width:0}
+  .amphitheatre{padding:.8rem .4rem 1.1rem}
+  .quiet-line{font-size:.98rem}
+}
+@media (prefers-reduced-motion:reduce){
+  .glyph,.echo-ring{animation:none;display:none}
+}
