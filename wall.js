@@ -7,6 +7,9 @@
    The ledger's seal is RECOMPUTED before anything renders from it
    (see verifyLedger below): a figure that cannot be reconciled
    renders NOTHING — the monument fails closed to its honest face.
+   And the check is SHOWN, not silent (the Glass Machinery Law): a
+   Seal row in the Covenant Ledger lets the visitor watch the
+   recompute, the reference, and the verdict resolve on the face.
    Paths resolve against this script's own home (the town root), so the
    whole monument lifts to its own route (/wall/) with zero rebuild.
    Still-town parity: no JS, reduced motion, or a failed ledger fetch
@@ -137,13 +140,34 @@
      Definition (BUILD_RECORD_WALL_DIGEST_CHECK_2026-11-23.md): the
      digest is SHA-256 over the canonical JSON — keys sorted at every
      depth, compact separators, no trailing newline — of every field
-     of the ledger EXCEPT the signature block itself. The digest of
-     record for the true file (0 grams · 0 of 47) is 86011a77… .
+     of the ledger EXCEPT the signature block itself.
+     A digest that travels with its data proves consistency, not
+     authenticity — so the recomputed digest is NOT compared against
+     the file's own claim. It is compared against EXPECTED_DIGEST:
+     the reference value pinned HERE, in this script, committed to
+     the site's git repository as a separate file the ledger cannot
+     rewrite, and anchored in the Day-Book's hash chain (entry #7,
+     "The Wall takes its seal", 2026-11-23), which every visitor's
+     browser recomputes on /record/. Data + digest rewritten together
+     in the ledger file still fail against the pin. (The fully
+     off-server reference — the Day-Book's Memo anchor — lands with
+     the founder's pennies-wallet step; see the build record.)
+     UPDATE PROTOCOL: the ledger's facts may only change when ALL
+     FOUR coupled artifacts land in one deploy — (1) the ledger with
+     its new signature.digest, (2) the new EXPECTED_DIGEST pinned
+     here, (3) a new Day-Book entry whose text states the new digest,
+     and (4) root.json updated to the new entry's root with the new
+     entry count. Any partial combination fails closed or breaks
+     loudly, never silently wrong. Pin ↔ Day-Book-anchor consistency
+     is verified by a human on /record/ (whose own chain every
+     browser recomputes), not by code — this script never fetches
+     the Day-Book. A ledger that changes silently renders nothing.
      On a match the monument renders exactly as it always has. On a
-     mismatch, a missing or malformed seal, or no crypto available to
-     check with, NOTHING is rendered from the file: the monument fails
-     closed to its founded face — 0 grams · 0 of 47 · receipt dark —
-     and the registry note says the seal did not verify. */
+     mismatch, a missing or malformed seal, a stale ledger, or no
+     crypto available to check with, NOTHING is rendered from the
+     file: the monument fails closed to its founded face — 0 grams ·
+     0 of 47 · receipt dark — and the note says the seal did not hold. */
+  var EXPECTED_DIGEST = '86011a778d4dd33ca9b031e8329a1c223e2ee244d11b98a86d2cb5c4f01d99c8';
   function canonicalJson(v) {
     if (v === null || typeof v !== 'object') return JSON.stringify(v);
     if (Array.isArray(v)) return '[' + v.map(canonicalJson).join(',') + ']';
@@ -160,16 +184,88 @@
     }, function () { return null; });
   }
   function verifyLedger(ledger) {
-    if (!ledger || typeof ledger !== 'object' || Array.isArray(ledger)) return Promise.resolve(false);
+    var fail = { sealed: false, hex: null };
+    if (!ledger || typeof ledger !== 'object' || Array.isArray(ledger)) return Promise.resolve(fail);
     var sig = ledger.signature;
     if (!sig || sig.algorithm !== 'SHA-256' || typeof sig.digest !== 'string' ||
-        !/^[0-9a-f]{64}$/i.test(sig.digest)) return Promise.resolve(false);
-    var body = {};
+        !/^[0-9a-f]{64}$/i.test(sig.digest)) return Promise.resolve(fail);
+    /* null-prototype body: a "__proto__" field in the ledger must enter
+       the preimage as an own property, never hit the prototype setter —
+       the seal covers every field except signature, literally */
+    var body = Object.create(null);
     Object.keys(ledger).forEach(function (k) { if (k !== 'signature') body[k] = ledger[k]; });
     return sha256Hex(canonicalJson(body)).then(function (hex) {
-      return hex !== null && hex === sig.digest.toLowerCase();
+      /* both the recomputed digest AND the file's stated digest must
+         equal the pinned reference — the file cannot vouch for itself */
+      return { sealed: hex !== null && hex === EXPECTED_DIGEST &&
+        sig.digest.toLowerCase() === EXPECTED_DIGEST, hex: hex };
     });
   }
+
+  /* ---------- the seal, shown: the Glass Machinery ----------
+     The check is not a silent swap. A Seal row rides in every
+     Covenant Ledger block on the face, in the ledger's own grammar
+     (a named part, then its reading), and the visitor watches it
+     work: the recompute resolves first, the reference is named
+     beside it, and the verdict lands in plain words at the moment
+     the check completes — only then do the figures render. On any
+     failure the verdict says so on the face and the numbers stay
+     dark. Reduced motion: the completed readout stands at once. */
+  var sealRows = [];
+  function shortDigest(hex) { return hex ? hex.slice(0, 16) + '\u2026' : '\u2014'; }
+  function buildSealRows() {
+    root.querySelectorAll('.wall-ledger').forEach(function (ledgerEl) {
+      var row = document.createElement('div');
+      row.className = 'wall-fact wall-seal';
+      row.setAttribute('data-wall-seal', '');
+      var label = document.createElement('b');
+      label.textContent = 'The Seal';
+      var face = document.createElement('span');
+      var recompute = document.createElement('span');
+      recompute.setAttribute('data-wall-seal-recompute', '');
+      recompute.textContent = 'RECOMPUTING THE SEAL \u2014 SHA-256 OVER THE LEDGER\u2019S FIELDS\u2026';
+      var reference = document.createElement('span');
+      reference.setAttribute('data-wall-seal-reference', '');
+      var verdict = document.createElement('span');
+      verdict.setAttribute('data-wall-seal-verdict', '');
+      verdict.style.color = '#C9A227';
+      verdict.style.fontWeight = '600';
+      face.appendChild(recompute);
+      face.appendChild(document.createElement('br'));
+      face.appendChild(reference);
+      face.appendChild(document.createElement('br'));
+      face.appendChild(verdict);
+      row.appendChild(label);
+      row.appendChild(face);
+      var counterFact = null;
+      ledgerEl.querySelectorAll('.wall-fact').forEach(function (f) {
+        if (!counterFact && f.querySelector('[data-wall-ledger-line]')) counterFact = f;
+      });
+      if (counterFact && counterFact.nextSibling) ledgerEl.insertBefore(row, counterFact.nextSibling);
+      else ledgerEl.appendChild(row);
+      sealRows.push({ recompute: recompute, reference: reference, verdict: verdict });
+    });
+  }
+  function sealStage(fn) { setTimeout(fn, reduced ? 0 : 600); }
+  function showSealVerdict(sealed, hex) {
+    sealRows.forEach(function (r) {
+      r.recompute.textContent = 'RECOMPUTED \u00B7 ' + shortDigest(hex);
+      r.reference.textContent = 'REFERENCE \u00B7 ' + shortDigest(EXPECTED_DIGEST) +
+        ' \u2014 PINNED IN THIS SCRIPT \u00B7 ANCHORED IN THE DAY-BOOK, ENTRY #7';
+      r.verdict.textContent = sealed
+        ? '\u2713 SEAL HOLDS \u2014 THE FIGURES HERE ARE RENDERED FROM THE RECONCILED LEDGER'
+        : '\u2717 SEAL DOES NOT HOLD \u2014 NO FIGURE IS RENDERED FROM AN UNRECONCILED LEDGER';
+    });
+  }
+  function showSealUnreachable() {
+    sealRows.forEach(function (r) {
+      r.recompute.textContent = 'THE LEDGER COULD NOT BE READ FROM HERE';
+      r.reference.textContent = 'REFERENCE \u00B7 ' + shortDigest(EXPECTED_DIGEST) +
+        ' \u2014 PINNED IN THIS SCRIPT \u00B7 ANCHORED IN THE DAY-BOOK, ENTRY #7';
+      r.verdict.textContent = '\u2717 SEAL DOES NOT HOLD \u2014 NO FIGURE IS RENDERED FROM AN UNRECONCILED LEDGER';
+    });
+  }
+  buildSealRows();
   function failClosedLedger() {
     var zeroBook = { bricksLaid: 0, bricksTarget: 47, gramsTotal: 0, bricks: [] };
     renderCounter(zeroBook);
@@ -184,21 +280,26 @@
   fetch(new URL('data/golden-wall.json', BASE).href, { cache: 'no-store' })
     .then(function (r) { if (!r.ok) throw new Error('ledger ' + r.status); return r.json(); })
     .then(function (ledger) {
-      return verifyLedger(ledger).then(function (sealed) {
-        if (!sealed) { failClosedLedger(); return; }
-        renderCounter(ledger);
-        renderRegistry(ledger);
-        fillSockets(ledger);
-        deadline = Date.parse(ledger.birthdayDeadlineUtc);
-        cdEls = Array.prototype.slice.call(root.querySelectorAll('[data-wall-countdown]'));
-        tickCountdown();
-        setInterval(tickCountdown, 1000);
+      return verifyLedger(ledger).then(function (result) {
+        /* the verdict lands visibly first; the figures follow it */
+        sealStage(function () {
+          showSealVerdict(result.sealed, result.hex);
+          if (!result.sealed) { failClosedLedger(); return; }
+          renderCounter(ledger);
+          renderRegistry(ledger);
+          fillSockets(ledger);
+          deadline = Date.parse(ledger.birthdayDeadlineUtc);
+          cdEls = Array.prototype.slice.call(root.querySelectorAll('[data-wall-countdown]'));
+          tickCountdown();
+          setInterval(tickCountdown, 1000);
+        });
       });
     })
     .catch(function () {
       /* the ledger could not be read: the static face already says 0 / 47,
          which is tonight's truth; the registry still renders its 47 unlit
-         slots from the empty book. */
+         slots from the empty book, and the Seal row says why. */
+      showSealUnreachable();
       renderRegistry({ bricks: [] });
       fillSockets({ bricks: [] });
       if (note) note.textContent = 'The wall ledger could not be reached from here — the counter on this page stands at its receipted face: 0 grams · 0 of 47 bricks.';
