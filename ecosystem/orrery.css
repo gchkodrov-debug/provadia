@@ -1,0 +1,79 @@
+/* PROVADIA — /ecosystem/ THE CONNECTED GALAXY (T4-C builder seat)
+   Civic Orrery: pinned centrepiece + scrolling ring cards.
+   Palette law: town palette everywhere EXCEPT .ojk-lens, the sister store's
+   own dimensional lens — the only place the store palette may appear. */
+:root{--bone:#E9DDC6;--brown:#30251B;--bright:#E4C65B}
+
+.galaxy-panel .panel-body{max-width:64ch}
+
+/* ---- pinned-centre layout ---- */
+.orrery-layout{display:grid;grid-template-columns:minmax(240px,330px) 1fr;gap:26px;align-items:start;margin-top:8px}
+.orrery-centre{position:sticky;top:104px}
+.orrery{position:relative;border:1px solid rgba(201,162,39,.55);background:rgba(20,18,16,.97);padding:14px}
+.orrery-stage{position:relative;background:radial-gradient(circle at 50% 50%,rgba(48,37,27,.95),rgba(20,18,16,0) 74%)}
+.orrery-svg{display:block;width:100%;height:auto}
+.oring{fill:none;stroke:rgba(201,162,39,.32);stroke-width:1;transition:stroke .5s ease,filter .5s ease}
+.onode{fill:rgba(201,162,39,.45);transition:fill .5s ease}
+.oring.is-lit{stroke:var(--bright);filter:drop-shadow(0 0 6px rgba(228,198,91,.55))}
+.onode.is-lit{fill:var(--bright)}
+.orrery-hub{position:absolute;left:50%;top:50%;width:64px;height:64px;object-fit:contain;transform:translate(-50%,-50%)}
+.orrery-caption{font-size:.8rem;line-height:1.5;color:rgba(244,239,230,.62);margin:.6rem 0 0;text-align:center}
+
+/* film aperture — an intentional dark frame, empty until the captain's shoot */
+.film-slot{border:1px dashed rgba(201,162,39,.4);background:#0c0a08;min-height:64px;margin-top:12px;position:relative}
+
+/* ---- ring cards + leader lines ---- */
+.orrery-parts{display:flex;flex-direction:column;gap:18px;min-width:0}
+.ring-card{position:relative;border:1px solid rgba(201,162,39,.4);background:rgba(20,18,16,.92);padding:20px 22px 10px 30px}
+.leader{position:absolute;left:-27px;top:34px;width:26px;height:2px;display:block}
+.leader-line{display:block;height:2px;background:rgba(201,162,39,.3);width:100%}
+.leader-dot{position:absolute;right:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:rgba(201,162,39,.4)}
+.ring-card.is-active{border-color:rgba(228,198,91,.75)}
+.ring-card.is-active .leader-line{background:var(--bright)}
+.ring-card.is-active .leader-dot{background:var(--bright);box-shadow:0 0 10px rgba(228,198,91,.8)}
+.ring-num{font-family:Cinzel,serif;letter-spacing:.3em;font-size:.66rem;color:var(--gold);text-transform:uppercase;margin:0 0 .35rem}
+.ring-title{font-family:Cinzel,serif;font-size:1.3rem;color:var(--pale);margin:0 0 .5rem;line-height:1.18}
+.claim-list{margin:0 0 1rem;padding-left:1.1rem}
+.claim-list li{font-size:.94rem;line-height:1.6;color:rgba(244,239,230,.86);margin:.3rem 0}
+.gate-state{border:1px solid rgba(201,162,39,.45);background:rgba(48,37,27,.55);padding:.7rem .9rem;font-size:.9rem;color:var(--pale)}
+.gw-label{display:block;font-family:Cinzel,serif;letter-spacing:.2em;font-size:.6rem;text-transform:uppercase;color:var(--gold);margin-bottom:.25rem}
+
+/* ---- gateway cards (native <details>: content is never JS-gated) ---- */
+.node-list{list-style:none;margin:.4rem 0 1rem;padding:0}
+.node-item{border-top:1px solid rgba(201,162,39,.22);padding:.45rem 0}
+.node-btn{font-family:Cinzel,serif;letter-spacing:.1em;font-size:.84rem;text-transform:uppercase;color:var(--gold);cursor:pointer;padding:.3rem 0;list-style:none}
+.node-btn::-webkit-details-marker{display:none}
+.node-btn::after{content:"+";float:right;color:var(--pale)}
+.node-details[open ] .node-btn::after{content:"–"}
+.node-btn:hover{color:var(--pale)}
+.node-btn:focus-visible{color:var(--pale);outline:2px solid var(--gold);outline-offset:2px}
+.gateway-card{border-left:2px solid var(--gold);background:rgba(48,37,27,.45);padding:.7rem .9rem;margin:.4rem 0 .6rem}
+.gateway-card p{font-size:.9rem;line-height:1.6;color:rgba(244,239,230,.88);margin:.45rem 0}
+.gateway-card a{color:var(--gold)}
+.gateway-card a:hover{color:var(--pale)}
+
+/* ---- RING 02 · the OneJobKits lens — store palette, this block ONLY ---- */
+.ojk-lens{--ojk-deep:#004C3F;--ojk-accent:#95BF47;--ojk-cream:#FAFAF7;--ojk-ink:#111111;
+  background:var(--ojk-cream);color:var(--ojk-ink);border:3px solid var(--ojk-deep);padding:18px 20px;margin:-6px -8px 4px}
+.ojk-lens .ring-num{color:var(--ojk-deep)}
+.ojk-lens .ring-title{color:var(--ojk-ink)}
+.ojk-lens p{font-size:.94rem;line-height:1.6;color:var(--ojk-ink)}
+.ojk-door{display:inline-block;background:var(--ojk-deep);color:var(--ojk-cream);font-family:Cinzel,serif;letter-spacing:.08em;font-size:.8rem;text-transform:uppercase;text-decoration:none;padding:.6rem 1rem;border:2px solid var(--ojk-accent)}
+.ojk-door:hover,.ojk-door:focus-visible{background:var(--ojk-accent);color:var(--ojk-ink);outline:none}
+
+/* ---- mobile: centrepiece stacks above, leaders go vertical ---- */
+@media (max-width:760px){
+  .orrery-layout{grid-template-columns:1fr;gap:14px}
+  .orrery-centre{position:static}
+  .ring-card{padding-left:22px}
+  .leader{left:8px;top:-15px;width:2px;height:14px}
+  .leader-line{width:2px;height:100%}
+  .leader-dot{right:-3px;top:auto;bottom:-4px}
+  .orrery-hub{width:52px;height:52px}
+}
+
+/* ---- reduced motion ---- */
+@media (prefers-reduced-motion:reduce){
+  .oring,.onode{transition:none}
+  html{scroll-behavior:auto}
+}
