@@ -703,8 +703,9 @@ html.cine .pv-open-layer{display:block;position:absolute;inset:0;z-index:8;point
 html.pv-entry-active .sa-cue,html.pv-entry-active .sa-skip{display:none}
 html.rm .scroll-cue .arr{animation:none}
 </style>
-<script>document.documentElement.classList.add("pv-on")</script> <link rel="stylesheet" href="/assets/breathing-ring.css"> </head>
-<body id="top"> <div class="pv-boot" id="pvBoot" aria-hidden="true"><svg class="pv-ring" viewBox="0 0 100 100" focusable="false"><circle cx="50" cy="50" r="46" fill="none" stroke="#C9A227" stroke-width="1.5"/></svg></div> 
+<link rel="stylesheet" href="/nexus.css">
+</head>
+<body id="top">
 <a class="skip-link" href="#arrival">Skip to the town</a>
 
 <div class="world" aria-hidden="true"></div>
@@ -807,7 +808,7 @@ html.rm .scroll-cue .arr{animation:none}
         <a class="room-chip" data-room="mint" href="/listings/mint.html">The Mint</a>
         <a class="room-chip" data-room="marketplace" href="/catalogue/">The Marketplace</a>
         <a class="room-chip" data-room="coin" href="/coin/">The Coin</a>
-        <a class="room-chip" data-room="wall" href="/record/">The Golden Wall</a>
+        <a class="room-chip" data-room="wall" href="/wall/">The Golden Wall</a>
         <a class="room-chip" data-room="record" href="/record/">The Record</a>
         <a class="room-chip" data-room="forum" href="/agora/">The Forum</a>
         <a class="room-chip" data-room="keeper" href="/knock/">The Keeper · Offline</a>
@@ -857,7 +858,7 @@ html.rm .scroll-cue .arr{animation:none}
           <p class="sa-callout left money" data-room="mint" data-sa-from="0.05" data-sa-to="0.15" data-sa-tip="0.50,0.32"><span class="sa-chip" aria-hidden="true">1</span><span class="sa-eyebrow">Inside the coin · What it is</span><span class="sa-title">The Mint</span><span class="sa-line">Where we create coins for people: the town's minting service, run end to end — conversation, the Honest Question, rehearsal, covenant, mark, launch, record, handover. What it does: it turns a founder's idea into a launched coin, with every step receipted.</span><a class="sa-door" href="/listings/mint.html" tabindex="-1">Enter the Mint →</a></p>
           <p class="sa-callout right money" data-room="marketplace" data-sa-from="0.15" data-sa-to="0.25" data-sa-tip="0.60,0.40"><span class="sa-chip" aria-hidden="true">2</span><span class="sa-eyebrow">Inside the coin · What it is</span><span class="sa-title">The Marketplace</span><span class="sa-line">The store with all the products: 34 services and a custom-build door — the Studio rides inside it — every price printed in page text. What it does: it is how the town earns its keep, and no holding of the coin is ever required to buy a service.</span><a class="sa-door" href="/catalogue/" tabindex="-1">Enter the Marketplace →</a></p>
           <p class="sa-callout left" data-room="coin" data-sa-from="0.25" data-sa-to="0.35" data-sa-tip="0.52,0.47"><span class="sa-chip" aria-hidden="true">3</span><span class="sa-eyebrow">Inside the coin · What it is</span><span class="sa-title">The Coin</span><span class="sa-line">PROVADIA itself: one billion coins, fixed forever, launched on pump.fun on 18 November 2026 — this portal carries its live chart and trade. What it does: holding it names you a Bricklayer in the town registry — and nothing else is promised.</span><a class="sa-door" href="/coin/" tabindex="-1">See the coin live →</a></p>
-          <p class="sa-callout right wall" data-room="wall" data-sa-from="0.35" data-sa-to="0.45" data-sa-tip="0.44,0.36"><span class="sa-chip" aria-hidden="true">4</span><span class="sa-eyebrow">Inside the coin · What it is</span><span class="sa-title">The Golden Wall</span><span class="sa-line">Twenty percent of the coin's creator fees, forever, buys real 1-gram gold bars into a licensed vault the founder never holds. What it does: it turns fees into a public monument — never backing, never redeemable. Today the Wall stands at 0 of 47 bricks.</span><a class="sa-door" href="/record/" tabindex="-1">The Wall, on the Record →</a></p>
+          <p class="sa-callout right wall" data-room="wall" data-sa-from="0.35" data-sa-to="0.45" data-sa-tip="0.44,0.36"><span class="sa-chip" aria-hidden="true">4</span><span class="sa-eyebrow">Inside the coin · What it is</span><span class="sa-title">The Golden Wall</span><span class="sa-line">Twenty percent of the coin's creator fees, forever, buys real 1-gram gold bars into a licensed vault the founder never holds. What it does: it turns fees into a public monument — never backing, never redeemable. Today the Wall stands at 0 of 47 bricks.</span><a class="sa-door" href="/wall/" tabindex="-1">The Wall, at its own door →</a></p>
           <p class="sa-callout left" data-room="record" data-sa-from="0.45" data-sa-to="0.55" data-sa-tip="0.56,0.55"><span class="sa-chip" aria-hidden="true">5</span><span class="sa-eyebrow">Inside the coin · What it is</span><span class="sa-title">The Record</span><span class="sa-line">The town's signed, hash-chained public book. What it does: every act of the town is written where anyone can check it. Sample, recorded as fact: the Wall stands at 0 of 47 bricks — Brick #1 is not yet bought.</span><a class="sa-door" href="/record/" tabindex="-1">Read the Record →</a></p>
           <p class="sa-callout right" data-room="forum" data-sa-from="0.55" data-sa-to="0.65" data-sa-tip="0.45,0.62"><span class="sa-chip" aria-hidden="true">6</span><span class="sa-eyebrow">Inside the coin · What it is</span><span class="sa-title">The Forum</span><span class="sa-line">The Agora — the town square, where members gather, ask, and are answered. What it does: it is the town's living room and its working support door today — the support email there is live, and the town's Discord stands open.</span><a class="sa-door" href="/agora/" tabindex="-1">Enter the Forum →</a></p>
           <p class="sa-callout left" data-room="keeper" data-sa-from="0.65" data-sa-to="0.75" data-sa-tip="0.50,0.80"><span class="sa-chip" aria-hidden="true">7</span><span class="sa-eyebrow">Inside the coin · What it is</span><span class="sa-title">The Keeper — The Knock</span><span class="sa-line">Solnik, Keeper of the Wall — the town's host and shopkeeper — and the Knock, the town's door for asking to enter its work. His status today: OFFLINE. The counter is being built; until he truly serves, the support email on the Agora page is the working door.</span><a class="sa-door" href="/knock/" tabindex="-1">Knock — ask to enter →</a></p>
@@ -1354,8 +1355,8 @@ html.rm .scroll-cue .arr{animation:none}
       readiness:'Live door',
       line:'PROVADIA itself: one billion coins, fixed forever, launched on pump.fun on 18 November 2026 \u2014 its live chart and trade stand behind this portal.',
       fact:'Holding it names you a Bricklayer in the town registry \u2014 and nothing else: no redemption, no yield, no rights, no expected return.'},
-    wall:{name:'The Golden Wall',ring:'inner',p:0.40,door:'/record/',doorLabel:'Enter \u2014 the Wall, on the Record',connections:['record','coin'],
-      readiness:'Live door (the Wall\u2019s home is the Record)',
+    wall:{name:'The Golden Wall',ring:'inner',p:0.40,door:'/wall/',doorLabel:'Enter \u2014 the Wall at its own door',connections:['record','coin'],
+      readiness:'Live door (the Wall stands at its own door, /wall/; its book is verified on the Record)',
       line:'Twenty percent of the coin\u2019s creator fees, forever, buys real 1-gram gold bars into a licensed vault the founder never holds.',
       fact:'Today the Wall stands at 0 of 47 bricks. It is a public monument \u2014 never backing, never redeemable.'},
     record:{name:'The Record',ring:'inner',p:0.50,door:'/record/',doorLabel:'Enter \u2014 Read the Record',connections:['wall','town'],
@@ -2196,5 +2197,7 @@ html.rm .scroll-cue .arr{animation:none}
   }
 })();
 </script>
-<script>(function(){var b=document.getElementById("pvBoot");if(!b)return;var done=false;function hide(){if(done)return;done=true;b.classList.add("pv-done");setTimeout(function(){if(b.parentNode)b.parentNode.removeChild(b)},900)}addEventListener("load",function(){setTimeout(hide,350)});setTimeout(hide,2200);})();</script> </body>
+<script type="application/json" id="nexus-share-manifest">{"title": "PROVADIA \u2014 A Living Town", "text": "Bitcoin is energy. PROVADIA is salt \u2014 the original currency. A living digital town on the web.", "url": "https://provadiacoin.com/", "media": "https://provadiacoin.com/marks/front-published.webp"}</script>
+<script src="/nexus.js"></script>
+</body>
 </html>
