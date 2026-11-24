@@ -209,7 +209,7 @@ async function verifyDaybook() {
     // The vault ledgers (Vault I's tithe book, Vault II's gold book) are
     // verified and rendered with the book — a broken vault breaks the record.
     if (book && !Array.isArray(book) && book.vaults) {
-      const vaultsOk = await verifyVaults(book, entries, anchorRoot);
+      const vaultsOk = await verifyVaults(book, checked, anchorRoot);
       if (!vaultsOk) ok = false;
     }
 
@@ -677,14 +677,17 @@ function renderGold(checked) {
   if (emptyEl && checked.length) emptyEl.style.display = "none";
 }
 
-function renderHonors(daybookEntries) {
-  const honors = (daybookEntries || []).filter((e) => /honou?r/i.test(e.title || ""));
+// Honors are read off the Day-Book — and off the same verified pass as
+// everything else on this page: each honor renders with the entryOk that
+// verifyDaybook() actually computed for its entry, never an assumed one.
+function renderHonors(checkedDaybook) {
+  const honors = (checkedDaybook || []).filter(({ e }) => /honou?r/i.test(e.title || ""));
   const listEl = document.querySelector('[data-vault-honors="list"]');
   if (listEl) {
     listEl.innerHTML = "";
-    for (const e of honors) {
+    for (const { e, entryOk } of honors) {
       listEl.appendChild(
-        vaultEntryLi(`#${e.n} · ${e.title}`, e.date, e.text, e.hash, true)
+        vaultEntryLi(`#${e.n} · ${e.title}`, e.date, e.text, e.hash, entryOk)
       );
     }
   }
@@ -696,7 +699,7 @@ function renderHonors(daybookEntries) {
 // itself, renders all three faces either way (a broken ledger shows its
 // entries with ✗ marks under a BROKEN vault verdict — never a silent
 // pass), and returns whether every vault check passed.
-async function verifyVaults(book, daybookEntries, anchorRoot) {
+async function verifyVaults(book, checkedDaybook, anchorRoot) {
   const verdictEl = document.querySelector("[data-vault-verdict]");
   const vaults = book.vaults;
   let ok = true;
@@ -710,7 +713,7 @@ async function verifyVaults(book, daybookEntries, anchorRoot) {
   if (!gold.ok) ok = false;
   renderGold(gold.checked);
 
-  renderHonors(daybookEntries);
+  renderHonors(checkedDaybook);
 
   if (verdictEl) {
     if (ok) {
