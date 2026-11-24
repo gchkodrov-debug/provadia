@@ -87,3 +87,102 @@
   .rec-v { text-align: left; }
   .rec-card { padding: 1.2rem 1rem 1rem; }
 }
+
+/* ---- THE CHRONO-ASTROLABE LEDGER (appended; existing rules untouched) ----
+   The Day-Book card's second face: view toggle, the four-ring astrolabe,
+   the four strata on their rails, the chain strip, the plain table, the
+   proof panels and the Hash Explorer. Same palette vars as the panels
+   above; bright gold #E4C65B is spent only on the astrolabe's receipts
+   ring (set in record.js) — the threshold light, nowhere else here. */
+
+.ledger-tools { display: flex; flex-wrap: wrap; gap: .6rem; margin: 0 0 1.4rem; }
+.ledger-view-btn {
+  font-family: Cinzel, serif; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--pale); background: transparent; border: 1px solid rgba(201,162,39,.45);
+  border-radius: 6px; padding: .55rem 1rem; cursor: pointer;
+}
+.ledger-view-btn:hover { border-color: var(--gold); }
+.ledger-view-btn[aria-pressed="true"] { background: var(--gold); color: var(--darkest); border-color: var(--gold); }
+
+.astrolabe { margin: 0 auto 1.6rem; max-width: 300px; text-align: center; }
+.astrolabe-svg { display: block; width: 100%; height: auto; }
+.astrolabe-spin {
+  animation: astrolabe-turn 240s linear infinite;
+  transform-box: view-box; transform-origin: 130px 130px;
+}
+@keyframes astrolabe-turn { to { transform: rotate(360deg); } }
+.astrolabe figcaption { margin-top: .4rem; }
+
+.stratum {
+  border-left: 2px solid rgba(201,162,39,.35); padding-left: 1.1rem;
+  margin: 0 0 1.6rem; position: relative;
+}
+.stratum-title {
+  font-family: Cinzel, serif; color: var(--pale); font-size: 1.08rem;
+  letter-spacing: .04em; margin: 0 0 .4rem; position: relative;
+}
+.stratum-title::before {
+  /* the rail's tip dot — each stratum hangs on the rail at its title */
+  content: ""; position: absolute; left: calc(-1.1rem - 5px); top: .42em;
+  width: 8px; height: 8px; border-radius: 50%; background: var(--gold);
+}
+.stratum-num { color: var(--gold); font-size: .78rem; letter-spacing: .14em; margin-right: .6rem; }
+.stratum-duty { margin-top: 0; }
+
+.chain-strip { list-style: none; margin: 0; padding: 0; }
+.chain-item {
+  display: flex; justify-content: space-between; gap: 1rem; align-items: baseline;
+  padding: .45rem 0; border-bottom: 1px solid rgba(201,162,39,.14);
+  font-size: .86rem; line-height: 1.5;
+}
+.chain-item:last-child { border-bottom: none; }
+.chain-hash { display: inline; white-space: nowrap; }
+
+[data-ledger-plain] { overflow-x: auto; }
+.rec-table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+.rec-table th {
+  font-family: Cinzel, serif; font-size: .74rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--gold); text-align: left; padding: .55rem .6rem;
+  border-bottom: 1px solid rgba(201,162,39,.45);
+}
+.rec-table td { padding: .6rem; border-bottom: 1px solid rgba(201,162,39,.16); line-height: 1.55; vertical-align: top; }
+.rec-table td .rec-hash { font-size: .7rem; }
+
+.rec-proof-btn {
+  font-family: Cinzel, serif; font-size: .74rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--gold); background: transparent; border: 1px solid rgba(201,162,39,.4);
+  border-radius: 6px; padding: .4rem .8rem; margin-top: .55rem; cursor: pointer;
+}
+.rec-proof-btn:hover { border-color: var(--gold); color: var(--pale); }
+.rec-proof {
+  margin-top: .7rem; padding: .8rem 1rem; border: 1px solid rgba(201,162,39,.3);
+  border-radius: 6px; background: rgba(0,0,0,.35);
+}
+.rec-proof-row {
+  display: flex; justify-content: space-between; gap: 1.5rem;
+  padding: .35rem 0; border-bottom: 1px solid rgba(201,162,39,.14); font-size: .84rem;
+}
+.rec-proof-row:last-child { border-bottom: none; }
+.rec-proof-row .rec-v { word-break: break-all; }
+
+.hash-explorer { margin-top: 1.8rem; border-top: 1px solid rgba(201,162,39,.25); padding-top: 1.3rem; }
+.hash-explorer-row { display: flex; gap: .6rem; margin-top: .6rem; }
+.hash-explorer-row input {
+  flex: 1; min-width: 0; background: rgba(0,0,0,.4); color: var(--salt);
+  border: 1px solid rgba(201,162,39,.4); border-radius: 6px; padding: .6rem .8rem;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: .82rem;
+}
+.hash-explorer-row input::placeholder { color: var(--salt); opacity: .55; }
+
+.film-slot:empty { height: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .astrolabe-spin { animation: none; }
+}
+
+@media (max-width: 560px) {
+  .hash-explorer-row { flex-direction: column; }
+  .rec-proof-row { flex-direction: column; gap: .15rem; }
+  .rec-proof-row .rec-v { text-align: left; }
+  .chain-item { flex-direction: column; gap: .1rem; }
+}
