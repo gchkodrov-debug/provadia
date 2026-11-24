@@ -75,15 +75,21 @@
   function sat(angle, radius, tag, title, body, inner) {
     var d = document.createElement('div');
     d.className = 'nexus-sat';
-    d.style.setProperty('--a', angle + 'deg');
-    d.style.setProperty('--r', radius + 'px');
+    /* position by direct trigonometry: offset from the orbit centre by
+       radius px at the satellite's angle (0deg = due north, clockwise) */
+    var rad = (angle - 90) * Math.PI / 180;
+    d.style.setProperty('--dx', Math.round(Math.cos(rad) * radius) + 'px');
+    d.style.setProperty('--dy', Math.round(Math.sin(rad) * radius) + 'px');
     d.innerHTML = '<span class="nexus-leader" aria-hidden="true"></span><span class="nexus-tip" aria-hidden="true"></span>' +
       '<p class="nexus-sat-tag">' + tag + '</p><h3 class="nexus-sat-title">' + title + '</h3>' +
       '<p class="nexus-sat-body">' + body + '</p>' + inner;
     return d;
   }
 
-  function radius() { return Math.min(window.innerWidth, window.innerHeight) < 560 ? 148 : 218; }
+  function radius() {
+    var m = Math.min(window.innerWidth, window.innerHeight);
+    return m < 560 ? 128 : 242;
+  }
 
   function buildOrbit() {
     orbit.innerHTML = '';
