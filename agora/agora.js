@@ -71,7 +71,7 @@
     }
     return fallback;
   }
-  var UNREACHABLE = 'The registry service stands live, but this page cannot reach it from your browser yet — the town’s cross-door wiring is being fitted tonight. If a request did go through before the line broke, signing in will find it. The desk answers for the door meanwhile: support@provadiacoin.com.';
+  var UNREACHABLE = 'The registry service stands live, but this page cannot reach it from your browser yet — the town’s cross-door wiring is being fitted tonight. If a request did go through before the line broke, signing in will find it. The Support Desk on this floor answers for the door meanwhile.';
 
   /* ---------- mode: two first-class faces ---------- */
   function applyMode(mode, focus) {
@@ -103,7 +103,7 @@
       el.textContent = 'The registry service answers — this door is live.';
       el.classList.add('is-live');
     } else {
-      el.textContent = 'The registry service stands live, but this page cannot reach it from your browser yet — the town’s cross-door wiring is being fitted tonight. Nothing you type is sent anywhere until the door answers. The desk answers for the door meanwhile: support@provadiacoin.com.';
+      el.textContent = 'The registry service stands live, but this page cannot reach it from your browser yet — the town’s cross-door wiring is being fitted tonight. Nothing you type is sent anywhere until the door answers. The Support Desk on this floor answers for the door meanwhile.';
       el.classList.remove('is-live');
       /* C1 (critic): the header chip must not keep asserting "Live"
          the probe could not prove — fall back to the verified count. */
@@ -157,7 +157,7 @@
       showMember(member);
       if (statusEl) statusEl.textContent = message;
     } catch (e) {
-      if (statusEl) statusEl.textContent = 'You are signed in. Your registry face could not be drawn — the desk can read it for you: support@provadiacoin.com.';
+      if (statusEl) statusEl.textContent = 'You are signed in. Your registry face could not be drawn — the Support Desk on this floor can read it for you.';
     }
     loadThreads();
   }
@@ -355,7 +355,7 @@
                 : 'Your post was accepted — the floor’s reading side is still being fitted, so it cannot show your post back yet.';
             });
           } else if (r.status === 404) {
-            status.textContent = 'The floor’s writing side is still being fitted to the registry service — nothing was sent, and nothing was lost. The desk takes the town’s words by email meanwhile: support@provadiacoin.com.';
+            status.textContent = 'The floor’s writing side is still being fitted to the registry service — nothing was sent, and nothing was lost. The Support Desk on this floor takes the town’s words meanwhile.';
           } else {
             status.textContent = errText(r.json, 'The floor would not take that post.');
           }
