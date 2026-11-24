@@ -704,8 +704,8 @@ html.pv-entry-active .sa-cue,html.pv-entry-active .sa-skip{display:none}
 html.rm .scroll-cue .arr{animation:none}
 </style>
 <link rel="stylesheet" href="/nexus.css">
-</head>
-<body id="top">
+<script>document.documentElement.classList.add("pv-on")</script> <link rel="stylesheet" href="/assets/breathing-ring.css"> </head>
+<body id="top"> <div class="pv-boot" id="pvBoot" aria-hidden="true"><svg class="pv-ring" viewBox="0 0 100 100" focusable="false"><circle cx="50" cy="50" r="46" fill="none" stroke="#C9A227" stroke-width="1.5"/></svg></div> 
 <a class="skip-link" href="#arrival">Skip to the town</a>
 
 <div class="world" aria-hidden="true"></div>
@@ -2199,5 +2199,5 @@ html.rm .scroll-cue .arr{animation:none}
 </script>
 <script type="application/json" id="nexus-share-manifest">{"title": "PROVADIA \u2014 A Living Town", "text": "Bitcoin is energy. PROVADIA is salt \u2014 the original currency. A living digital town on the web.", "url": "https://provadiacoin.com/", "media": "https://provadiacoin.com/marks/front-published.webp"}</script>
 <script src="/nexus.js"></script>
-</body>
+<script>(function(){var b=document.getElementById("pvBoot");if(!b)return;var done=false;function hide(){if(done)return;done=true;b.classList.add("pv-done");setTimeout(function(){if(b.parentNode)b.parentNode.removeChild(b)},900)}addEventListener("load",function(){setTimeout(hide,350)});setTimeout(hide,2200);})();</script> </body>
 </html>
