@@ -146,6 +146,19 @@ main,footer{position:relative;z-index:3}
 .doors a:hover,.doors a:focus-visible{color:var(--gold);background:var(--gold-a12)}
 .keeper-chip{border:1px solid var(--door-line);border-radius:999px;color:var(--gold)!important;background:var(--gold-a08)}
 .keeper-chip .dot{display:inline-block;width:.44rem;height:.44rem;border-radius:50%;background:var(--offline);margin-right:.4rem;vertical-align:1px}
+@media (max-width:760px){
+  /* The architect's fix (entry judgment, 2026-11-23): at phone widths
+     the header's doors row used to scroll-crop its third door
+     mid-word at the right edge (the still page at 375px). The row
+     now WRAPS under the wordmark — every door's name whole, nothing
+     clipped — and the still page's arrival gains the headroom the
+     taller wrapped header needs. In the cinema the header is
+     invisible by design, so the wrap costs the film nothing. */
+  .site-nav{flex-wrap:wrap;row-gap:.1rem}
+  .doors{flex:1 1 100%;flex-wrap:wrap;overflow-x:visible;margin-left:0}
+  .doors a{padding:.34rem .5rem}
+  html:not(.cine) .arrival{padding-top:11rem}
+}
 .skip-link{position:fixed;left:.6rem;top:-4rem;z-index:60;background:var(--brown);color:var(--cream);padding:.5rem .9rem;border:1px solid var(--door-line);border-radius:10px;transition:top .2s}
 .skip-link:focus{top:.6rem}
 
@@ -512,9 +525,12 @@ html.static .enter-note{display:block;max-width:38rem;margin:1.1rem auto 0;text-
    nodes along the lower arc, and the registry seal "ALL DOORS · 10"
    at the bottom pole, wired to the coin's existing all-doors panel.
    Beat 3 — one tap on any lens dives: the chosen ring expands past
-   the viewport while the unchosen fold back, and the flight lands in
-   the journey's own entry machinery (the threshold, its film, its
-   doors). The films F-2/F-2B/F-3 (the true cleave and fly-through)
+   the viewport while the unchosen fold back, and beneath its cover
+   the flight goes straight to the chosen world — no intermediate
+   threshold card, no second Enter button (the architect's ruling on
+   the built entry, 2026-11-23; the journey's own threshold machinery
+   stands untouched for the scroll journey itself). The films
+   F-2/F-2B/F-3 (the true cleave and fly-through)
    are owed, not faked — see the build record. Cinematic path only:
    every rule below is scoped to html.cine or lives where static modes
    never render it; the still page and its rescue are untouched except
@@ -573,7 +589,7 @@ html.cine .pv-open-layer{display:block;position:absolute;inset:0;z-index:8;point
 .pv-main .pv-disc::after{content:"";position:absolute;inset:-12px;border-radius:50%;border:1px solid var(--gold-a25);animation:pvSpinR 38s linear infinite}
 .pv-sec .pv-disc{width:44px;height:44px;border:1px solid var(--gold-a70);box-shadow:0 8px 20px var(--black-a55)}
 .pv-sec .pv-face img{filter:brightness(.85) saturate(.92)}
-.pv-label{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-bright);white-space:nowrap;text-shadow:0 1px 8px var(--black-a90),0 0 14px var(--black-a80)}
+.pv-label{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-bright);white-space:nowrap;text-shadow:0 2px 8px #141210,0 0 16px #141210}
 .pv-sec .pv-label{font-size:10px;letter-spacing:.16em;color:var(--cream)}
 @media (max-width:760px){
   /* The lower arc is tight on a phone: the six names run a size
@@ -591,6 +607,13 @@ html.cine .pv-open-layer{display:block;position:absolute;inset:0;z-index:8;point
 @media (min-width:761px){
   .pv-main .pv-disc{width:118px;height:118px}
   .pv-sec .pv-disc{width:56px;height:56px}
+  /* The architect's fix (entry judgment, 2026-11-23): on desktop the
+     two primary lenses rest 4% wider — 24% / 76% — so their labels
+     clear the coin's beaded rim. The entry script's fold vectors aim
+     at the same two numbers at this breakpoint (see setFrom); the
+     pair must move together. */
+  .pv-node[data-room="mint"]{left:24%!important}
+  .pv-node[data-room="marketplace"]{left:76%!important}
 }
 /* The registry seal at the bottom pole — a trigger, not a part: it
    opens the coin's own all-doors panel (the journey's machinery). */
@@ -607,8 +630,14 @@ html.cine .pv-open-layer{display:block;position:absolute;inset:0;z-index:8;point
 .pv-diving .pv-node.pv-fold,.pv-diving .pv-seal.pv-fold{opacity:0;transform:translate(-50%,-50%) scale(.4);transition-duration:.22s;transition-delay:0s;pointer-events:none}
 .pv-diving .pv-node.pv-chosen .pv-disc{box-shadow:0 0 44px var(--gold-bright-a35),0 14px 34px var(--black-a55)}
 .pv-dive{position:fixed;z-index:70;border-radius:50%;pointer-events:none;border:2px solid var(--gold-bright);
-  background:radial-gradient(circle,rgba(255,239,193,.85) 0%,rgba(228,198,91,.5) 34%,rgba(201,162,39,.22) 58%,rgba(20,18,16,.06) 74%);
+  background:radial-gradient(circle,rgba(255,239,193,.85) 0%,rgba(228,198,91,.5) 20%,rgba(201,162,39,.2) 38%,rgba(20,18,16,.05) 56%);
   box-shadow:0 0 80px rgba(228,198,91,.35),inset 0 0 60px rgba(255,239,193,.35)}
+/* The dive's corner shade (the architect's fix, 2026-11-23): a fixed
+   vignette born with the dive disc, centred on the chosen aperture —
+   its corners are the vault itself, so however far the disc expands,
+   the bright gold stays inside the aperture and the viewport's
+   corners stay dark. Script-born and script-removed with the disc. */
+.pv-dive-shade{position:fixed;inset:0;z-index:71;pointer-events:none;opacity:0}
 .pv-dive.pv-return{border-radius:0;border:0;box-shadow:none;
   background:radial-gradient(circle at 50% 46%,rgba(255,239,193,.55) 0%,rgba(228,198,91,.3) 30%,transparent 62%)}
 .pv-novis,.pv-novis *{transition:none!important}
@@ -635,6 +664,17 @@ html.cine .pv-open-layer{display:block;position:absolute;inset:0;z-index:8;point
 .sa-reduced .sa-beats{position:static;padding:.8rem 0}
 .sa-reduced .sa-callout{position:static;transform:none;opacity:1!important;width:auto;text-align:left}
 .sa-reduced .sa-cue,.sa-reduced .sa-depth,.sa-reduced .sa-skip,.sa-reduced .sa-leaders{display:none}
+/* The architect's fix (entry judgment, 2026-11-23): while the coin
+   entry stage is active — the entry script marks <html> for exactly
+   that span — the journey's top strip does not render. The cue and
+   the skip pill share one top offset inside the journey's stage, and
+   in the band of journey that can peek below the arrival (the
+   arrival is 100svh; a taller visible viewport shows the journey's
+   first ~100px at the bottom edge) the two collided on top of each
+   other. The strip returns the moment the visitor leaves the entry
+   stage and the journey takes the screen; the Portal Engine's own
+   cue fade (progress > 0.04) governs it from there, as before. */
+html.pv-entry-active .sa-cue,html.pv-entry-active .sa-skip{display:none}
 html.rm .scroll-cue .arr{animation:none}
 </style>
 </head>
@@ -688,9 +728,11 @@ html.rm .scroll-cue .arr{animation:none}
     <div class="pv-open-layer" id="pvOpen" aria-hidden="true">
       <div class="pv-depth" aria-hidden="true"></div>
       <svg class="pv-rings" aria-hidden="true" viewBox="0 0 100 100">
-        <circle class="pv-r1" cx="50" cy="50" r="48.5" fill="none" stroke="#e4c65b" stroke-width=".8" stroke-dasharray="3 2.2" opacity=".9"/>
-        <circle class="pv-r2" cx="50" cy="50" r="41" fill="none" stroke="#e4c65b" stroke-width=".55" stroke-dasharray="14 5" opacity=".65"/>
-        <circle class="pv-r3" cx="50" cy="50" r="34.5" fill="none" stroke="#e4c65b" stroke-width=".7" stroke-dasharray="1.5 3" opacity=".8"/>
+        <defs><filter id="pvGlowBlur" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.4"/></filter></defs>
+        <circle class="pv-r1" cx="50" cy="50" r="48.5" fill="none" stroke="#e4c65b" stroke-width=".8" stroke-dasharray="3 2.2" opacity=".45"/>
+        <circle class="pv-r2" cx="50" cy="50" r="41" fill="none" stroke="#e4c65b" stroke-width=".55" stroke-dasharray="14 5" opacity=".45"/>
+        <circle class="pv-rglow" cx="50" cy="50" r="34.5" fill="none" stroke="#e4c65b" stroke-width="3.2" opacity=".5" filter="url(#pvGlowBlur)"/>
+        <circle class="pv-r3" cx="50" cy="50" r="34.5" fill="none" stroke="#e4c65b" stroke-width=".7" stroke-dasharray="1.5 3" opacity=".45"/>
       </svg>
       <button type="button" class="pv-node pv-main" data-room="mint" data-x="28" data-y="34" tabindex="-1" style="left:28%;top:34%;--pv-d:0ms" aria-label="The Mint — enter this world">
         <span class="pv-disc"><span class="pv-face"><video class="pv-lens-video" muted loop playsinline preload="none" data-src="/listings/mint-assets/mint-assembly-film.mp4" poster="/listings/mint-frames/f120.webp" aria-hidden="true"></video></span></span>
@@ -1588,9 +1630,11 @@ html.rm .scroll-cue .arr{animation:none}
    (rings, depth, the 18% camera push on the coin core), Beat 2 springs
    the worlds out to their orbital places around the centre — the
    coin's named parts held like satellites, per the Universal
-   Structure Law — and Beat 3 dives through the chosen lens into the
-   journey's own Portal Engine (hotspot click → dolly push → the
-   world's threshold). The registry seal opens the coin's existing
+   Structure Law — and Beat 3 dives through the chosen lens straight
+   to the chosen world (the architect's ruling: one gesture, no
+   intermediate threshold card, no second Enter button; a room with
+   no door page would keep the Portal Engine's hotspot flight as its
+   fallback). The registry seal opens the coin's existing
    all-doors panel. The Return keeps the engine's behavior and gains
    the reverse contraction. What is NOT here, by design: the filmed
    cleave (F-2/F-2B) and the filmed fly-through (F-3) — owed as Flow
@@ -1611,7 +1655,29 @@ html.rm .scroll-cue .arr{animation:none}
   var film=stage.querySelector('.coin-film');
   var nodes=Array.prototype.slice.call(layer.querySelectorAll('.pv-node'));
   var seal=document.getElementById('pvSeal');
-  var state='closed', timers=[], activeDisc=null;
+  var state='closed', timers=[], activeDisc=null, activeShade=null;
+
+  /* Entry-stage ownership of the viewport (the architect's fix):
+     while the arrival intersects the screen at all, <html> carries
+     pv-entry-active and the journey's top strip (its scroll cue and
+     skip pill — see the CSS beside .sa-reduced) does not render:
+     the entry stage owns the viewport, and the strip can no longer
+     collide in the band of journey that peeks below the 100svh
+     arrival when the visible viewport runs taller. The class lifts
+     the moment the visitor scrolls on and the journey takes the
+     screen. Without IntersectionObserver, a scroll listener keeps
+     the same gate by position instead. */
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){
+      root.classList.toggle('pv-entry-active',!!es[0].isIntersecting);
+    },{threshold:0}).observe(arrival);
+  } else {
+    var syncStrip=function(){
+      root.classList.toggle('pv-entry-active', window.scrollY < arrival.offsetTop + arrival.offsetHeight - 1);
+    };
+    syncStrip();
+    window.addEventListener('scroll', syncStrip, {passive:true});
+  }
   function later(fn,ms){ timers.push(setTimeout(fn,ms)); }
   function clearTimers(){ for(var i=0;i<timers.length;i++) clearTimeout(timers[i]); timers=[]; }
 
@@ -1632,7 +1698,13 @@ html.rm .scroll-cue .arr{animation:none}
   function setFrom(g){
     g=g||geom();
     layer.querySelectorAll('.pv-node,.pv-seal').forEach(function(el){
-      var tx=parseFloat(el.getAttribute('data-x'))/100*g.lw;
+      var dxp=parseFloat(el.getAttribute('data-x'));
+      /* Desktop widening (the architect's fix): the two primary
+         lenses rest at 24% / 76% at the min-width:761px breakpoint
+         (the CSS rule beside the disc sizes), so their fold vectors
+         aim at the same homes — the pair must move together. */
+      if(window.innerWidth>=761){ var rm=el.getAttribute('data-room'); if(rm==='mint') dxp=24; else if(rm==='marketplace') dxp=76; }
+      var tx=dxp/100*g.lw;
       var ty=parseFloat(el.getAttribute('data-y'))/100*g.lh;
       el.style.setProperty('--pv-fx',(g.cx-tx).toFixed(1)+'px');
       el.style.setProperty('--pv-fy',(g.cy-ty).toFixed(1)+'px');
@@ -1695,6 +1767,7 @@ html.rm .scroll-cue .arr{animation:none}
        the opening (Escape mid-dive included) takes the disc down,
        or its removal timer — cleared above — would strand it. */
     if(activeDisc){ try{ activeDisc.getAnimations().forEach(function(a){ a.cancel(); }); }catch(e){} if(activeDisc.parentNode) activeDisc.remove(); activeDisc=null; }
+    if(activeShade){ try{ activeShade.getAnimations().forEach(function(a){ a.cancel(); }); }catch(e){} if(activeShade.parentNode) activeShade.remove(); activeShade=null; }
     var ae=document.activeElement;
     if(ae&&(nodes.indexOf(ae)>-1||ae===seal)&&openBtn) openBtn.focus({preventScroll:true});
     if(instant){ layer.classList.add('pv-novis'); stage.classList.add('pv-novis'); }
@@ -1721,8 +1794,29 @@ html.rm .scroll-cue .arr{animation:none}
 
   /* Beat 3 — the dive. The chosen lens's ring expands past the
      viewport (750ms, the document's curve); beneath its cover the
-     page steps into the journey and the Portal Engine takes the
-     flight (its own dolly push, portal light and threshold). */
+     flight goes STRAIGHT to the chosen world — the architect's
+     ruling on the built entry: no intermediate threshold card, no
+     second Enter button; the tap lands on the world's own arrival
+     (for the Mint, the Mint page itself). The destination is read
+     from the journey callout's own door link, so this flight can
+     never disagree with the doors. A room with no door page keeps
+     the standing Portal Engine flight (hotspot → dolly → threshold)
+     as its honest fallback. Escape mid-dive clears the navigation
+     timer with every other timer (see closeOpening), so a cancelled
+     dive never navigates. */
+  /* One restart for the arrival film, shared by the return path
+     (pageshow) and the dive's stalled-flight hand-back: rewind to
+     the closed face and play, so the restored coin is the single
+     resting arrival — never a frame frozen mid-opening. */
+  function restartArrivalFilm(){
+    if(!film) return;
+    try{ film.currentTime=0; }catch(e){}
+    if(film.paused){ var pr=film.play(); if(pr&&pr.catch) pr.catch(function(){}); }
+  }
+  function doorFor(room){
+    var c=section.querySelector('.sa-callout[data-room="'+room+'"] .sa-door');
+    return c?c.getAttribute('href'):null;
+  }
   function dive(room,el){
     if(state!=='open') return;
     state='diving';
@@ -1730,7 +1824,8 @@ html.rm .scroll-cue .arr{animation:none}
     nodes.forEach(function(n){ if(n!==el) n.classList.add('pv-fold'); });
     if(seal) seal.classList.add('pv-fold');
     el.classList.add('pv-chosen');
-    var disc=null, cx=window.innerWidth/2, cy=window.innerHeight/2, rad=38;
+    var url=doorFor(room);
+    var disc=null, shade=null, covered=false, cx=window.innerWidth/2, cy=window.innerHeight/2, rad=38;
     var face=el.querySelector('.pv-disc');
     if(face){ var r=face.getBoundingClientRect(); cx=r.left+r.width/2; cy=r.top+r.height/2; rad=Math.max(10,r.width/2); }
     try{
@@ -1742,25 +1837,55 @@ html.rm .scroll-cue .arr{animation:none}
       activeDisc=disc;
       var need=Math.ceil(Math.hypot(Math.max(cx,window.innerWidth-cx),Math.max(cy,window.innerHeight-cy))/rad)+1;
       disc.animate([{transform:'scale(1)'},{transform:'scale('+need+')'}],{duration:750,easing:'cubic-bezier(.55,0,.2,1)',fill:'forwards'});
-    }catch(e){ disc=null; }
+      covered=true;
+      /* The corner shade (the architect's fix): born with the disc,
+         centred on the chosen aperture — the viewport's corners go
+         to the vault while the gold stays inside the ring. */
+      shade=document.createElement('div');
+      shade.className='pv-dive-shade'; shade.setAttribute('aria-hidden','true');
+      shade.style.background='radial-gradient(circle at '+cx+'px '+cy+'px,transparent 22%,rgba(20,18,16,.5) 55%,rgba(20,18,16,.92) 80%,#141210 100%)';
+      document.body.appendChild(shade);
+      activeShade=shade;
+      shade.animate([{opacity:'0'},{opacity:'1'}],{duration:360,easing:'ease-out',fill:'forwards'});
+    }catch(e){ /* a half-born cover still cleans up through activeDisc/activeShade in closeOpening; the dive flies on */ }
     later(function(){
+      if(state!=='diving') return; // Escape took the opening down first
       if(film&&film.pause) film.pause();
+      if(url){ window.location.assign(url); return; }
       var de=document.documentElement, prev=de.style.scrollBehavior;
       de.style.scrollBehavior='auto';
       section.scrollIntoView({behavior:'auto',block:'start'});
       de.style.scrollBehavior=prev;
       var hs=section.querySelector('.sa-hotspot[data-room="'+room+'"]');
       if(hs) hs.click();
-    }, disc?640:120);
+    }, covered?640:120);
     later(function(){
-      if(disc){
-        var f=disc.animate([{opacity:'1'},{opacity:'0'}],{duration:260,easing:'ease-out',fill:'forwards'});
-        f.onfinish=function(){ disc.remove(); if(activeDisc===disc) activeDisc=null; };
-        setTimeout(function(){ if(disc.parentNode) disc.remove(); if(activeDisc===disc) activeDisc=null; },600);
-      }
-      closeOpening(true);
-      state='closed';
-    }, disc?830:300);
+      if(state!=='diving') return;
+      /* The hand-back — the flight never left (no door) or the
+         navigation stalled (4s): the cover fades FIRST and only
+         then is the opening closed and the arrival film restarted,
+         so the visitor gets their living homepage back, never a
+         snapped-off veil over a frozen coin. (On any real
+         navigation this document is already gone.) */
+      var d=activeDisc, sh=activeShade, done=false;
+      var finish=function(){
+        if(done||state!=='diving') return; done=true;
+        closeOpening(true);
+        /* The film restart belongs to the stalled-navigation case
+           (the visitor is still at the entry stage); on the no-door
+           path they are inside the journey by now, and the arrival
+           film's own observer revives it when they return. */
+        if(url) restartArrivalFilm();
+      };
+      var fades=[];
+      [d,sh].forEach(function(n){
+        if(!n) return;
+        try{ fades.push(n.animate([{opacity:'1'},{opacity:'0'}],{duration:260,easing:'ease-out',fill:'forwards'})); }catch(e){}
+      });
+      if(!fades.length){ finish(); return; }
+      Promise.all(fades.map(function(a){ return a.finished?a.finished.catch(function(){}):Promise.resolve(); })).then(finish);
+      later(finish, 620);
+    }, url?4000:(covered?830:300));
   }
   nodes.forEach(function(n){
     n.addEventListener('click',function(){ dive(n.getAttribute('data-room'),n); });
@@ -1831,6 +1956,15 @@ html.rm .scroll-cue .arr{animation:none}
     if(card&&!card.hidden){ var b=card.querySelector('.ec-back'); if(b) b.click(); }
     window.scrollTo(0,0);
     setTimeout(function(){ window.scrollTo(0,0); },80);
+    /* The return state is the SINGLE resting arrival coin (the
+       architect's fix): the dive paused the arrival film wherever
+       the flight caught it, and a restored page left it frozen on a
+       mid-opening frame — the stacked discs ghosting over the closed
+       face in the judged still. Restart the loop from its first
+       frame, the whole closed coin. Intersection alone cannot be
+       trusted to wake it: after a history restore the arrival may
+       never cross the observer's threshold again. */
+    restartArrivalFilm();
   });
 
   /* Single-canvas discipline (the document's §F): the arrival film
