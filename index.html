@@ -572,6 +572,32 @@ html.cine .pv-open-layer{display:block;position:absolute;inset:0;z-index:8;point
 .pv-rings .pv-r3{animation:pvSpin 44s linear infinite;transform-origin:50% 50%}
 @keyframes pvSpin{to{transform:rotate(360deg)}}
 @keyframes pvSpinR{to{transform:rotate(-360deg)}}
+/* The filmed opening (Gemini's Flow takes F-2/F-2B/F-3, judged and
+   shipped 2026-11-23): a portrait portal panel centred on the coin's
+   own centre (--pv-cx/--pv-cy, the same point the rings hang from).
+   The films are the permanent mechanism; the interim SVG rings and
+   the CSS dive stay as the no-film fallback — when the layer carries
+   pv-filmed, the rings and depth retire and the panel takes over.
+   The two primary nodes become clear hit discs over the glass
+   refraction lenses inside the F-2B frame (their size rides
+   --pv-lens-d, set by the entry script from the panel's real width);
+   their labels keep the architect's #141210 grounding shadow. */
+.pv-films{position:absolute;left:var(--pv-cx,50%);top:var(--pv-cy,50%);transform:translate(-50%,-50%);
+  aspect-ratio:9/16;height:min(95%,167vw);border-radius:14px;overflow:hidden;background:#07090f;
+  opacity:0;pointer-events:none;box-shadow:0 30px 80px var(--black-a65),0 0 64px var(--gold-a12)}
+.pv-films.on{opacity:1;transition:opacity .3s ease}
+.pv-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .25s ease}
+.pv-film.on{opacity:1}
+.pv-open-layer.pv-filmed.pv-beat1 .pv-rings{opacity:0}
+.pv-open-layer.pv-filmed.pv-beat1 .pv-depth{opacity:0}
+.pv-open-layer.pv-filmed .pv-node.pv-main .pv-disc{width:var(--pv-lens-d,76px);height:var(--pv-lens-d,76px);
+  background:transparent;border-color:transparent;box-shadow:none}
+.pv-open-layer.pv-filmed .pv-node.pv-main .pv-disc::before,
+.pv-open-layer.pv-filmed .pv-node.pv-main .pv-disc::after{display:none}
+.pv-open-layer.pv-filmed .pv-node.pv-main .pv-face{visibility:hidden}
+.pv-open-layer.pv-filmed .pv-node.pv-main:hover .pv-disc,
+.pv-open-layer.pv-filmed .pv-node.pv-main:focus-visible .pv-disc{border:1.5px solid var(--gold-bright);background:rgba(228,198,91,.08)}
+
 /* The satellites: lenses and nodes. Before the opening they sit folded
    into the coin's centre (the entry script sets --pv-fx/--pv-fy, the
    vector home); Beat 2 springs them out to their orbital places. */
@@ -726,6 +752,11 @@ html.rm .scroll-cue .arr{animation:none}
       </div>
     </div>
     <div class="pv-open-layer" id="pvOpen" aria-hidden="true">
+      <div class="pv-films" id="pvFilms" aria-hidden="true">
+        <video class="pv-film pv-film-f2" id="pvFilmF2" muted playsinline preload="none" poster="/next/assets/entry-f2-poster.webp" data-src="/next/assets/entry-f2.mp4"></video>
+        <video class="pv-film pv-film-f2b" id="pvFilmF2B" muted loop playsinline preload="none" poster="/next/assets/entry-f2b-poster.webp" data-src="/next/assets/entry-f2b.mp4"></video>
+        <video class="pv-film pv-film-f3" id="pvFilmF3" muted playsinline preload="none" data-src="/next/assets/entry-f3.mp4"></video>
+      </div>
       <div class="pv-depth" aria-hidden="true"></div>
       <svg class="pv-rings" aria-hidden="true" viewBox="0 0 100 100">
         <defs><filter id="pvGlowBlur" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.4"/></filter></defs>
@@ -1636,11 +1667,14 @@ html.rm .scroll-cue .arr{animation:none}
    no door page would keep the Portal Engine's hotspot flight as its
    fallback). The registry seal opens the coin's existing
    all-doors panel. The Return keeps the engine's behavior and gains
-   the reverse contraction. What is NOT here, by design: the filmed
-   cleave (F-2/F-2B) and the filmed fly-through (F-3) — owed as Flow
-   orders, never faked in code; and no animation is claimed across a
-   document boundary — browser-back restoration is state restoration
-   (below), honestly recorded as such in the build record. */
+   the reverse contraction. The filmed cleave (F-2/F-2B) and the
+   filmed fly-through (F-3) are wired below (Gemini's takes, judged
+   2026-11-23): F-2 forward on the touch and reversed on the return,
+   F-2B looping at the open state, F-3 on the lens tap; the interim
+   rings and CSS dive remain as the no-film fallback only. No
+   animation is claimed across a document boundary — browser-back
+   restoration is state restoration (below), honestly recorded as
+   such in the build record. */
 (function(){
   var root=document.documentElement;
   if(!root.classList.contains('cine')) return;
@@ -1653,6 +1687,17 @@ html.rm .scroll-cue .arr{animation:none}
   PV.entryOwnsOpen=true; // the Portal Engine's coin handler defers to this script
   var openBtn=document.getElementById('coinOpen');
   var film=stage.querySelector('.coin-film');
+  var filmsBox=document.getElementById('pvFilms');
+  var f2=document.getElementById('pvFilmF2');
+  var f2b=document.getElementById('pvFilmF2B');
+  var f3=document.getElementById('pvFilmF3');
+  /* The filmed mechanism (Gemini's wiring instruction): F-2 cleaves
+     forward on the touch and reverses on the return; F-2B loops at
+     the open state with the two primary hit targets riding its glass
+     lenses; F-3 flies through on a lens tap. `filmed` turns true
+     only when F-2 has actually decoded — until then, and on any film
+     error, the proven rings/disc mechanism runs this opening. */
+  var filmed=false, diveToken=0, revRAF=null;
   var nodes=Array.prototype.slice.call(layer.querySelectorAll('.pv-node'));
   var seal=document.getElementById('pvSeal');
   var state='closed', timers=[], activeDisc=null, activeShade=null;
@@ -1695,8 +1740,26 @@ html.rm .scroll-cue .arr{animation:none}
     layer.style.setProperty('--pv-cd',g.cd.toFixed(1)+'px');
     return g;
   }
+  /* The F-2B frame's glass lenses, measured on the film itself
+     (frame 5, full res): the Mint lens centre (0.22, 0.295), the
+     Marketplace lens centre (0.755, 0.565), lens diameter ~0.36 of
+     the frame width. Mapped through the panel's real rect into
+     layer percentages, so the hit discs sit on the filmed lenses
+     on any screen. */
+  function lensHome(room){
+    if(!filmsBox) return null;
+    var lr=layer.getBoundingClientRect(), pr=filmsBox.getBoundingClientRect();
+    if(!lr.width||!pr.width) return null;
+    var c=(room==='mint')?[0.22,0.295]:[0.755,0.565];
+    return { x:(pr.left-lr.left+c[0]*pr.width)/lr.width*100,
+             y:(pr.top-lr.top+c[1]*pr.height)/lr.height*100,
+             d:pr.width*0.36 };
+  }
   function setFrom(g){
     g=g||geom();
+    if(filmed){
+      layer.style.setProperty('--pv-lens-d',((filmsBox?filmsBox.getBoundingClientRect().width:0)*0.36).toFixed(1)+'px');
+    }
     layer.querySelectorAll('.pv-node,.pv-seal').forEach(function(el){
       var dxp=parseFloat(el.getAttribute('data-x'));
       /* Desktop widening (the architect's fix): the two primary
@@ -1704,8 +1767,26 @@ html.rm .scroll-cue .arr{animation:none}
          (the CSS rule beside the disc sizes), so their fold vectors
          aim at the same homes — the pair must move together. */
       if(window.innerWidth>=761){ var rm=el.getAttribute('data-room'); if(rm==='mint') dxp=24; else if(rm==='marketplace') dxp=76; }
+      var dyp=parseFloat(el.getAttribute('data-y'));
+      /* Filmed primaries: the node itself lands on the filmed glass
+         lens (its home IS the lens), so both its rest position and
+         its fold vector aim there. */
+      if(filmed){ var rm2=el.getAttribute('data-room');
+        if(rm2==='mint'||rm2==='marketplace'){ var lh=lensHome(rm2);
+          if(lh){ dxp=lh.x;
+            /* The node's box centres on its rest point, but the disc
+               rides above centre by half the label stack beneath it —
+               lift the rest point by that half so the DISC's centre,
+               not the node's, lands on the filmed lens. The priority
+               flag matters: the desktop widening rule carries
+               !important and would otherwise hold the old homes. */
+            var nh=el.offsetHeight||0, dh=0, dEl=el.querySelector('.pv-disc');
+            if(dEl) dh=dEl.offsetHeight||0;
+            dyp=lh.y+((nh-dh)/2)/g.lh*100;
+            el.style.setProperty('left',dxp.toFixed(2)+'%','important');
+            el.style.setProperty('top',dyp.toFixed(2)+'%','important'); } } }
       var tx=dxp/100*g.lw;
-      var ty=parseFloat(el.getAttribute('data-y'))/100*g.lh;
+      var ty=dyp/100*g.lh;
       el.style.setProperty('--pv-fx',(g.cx-tx).toFixed(1)+'px');
       el.style.setProperty('--pv-fy',(g.cy-ty).toFixed(1)+'px');
     });
@@ -1720,6 +1801,9 @@ html.rm .scroll-cue .arr{animation:none}
   var prefetched=false;
   function prefetch(){
     if(prefetched) return; prefetched=true;
+    [f2b,f3].forEach(function(v){
+      if(v&&!v.getAttribute('src')){ v.setAttribute('src',v.getAttribute('data-src')); try{ v.load(); }catch(e){} }
+    });
     var l=document.createElement('link'); l.rel='prefetch'; l.href='/listings/mint.html'; document.head.appendChild(l);
     var mv=layer.querySelector('.pv-lens-video');
     if(mv&&!mv.getAttribute('src')){
@@ -1738,6 +1822,38 @@ html.rm .scroll-cue .arr{animation:none}
     }
   }
 
+  /* Arm F-2 quietly after the arrival settles (never on a saved-data
+     connection — the head gate's still path serves those visitors,
+     and a cinematic session that reaches here unarmed simply runs
+     the rings for this opening). */
+  function armF2(){
+    if(!f2||f2.getAttribute('src')) return;
+    if(navigator.connection&&navigator.connection.saveData) return;
+    f2.setAttribute('src',f2.getAttribute('data-src'));
+    try{ f2.load(); }catch(e){}
+  }
+  if(window.requestIdleCallback) requestIdleCallback(armF2,{timeout:2600});
+  else window.addEventListener('load',function(){ setTimeout(armF2,700); });
+  if(f2){
+    f2.addEventListener('canplay',function(){
+      if(!filmed){ filmed=true; layer.classList.add('pv-filmed'); if(state==='open'||state==='opening') setFrom(place()); }
+    });
+    f2.addEventListener('error',function(){ filmed=false; layer.classList.remove('pv-filmed'); },true);
+  }
+
+  function beat2(){
+    if(state!=='opening') return;
+    layer.classList.add('pv-open');
+    /* The layer leaves aria-hidden only now, with Beat 2: at Beat 1
+       its worlds are still folded and unfocusable, and assistive
+       tech must not meet them before they exist. */
+    layer.removeAttribute('aria-hidden');
+    nodes.forEach(function(n){ n.removeAttribute('tabindex'); });
+    if(seal) seal.removeAttribute('tabindex');
+    var mv=layer.querySelector('.pv-lens-video');
+    if(mv){ var pr=mv.play(); if(pr&&pr.catch) pr.catch(function(){}); }
+    state='open';
+  }
   function openOpening(){
     if(state!=='closed') return;
     state='opening';
@@ -1746,22 +1862,84 @@ html.rm .scroll-cue .arr{animation:none}
     setFrom(place());
     stage.classList.add('pv-pushing');
     layer.classList.add('pv-beat1');
-    later(function(){
-      layer.classList.add('pv-open');
-      /* The layer leaves aria-hidden only now, with Beat 2: at Beat 1
-         its worlds are still folded and unfocusable, and assistive
-         tech must not meet them before they exist. */
-      layer.removeAttribute('aria-hidden');
-      nodes.forEach(function(n){ n.removeAttribute('tabindex'); });
-      if(seal) seal.removeAttribute('tabindex');
-      var mv=layer.querySelector('.pv-lens-video');
-      if(mv){ var pr=mv.play(); if(pr&&pr.catch) pr.catch(function(){}); }
-      state='open';
-    },650);
+    if(filmed&&f2&&filmsBox){
+      /* The filmed cleave: the arrival film rests, the panel rises,
+         F-2 splits the coin (1.25x — the architect's crispness note),
+         and Beat 2 lands as the cleave settles into the F-2B loop. */
+      if(film&&film.pause) film.pause();
+      filmsBox.classList.add('on');
+      f2.classList.add('on');
+      try{ f2.currentTime=0; }catch(e){}
+      f2.playbackRate=1.25;
+      var pr=f2.play(); if(pr&&pr.catch) pr.catch(function(){});
+      var toLoop=function(){
+        if(state!=='opening') return;
+        beat2();
+        var startLoop=function(){
+          f2b.classList.add('on');
+          var p2=f2b.play(); if(p2&&p2.catch) p2.catch(function(){});
+          setTimeout(function(){ if(state==='open'){ f2.classList.remove('on'); try{ f2.pause(); }catch(e){} } },260);
+        };
+        if(f2b.readyState>=2) startLoop();
+        else {
+          /* The loop is still loading (relay improver's catch): the
+             worlds open on time over F-2's held last frame, and the
+             crossfade waits for the loop's first frame instead of
+             fading to an empty panel. If the visitor leaves first,
+             the fade never fires. */
+          var xf=function(){ f2b.removeEventListener('canplay',xf); if(state==='open') startLoop(); };
+          f2b.addEventListener('canplay',xf);
+          var pp=f2b.play(); if(pp&&pp.catch) pp.catch(function(){});
+        }
+      };
+      f2.addEventListener('ended',toLoop,{once:true});
+      /* A stalled cleave never traps the visitor: if the film has
+         not ended in 9s, Beat 2 arrives anyway over its last frame. */
+      later(function(){ if(state==='opening'){ f2.removeEventListener('ended',toLoop); toLoop(); } },9000);
+      return;
+    }
+    later(beat2,650);
+  }
+  function filmsOff(){
+    [f2,f2b,f3].forEach(function(v){ if(!v) return; v.classList.remove('on'); try{ v.pause(); }catch(e){} });
+    if(filmsBox) filmsBox.classList.remove('on');
+    if(revRAF){ cancelAnimationFrame(revRAF); revRAF=null; }
+  }
+  /* The return (the architect's wiring): F-2 runs backwards — the
+     cleaved coin draws its halves home — at 2x, then the panel
+     retires and the arrival film restarts on the whole closed face. */
+  function reverseClose(){
+    state='closing';
+    layer.classList.remove('pv-open');
+    layer.setAttribute('aria-hidden','true');
+    nodes.forEach(function(n){ n.setAttribute('tabindex','-1'); n.classList.remove('pv-fold'); n.classList.remove('pv-chosen'); });
+    if(seal){ seal.setAttribute('tabindex','-1'); seal.classList.remove('pv-fold'); }
+    if(f2b){ f2b.classList.remove('on'); try{ f2b.pause(); }catch(e){} }
+    if(f3){ f3.classList.remove('on'); try{ f3.pause(); }catch(e){} }
+    f2.classList.add('on');
+    try{ if(f2.currentTime<f2.duration-0.05) f2.currentTime=f2.duration; }catch(e){}
+    var last=performance.now();
+    var step=function(now){
+      if(state!=='closing') return;
+      var dt=(now-last)/1000; last=now;
+      var t=f2.currentTime-dt*2.0;
+      if(t<=0.02){
+        try{ f2.currentTime=0; }catch(e){}
+        closeOpening(true);
+        restartArrivalFilm();
+        return;
+      }
+      try{ f2.currentTime=t; }catch(e){}
+      revRAF=requestAnimationFrame(step);
+    };
+    revRAF=requestAnimationFrame(step);
   }
   function closeOpening(instant){
     if(state==='closed') return;
+    if(!instant&&filmed&&state==='open'){ clearTimers(); reverseClose(); return; }
+    if(state==='diving'){ diveToken++; }
     clearTimers();
+    filmsOff();
     state='closed';
     /* A dive disc never outlives the opening: whatever path closes
        the opening (Escape mid-dive included) takes the disc down,
@@ -1819,6 +1997,44 @@ html.rm .scroll-cue .arr{animation:none}
   }
   function dive(room,el){
     if(state!=='open') return;
+    /* The filmed dive: F-3 flies through the portal; the flight
+       lands on the chosen world as the vortex interior goes calm
+       and dark (measured: the frame's mean luminance falls below
+       ~37 at 6.4s and keeps falling — the cut hides inside the
+       darkness). Escape cancels through closeOpening, which bumps
+       the dive token, so a cancelled flight never navigates. */
+    if(filmed&&f3&&f3.readyState>=2){
+      state='diving';
+      var token=++diveToken;
+      layer.classList.add('pv-diving');
+      nodes.forEach(function(n){ if(n!==el) n.classList.add('pv-fold'); });
+      if(seal) seal.classList.add('pv-fold');
+      el.classList.add('pv-chosen');
+      var url3=doorFor(room);
+      if(f2b){ f2b.classList.remove('on'); try{ f2b.pause(); }catch(e){} }
+      f3.classList.add('on');
+      try{ f3.currentTime=0; }catch(e){}
+      var p3=f3.play(); if(p3&&p3.catch) p3.catch(function(){});
+      var check=setInterval(function(){
+        if(token!==diveToken||state!=='diving'){ clearInterval(check); return; }
+        if(f3.currentTime>=6.4){
+          clearInterval(check);
+          if(url3){ window.location.assign(url3); return; }
+          closeOpening(true);
+          var hs=section.querySelector('.sa-hotspot[data-room="'+room+'"]');
+          if(hs) hs.click();
+        }
+      },120);
+      /* The hand-back: if the flight has not landed in 9.5s, the
+         visitor gets their living homepage back, never a veil. */
+      later(function(){
+        if(token!==diveToken||state!=='diving') return;
+        clearInterval(check);
+        closeOpening(true);
+        restartArrivalFilm();
+      },9500);
+      return;
+    }
     state='diving';
     layer.classList.add('pv-diving');
     nodes.forEach(function(n){ if(n!==el) n.classList.add('pv-fold'); });
