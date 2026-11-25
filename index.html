@@ -704,7 +704,8 @@ html.pv-entry-active .sa-cue,html.pv-entry-active .sa-skip{display:none}
 html.rm .scroll-cue .arr{animation:none}
 </style>
 <link rel="stylesheet" href="/nexus.css">
-<script>document.documentElement.classList.add("pv-on")</script> <link rel="stylesheet" href="/assets/breathing-ring.css"> </head>
+<script>document.documentElement.classList.add("pv-on")</script> <link rel="stylesheet" href="/assets/breathing-ring.css"> <script type="importmap">{"imports":{"three":"/solnik/vendor/three.module.js","three/addons/":"/solnik/vendor/addons/"}}</script>
+</head>
 <body id="top"> <div class="pv-boot" id="pvBoot" aria-hidden="true"><svg class="pv-ring" viewBox="0 0 100 100" focusable="false"><circle cx="50" cy="50" r="46" fill="none" stroke="#C9A227" stroke-width="1.5"/></svg></div> 
 <a class="skip-link" href="#arrival">Skip to the town</a>
 
@@ -730,7 +731,7 @@ html.rm .scroll-cue .arr{animation:none}
 
 <main>
   <!-- ================= ARRIVAL — THE COIN IS THE HOUSE ================= -->
-  <section class="arrival" id="arrival" tabindex="-1" aria-label="Welcome to Provadia — the coin is the house">
+  <section class="arrival" id="arrival" tabindex="-1" aria-label="Welcome to Provadia — the coin is the house" data-solnik-anchor="town-arrival" data-solnik-x="0.5">
     <div class="halo" aria-hidden="true"></div>
     <p class="eyebrow">Provadia · The Living Town</p>
     <h1 class="kt-h1" aria-label="Provadia — a living digital town.">Provadia — a living digital town.</h1>
@@ -975,7 +976,7 @@ html.rm .scroll-cue .arr{animation:none}
   </section>
 
   <!-- ================= AFTER THE JOURNEY ================= -->
-  <div id="after-journey"></div>
+  <div id="after-journey" data-solnik-anchor="town-doors" data-solnik-x="0.5"></div>
 
   <section class="below" aria-label="The two doors">
     <p class="eyebrow">Both doors stand open</p>
@@ -2199,5 +2200,6 @@ html.rm .scroll-cue .arr{animation:none}
 </script>
 <script type="application/json" id="nexus-share-manifest">{"title": "PROVADIA \u2014 A Living Town", "text": "Bitcoin is energy. PROVADIA is salt \u2014 the original currency. A living digital town on the web.", "url": "https://provadiacoin.com/", "media": "https://provadiacoin.com/marks/front-published.webp"}</script>
 <script src="/nexus.js"></script>
-<script>(function(){var b=document.getElementById("pvBoot");if(!b)return;var done=false;function hide(){if(done)return;done=true;b.classList.add("pv-done");setTimeout(function(){if(b.parentNode)b.parentNode.removeChild(b)},900)}addEventListener("load",function(){setTimeout(hide,350)});setTimeout(hide,2200);})();</script> </body>
+<script>(function(){var b=document.getElementById("pvBoot");if(!b)return;var done=false;function hide(){if(done)return;done=true;b.classList.add("pv-done");setTimeout(function(){if(b.parentNode)b.parentNode.removeChild(b)},900)}addEventListener("load",function(){setTimeout(hide,350)});setTimeout(hide,2200);})();</script> <script type="module">import('/solnik/living-entity.js').then(function(m){m.initSolnik({greeting:'visitor'});}).catch(function(){});</script>
+</body>
 </html>
