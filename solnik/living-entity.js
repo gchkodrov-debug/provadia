@@ -43,6 +43,13 @@ export async function initSolnik() {
     #solnik-talk button{background:#C9A227;color:#141210;border:0;border-radius:8px;padding:7px 12px;font:13px Georgia,serif;cursor:pointer}
     #solnik-poster{position:absolute;right:14px;bottom:64px;width:190px;border:1px solid #C9A227;border-radius:12px;overflow:hidden;background:#141210;color:#E9DDC6}
     #solnik-poster img{width:100%;display:block}#solnik-poster p{margin:0;padding:8px 10px;font-size:12.5px;line-height:1.4}
+    @media (max-width:560px){
+      #solnik-pill{flex-wrap:wrap;justify-content:flex-end;max-width:calc(100vw - 16px);border-radius:16px;right:8px;bottom:8px}
+      #solnik-pill .who{display:none}
+      #solnik-pill button{padding:5px 9px;font-size:12.5px}
+      #solnik-caption{max-width:225px;font-size:13.5px}
+      #solnik-talk{right:8px;bottom:104px}
+    }
   </style>
   <canvas id="solnik-canvas" aria-hidden="true"></canvas>
   <div id="solnik-caption" role="status" aria-live="polite"></div>
