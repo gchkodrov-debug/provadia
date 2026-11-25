@@ -91,3 +91,24 @@
   .lm-entrance *,.lm-chamber *{animation:none!important;transition:none!important}
   .lm-ember{display:none}
 }
+
+/* ---------- 2026-11-25 FIX PASS — D-OVERFLOW / D-OVERLAP ---------- */
+/* The journey section bleeds to 100vw, which counts the classic
+   scrollbar's width and overshoots the right edge by half of it —
+   a few pixels of horizontal overflow on desktop. Clip horizontal
+   overflow at page level (clip, not hidden, so the sticky stage
+   inside the journey keeps working). */
+body{overflow-x:clip}
+/* Perch shelves. Solnik rides the top edge of his anchor sections
+   with his legs dangling below the edge; these clear bands keep him
+   off the text under the chamber's and the What's-inside section's
+   top edges at widths where no side margin exists. */
+.lm-chamber{padding-top:7.5rem}
+.inside-section{padding-top:7rem}
+@media (max-width:760px){
+  .inside-section{padding-top:5.25rem}
+}
+/* His pill (and portrait card) rest at the viewport's bottom-right;
+   give the footer enough bottom room that the Privacy / Terms links
+   are never underneath them at the end of the page. */
+.town-footer{padding-bottom:8.5rem}
