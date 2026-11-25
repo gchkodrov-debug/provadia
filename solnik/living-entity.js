@@ -11,11 +11,13 @@
 // living-entity-3d.js for instant rollback.
 // Judging standard (founder, 2026-11-25): REAL AS POSSIBLE — where realism trades
 // against convenience, realism wins; no faked capabilities, no consciousness claims.
-// Page-body half of the Living Entity Engine (Gemini #109). Three.js transparent
-// overlay + rigged GLB; his brain lives at wss://brain.provadiacoin.com/v1/solnik.
+// Page-body half of the Living Entity Engine (Gemini #109). Hand-drawn SVG
+// cartoon overlay (solnik-toon.js); his brain lives at
+// wss://brain.provadiacoin.com/v1/solnik.
 // Constitutional fences: guidance/conversation only; summon/mute/dismiss/disable
-// are the visitor's, always within reach. Loads ONLY behind ?solnik=preview.
-import { Toon } from './solnik-toon.js';
+// are the visitor's, always within reach.
+let Toon = null;
+try { ({ Toon } = await import('./solnik-toon.js')); } catch (e) { Toon = null; } // a rig that fails to LOAD degrades to the portrait too — never a dead page (blind verifier D5)
 
 const BASE = new URL('.', import.meta.url).pathname; // /solnik/
 const BRAIN = 'wss://brain.provadiacoin.com/v1/solnik';
@@ -106,7 +108,7 @@ export async function initSolnik(opts = {}) {
   stage.style.width = SW + 'px'; stage.style.height = SH + 'px';
   stage.style.zIndex = '2147482999';
   let toon;
-  try { toon = new Toon(stage); } catch (e) { return posterMode(root, say, greetingVariant); } // a body that cannot be drawn degrades to the portrait, never to a dead pill
+  try { if (!Toon) throw new Error('cartoon rig unavailable'); toon = new Toon(stage); } catch (e) { return posterMode(root, say, greetingVariant); } // a body that cannot be drawn degrades to the portrait, never to a dead pill
 
   // ---------- gesture system (the cartoon's clips) ----------
   // playClip keeps the completion-01 call contract; names map to cartoon
@@ -159,8 +161,9 @@ export async function initSolnik(opts = {}) {
   // He no longer glides on an arc. A route is built from legs: walk/run along
   // his level, then climb (up) or drop (down) to the target level. perchAt
   // keeps the completion-01 contract: returns the route duration in seconds.
-  const pos = { x: VW / 2, y: VH * 0.4 };
+  const pos = { x: Math.max(84, VW * 0.09), y: VH * 0.86 }; // starts at the lower-left margin — dead centre is where doors put their main buttons (blind verifier P-D1)
   let travel = null, perchId = null, visibleWanted = true, asleep = false;
+  let swingIn = null; // the swing-in entrance: {t0, dur, px, py, L, th0, ang, cableVb, start}
   let bobY = 0, bobEnv = 0; // speech bob (px) + its voice-envelope driver
   let locoPhase = 0, landUntil = 0, facing = 1, facingT = 1;
   let perchKind = 'perch', perchDepth = null, lastVerb = null;
@@ -598,10 +601,20 @@ export async function initSolnik(opts = {}) {
 
   // ---------- main loop ----------
   let raf = 0, last = performance.now();
+  function stepSwing(now) {
+    if (!swingIn) return;
+    const k = Math.min(1, (now - swingIn.t0) / swingIn.dur);
+    const ang = swingIn.th0 * Math.cos(k * Math.PI * 0.72);
+    swingIn.ang = ang;
+    pos.x = swingIn.px + swingIn.L * Math.sin(ang);
+    pos.y = swingIn.py - swingIn.L * Math.cos(ang);
+    facingT = 1;
+    if (k >= 1) { const st = swingIn.start; swingIn = null; perchAt({ id: st.id, x: st.x, topY: st.topY }, false); if (travel && travel.legs.length === 2) travel.legs.reverse(); } // let go: drop the last stretch first, then walk in on the ground
+  }
   function frame(now) {
     raf = requestAnimationFrame(frame);
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
-    stepTravel(dt); stepBody(dt, now); stepLoco(now); stepExpr(dt, now); stepGrip(); stepBurst(dt); stepFace(dt, now); stepVisemes(); stepCaption(); stepPlane(now);
+    stepSwing(now); stepTravel(dt); stepBody(dt, now); stepLoco(now); stepExpr(dt, now); stepGrip(); stepBurst(dt); stepFace(dt, now); stepVisemes(); stepCaption(); stepPlane(now);
     let portalK = -1;
     if (portalAnim) { portalK = Math.min(1, (now - portalAnim.t0) / portalAnim.dur); if (portalK >= 1) { const doneMode = portalAnim.mode; portalAnim = null; if (doneMode === 'enter') { stage.style.display = 'none'; throughPortal = true; if (portalResolve) { portalResolve(true); portalResolve = null; } } } }
     if (gesture.name !== 'none' && now > gesture.until) gesture = { name: 'none', until: 0 };
@@ -609,7 +622,8 @@ export async function initSolnik(opts = {}) {
     const legType = travel ? travel.legs[travel.i].type : null;
     if (visibleWanted) toon.render({
       t: now / 1000, facing,
-      loco: { mode: portalAnim ? portalAnim.mode : (asleep ? 'sleep' : (legType || (now < landUntil ? 'land' : 'idle'))), phase: locoPhase, landT: Math.max(0, landUntil - now) / 1000, k: portalK < 0 ? 1 : portalK },
+      loco: { mode: portalAnim ? portalAnim.mode : (swingIn ? 'swing' : (asleep ? 'sleep' : (legType || (now < landUntil ? 'land' : 'idle')))), phase: locoPhase, landT: Math.max(0, landUntil - now) / 1000, k: portalK < 0 ? 1 : portalK },
+      swing: swingIn ? { ang: swingIn.ang, cableVb: swingIn.cableVb } : null,
       gesture: { name: gName, el: now - exprT0 },
       head: { roll: faceState.headRoll, pitchPx: faceState.headPitchPx, yawPx: faceState.headYawPx },
       face: { browL: (exprCur.browL + exprDyn.brow) * 130, browR: (exprCur.browR + exprDyn.brow) * 130, browAngL: exprName === 'serious' ? 9 : 0, browAngR: exprName === 'serious' ? 9 : 0, eyeOpen: faceState.eyeScale, pupilX: faceState.pupilX, pupilY: faceState.pupilY, mouth: mouthState.name, mouthOpen: mouthState.open },
@@ -624,11 +638,16 @@ export async function initSolnik(opts = {}) {
   // ---------- entrance (drop-in: he falls to his first perch and lands) ----------
   const allAnchors = anchors(true);
   const portalAnchor = Object.keys(allAnchors).map(k => ({ id: k, ...allAnchors[k] })).find(a => a.kind === 'portal');
-  const start = portalAnchor || nearestAnchor() || { id: 'mint-entrance', x: VW / 2, topY: VH * 0.55 };
+  const start = portalAnchor || nearestAnchor() || { id: 'town-margin', x: Math.max(84, VW * 0.09), topY: VH * 0.86 }; // no anchor in the window: the lower-left margin, never dead centre — the entry door's coin-open button lives at centre and he must not stand on it (P-D1)
   perchId = start.id; perchKind = start.kind || 'perch'; pos.x = start.x;
   if (portalAnchor && !reduced) { enteredVia = 'portal'; pos.y = start.topY; place(); portalAnim = { mode: 'emerge', t0: performance.now(), dur: 1150 }; fireBurst(start.x, start.topY + 30); }
   else if (reduced) { pos.y = start.topY; place(); }
-  else { pos.y = start.topY + Math.min(320, VH * 0.42); place(); perchAt({ id: start.id, x: start.x, topY: start.topY }, false); }
+  else { // swing-in entrance (the founder's clip list names swing/drop-in): he swings in on a ribbon cable, lets go, and drops the last stretch to his perch
+    const L = Math.min(300, VH * 0.44);
+    swingIn = { t0: performance.now(), dur: 1400, px: start.x, py: start.topY + L, L, th0: -0.62, ang: -0.62, cableVb: L * 220 / S, start: { id: start.id, x: start.x, topY: start.topY } };
+    pos.x = swingIn.px + L * Math.sin(-0.62); pos.y = swingIn.py - L * Math.cos(-0.62); place();
+    engagedUntil = performance.now() + 2600; // the entrance is his — no follow hop may cut the swing short
+  }
   fireBurst(start.x, start.topY + 40);
   gripArms();
   connectBrain();
@@ -638,7 +657,7 @@ export async function initSolnik(opts = {}) {
   } else {
     raf = requestAnimationFrame(frame);
   }
-  window.__solnik = { version: 'cartoon-02', anchors, state: () => ({ perchId, perchKind, plane, lastVerb, throughPortal, enteredVia, speaking, asleep, visibleWanted, travelling: !!travel, locoMode: portalAnim ? portalAnim.mode : (travel ? travel.legs[travel.i].type : (asleep ? 'sleep' : 'idle')), facing, lastLifeAt, followMode, expr: exprName, gesture: gesture.name }),
+  window.__solnik = { version: 'cartoon-02', anchors, state: () => ({ perchId, perchKind, plane, lastVerb, throughPortal, enteredVia, speaking, asleep, visibleWanted, travelling: !!travel, locoMode: portalAnim ? portalAnim.mode : (swingIn ? 'swing' : (travel ? travel.legs[travel.i].type : (asleep ? 'sleep' : 'idle'))), facing, lastLifeAt, followMode, expr: exprName, gesture: gesture.name }),
     interact: (anchorId) => { const a = anchors(true)[anchorId]; if (!a) return false; perchAt({ id: anchorId, ...a }, false); if (!travel) setTimeout(arriveInteract, 60); return true; },
     enterPortal: (anchorId) => new Promise((res) => { const a = anchors(true)[anchorId]; if (!a) { res(false); return; } if (reduced) { perchAt({ id: anchorId, ...a }, true); stage.style.display = 'none'; throughPortal = true; res(true); return; } portalResolve = res; const begin = () => { portalAnim = { mode: 'enter', t0: performance.now(), dur: 900 }; }; if (perchId === anchorId && !travel) begin(); else { perchAt({ id: anchorId, ...a }, false); if (!travel) begin(); else portalAfterTravel = begin; } }), // perchAt starts no route within 30 px — begin at once or the promise hangs (critic #9)
     emerge: (anchorId) => { const a = anchors(true)[anchorId]; if (!a) return false; throughPortal = false; stage.style.display = ''; visibleWanted = true; perchId = anchorId; perchKind = a.kind || 'perch'; perchDepth = a.depth || null; pos.x = a.x; pos.y = a.topY; place(); portalAnim = reduced ? null : { mode: 'emerge', t0: performance.now(), dur: 1150 }; fireBurst(a.x, a.topY + 30); return true; } };
@@ -658,12 +677,12 @@ function posterMode(root, say, greetingVariant) { // no drawable body: the adopt
   root.dataset.posterWired = '1';
   const p = document.createElement('div');
   p.id = 'solnik-poster';
-  p.innerHTML = '<img src="' + new URL('.', import.meta.url).pathname + 'assets/solnik-character-v1.jpg" alt="Solnik, the brass service sprite of Provadia"><p><strong style="color:#C9A227">Solnik</strong> — the town\'s service sprite. This device can\'t show him in 3D, but he is still here: use Type below to talk to him.</p>';
+  p.innerHTML = '<img src="' + new URL('.', import.meta.url).pathname + 'assets/solnik-character-v1.jpg" alt="Solnik, the brass service sprite of Provadia"><p><strong style="color:#C9A227">Solnik</strong> — the town\'s service sprite. This device can\'t show him moving, but he is still here: use Type below to talk to him.</p>';
   root.appendChild(p);
   const caption = $('#solnik-caption', root); // the main loop never runs here, so park the caption top-right
   if (caption) { caption.style.left = 'auto'; caption.style.right = '14px'; caption.style.top = '14px'; }
-  say.now('This is Solnik, in portrait form — my 3D body needs WebGL, which this device has off.');
-  // The pill and Type box were built with the root but the 3D path wires them — wire them here too,
+  say.now('This is Solnik, in portrait form — my cartoon body could not be drawn on this device, so you get my portrait instead.');
+  // The pill and Type box were built with the root but the living-body path wires them — wire them here too,
   // or Summon/Mute/Dismiss/Disable and the promised text chat are dead buttons in this mode.
   let pws = null, dismissed = false;
   const connect = () => {
@@ -683,7 +702,7 @@ function posterMode(root, say, greetingVariant) { // no drawable body: the adopt
   const doSend = () => { const i = q('#solnik-input'); const t = i.value.trim(); if (!t) return; i.value = ''; if (!pws || pws.readyState !== 1) { connect(); say.now('One moment — my brain is still waking up. Try again in a second.'); return; } pws.send(JSON.stringify({ type: 'say', text: t })); };
   q('#solnik-send').onclick = doSend;
   q('#solnik-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') doSend(); });
-  q('#sk-speak').onclick = () => say.now('Voice needs my 3D body — but you can type to me, and I will answer in writing.');
+  q('#sk-speak').onclick = () => say.now('Voice needs my living body — but you can type to me, and I will answer in writing.');
   q('#sk-mute').onclick = (e) => { store.muted = !store.muted; e.currentTarget.setAttribute('aria-pressed', String(store.muted)); };
   q('#sk-dismiss').onclick = () => { dismissed = true; say.flush(); if (pws && pws.readyState === 1) pws.send(JSON.stringify({ type: 'interrupt' })); p.style.display = 'none'; caption.classList.remove('on'); };
   q('#sk-summon').onclick = () => { dismissed = false; p.style.display = ''; if (!pws) connect(); };
