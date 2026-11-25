@@ -121,9 +121,10 @@
 <link rel="stylesheet" href="../design/vendor/driver.css">
 <link rel="stylesheet" href="../design/guide.css">
 <link rel="stylesheet" href="../design/keeper.css">
+<script type="importmap">{"imports":{"three":"/solnik/vendor/three.module.js","three/addons/":"/solnik/vendor/addons/"}}</script>
 </head>
 <body>
-<div id="stage" aria-hidden="true"></div>
+<div id="stage" aria-hidden="true" data-solnik-anchor="wall-stage" data-solnik-x="0.5"></div>
 <div id="fade"><div id="wake" aria-hidden="true">The town is waking</div></div>
 <nav class="doors" aria-label="The doors of the town">
   <a class="door-link" href="../">The Town</a>
@@ -174,7 +175,7 @@
 
       <div class="wall-arrival" data-wall-arrival>
         <p class="wall-eyebrow">Inside the Coin · Door 04 · The Golden Wall</p>
-        <h2 class="wall-title">The Golden Wall — <span data-wall-title-count>0 of 47 Bricks</span></h2>
+        <h2 class="wall-title" data-solnik-anchor="wall-title" data-solnik-x="0.5">The Golden Wall — <span data-wall-title-count>0 of 47 Bricks</span></h2>
         <p class="wall-sub">A public monument built in allocated 1-gram gold bars from 20% of creator fees — never backing, never redeemable, counted in grams and bricks only.</p>
         <div class="wall-chips">
           <span class="wall-chip" data-wall-counter>0 GRAMS · 0 OF 47 BRICKS LAID</span>
@@ -282,5 +283,6 @@
 <script src="../design/keeper.js"></script>
 <script src="../wall.js"></script>
 <script src="../nexus.js"></script>
+<script type="module">import('/solnik/living-entity.js').then(function(m){m.initSolnik({greeting:'visitor'});}).catch(function(){});</script>
 </body>
 </html>
