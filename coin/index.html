@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="../design/vendor/driver.css">
 <link rel="stylesheet" href="../design/guide.css">
 <link rel="stylesheet" href="../nexus.css">
+<script type="importmap">{"imports":{"three":"/solnik/vendor/three.module.js","three/addons/":"/solnik/vendor/addons/"}}</script>
 </head><body data-nexus-anchor="bottom" data-page="/coin/">
 <!-- CANONICAL SHELL v1 — include verbatim; active door is set by shared.js. -->
 <a class="skip-link" href="#main">Skip to content</a>
@@ -36,7 +37,7 @@
 <main id="main">
   <section class="coin-arrival wrap" aria-labelledby="coin-title">
     <p class="eyebrow">The Coin · The Tenth Door</p>
-    <h1 id="coin-title">The Coin</h1>
+    <h1 id="coin-title" data-solnik-anchor="coin-title" data-solnik-x="0.5">The Coin</h1>
     <p class="coin-lede">PROVADIA — the town's coin. One fixed billion, minted once on Solana and never again. This page is its market face: the coin itself, its live price and chart as the trading platforms read them, and the facts the chain itself keeps. Nothing here is typed by hand — the numbers are read from the pool's own record, and the facts stand on a receipt anyone can re-check.</p>
     <div class="coin-stage">
       <div class="coin-tilt" data-coin-tilt>
@@ -59,7 +60,7 @@
   </section>
   <section class="coin-section wrap" aria-labelledby="coin-numbers">
     <p class="eyebrow">The Coin · The Numbers</p>
-    <h2 id="coin-numbers">The Numbers, Read Live</h2>
+    <h2 id="coin-numbers" data-solnik-anchor="coin-numbers" data-solnik-x="0.5">The Numbers, Read Live</h2>
     <div class="coin-stats">
       <div class="coin-stat"><p class="coin-stat-label">Price · USD</p><p class="coin-stat-value number" data-stat="price">—</p></div>
       <div class="coin-stat"><p class="coin-stat-label">Change · 24h</p><p class="coin-stat-value number" data-stat="change">—</p></div>
@@ -72,7 +73,7 @@
   </section>
   <section class="coin-section wrap" aria-labelledby="coin-chart">
     <p class="eyebrow">The Coin · The Pulse of Provadia</p>
-    <h2 id="coin-chart">The Pulse</h2>
+    <h2 id="coin-chart" data-solnik-anchor="coin-chart" data-solnik-x="0.5">The Pulse</h2>
     <p>The town&rsquo;s own instrument — no borrowed chart, nothing embedded from anywhere else. Two views of one verified record: a precision chart, and the living observatory, where the coin hangs at the centre of its constellation and every real swap fires a wave of gold. Both are fed by the pool&rsquo;s public record, read every fifteen seconds. When the market is quiet, this page says so and rests. When the feed breaks, it shows its last verified snapshot — and says that too.</p>
     <div class="pulse-status" data-pulse-pill data-state="BOOT" role="status">
       <span class="pulse-dot" aria-hidden="true"></span>
@@ -141,7 +142,7 @@
   </section>
   <section class="coin-section wrap" aria-labelledby="coin-facts">
     <p class="eyebrow">The Coin · The Facts</p>
-    <h2 id="coin-facts">The Facts, On-Chain</h2>
+    <h2 id="coin-facts" data-solnik-anchor="coin-facts" data-solnik-x="0.5">The Facts, On-Chain</h2>
     <p>These are not market numbers — they are the coin's construction, read from its mint account on Solana and kept in the town's Living Covenant, Receipt #001, checked on-chain on 21 November 2026. They cannot change quietly: the authorities that could change them do not exist.</p>
     <div class="coin-facts">
       <div class="fact-row"><p class="fact-label">Supply</p><p class="fact-value">1,000,000,000 PROVADIA — fixed. The whole supply was minted at creation; no more can ever be made.</p></div>
@@ -340,4 +341,5 @@
 </script>
 <script type="application/json" id="nexus-share-manifest">{"title": "PROVADIA \u2014 The Coin", "text": "PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall's fate \u2014 and nothing else: no redemption, no yield, no rights, no expected return. Contract: 9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump", "url": "https://provadiacoin.com/coin/", "media": "https://provadiacoin.com/marks/front-published.webp"}</script>
 <script src="../nexus.js"></script>
+<script type="module">import('/solnik/living-entity.js').then(function(m){m.initSolnik({greeting:'visitor'});}).catch(function(){});</script>
 </body></html>
