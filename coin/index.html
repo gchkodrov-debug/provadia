@@ -116,7 +116,7 @@
         <div class="pulse-observatory" data-observatory-stage>
           <div class="pulse-entrance-slot" data-entrance-slot hidden aria-hidden="true"></div>
           <p class="pulse-obs-note" data-obs-note hidden></p>
-          <p class="pulse-obs-badge">3D Observatory · The Heart · The Heartbeat · Genesis Constellation — Specimen · 0 / 470 Minted<br>Entrance film pulse-entrance-v1 — not yet shot · this stage opens without it</p>
+          <p class="pulse-obs-badge">3D Observatory · The Heart · The Heartbeat · Genesis Constellation — Specimen · 0 / 470 Minted<br>Entrance film pulse-entrance-v1 — filmed · mounted in this stage</p>
         </div>
       </div>
     </div>
@@ -297,6 +297,47 @@
 <script src="../design/vendor/gsap.min.js"></script><script src="../design/vendor/ScrollTrigger.min.js"></script><script src="../design/vendor/three.min.js"></script><script src="../design/space.js"></script><script src="../design/coin3d.js"></script><script src="../design/vendor/driver.js"></script>
 <script src="../design/guide.js"></script>
 <script src="../design/vendor/lightweight-charts.standalone.production.js"></script><script src="../design/pulse.js?v=pulse-s123-1"></script><script src="../design/pulse3d.js?v=pulse-s123-1"></script>
+<script>
+/* ——— entrance film · pulse-entrance-v1 ———
+   Mounted into the observatory's entrance slot through the Pulse engine's own
+   mount handle, on the visitor's first entry and not before. The film plays
+   once, with its sound, when the visitor opens the 3D Observatory — their
+   click is the consent, nothing autoplays. When it ends, the slot hides and
+   the observatory stands revealed; switching back to the Functional Chart
+   stops it at once. Every entry tries the sound again (a browser refusal
+   mutes that one play, never the film). Reduced motion: never mounted — the
+   stage opens without it, exactly as the page was built to do. */
+(function () {
+  "use strict";
+  if (!window.PulseEntrance) return;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var slot = document.querySelector("[data-entrance-slot]");
+  if (!slot) return;
+  var v = document.createElement("video");
+  v.src = "assets/pulse-entrance-v1.mp4";
+  v.poster = "assets/pulse-entrance-poster.webp";
+  v.playsInline = true;
+  v.preload = "metadata";
+  v.setAttribute("aria-hidden", "true");
+  var mounted = false;
+  function enter() {
+    if (!mounted) { mounted = window.PulseEntrance.mount(v); if (!mounted) return; }
+    slot.hidden = false;
+    v.muted = false;
+    try { v.currentTime = 0; } catch (e) {}
+    var p = v.play();
+    if (p && p.catch) p.catch(function () { v.muted = true; var q = v.play(); if (q && q.catch) q.catch(function () {}); });
+  }
+  function leave() { if (mounted) { v.pause(); slot.hidden = true; } }
+  v.addEventListener("ended", function () { slot.hidden = true; });
+  document.addEventListener("click", function (e) {
+    var t = e.target;
+    if (!t || !t.closest) return;
+    if (t.closest("[data-mode-btn='observatory']")) enter();
+    else if (t.closest("[data-mode-btn='chart']")) leave();
+  });
+})();
+</script>
 <script type="application/json" id="nexus-share-manifest">{"title": "PROVADIA \u2014 The Coin", "text": "PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall's fate \u2014 and nothing else: no redemption, no yield, no rights, no expected return. Contract: 9UE6NStA9pRZ5xagrK1FNy3vybmQVL2VaKB7BNpvpump", "url": "https://provadiacoin.com/coin/", "media": "https://provadiacoin.com/marks/front-published.webp"}</script>
 <script src="../nexus.js"></script>
 </body></html>
