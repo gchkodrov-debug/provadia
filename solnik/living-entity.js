@@ -1,4 +1,7 @@
 // SOLNIK — living-entity.js (SPECIMEN 01, preview-only)
+// v2 (completion-01): Surfer locomotion layer + composed facial-expression library.
+// Judging standard (founder, 2026-11-25): REAL AS POSSIBLE — where realism trades
+// against convenience, realism wins; no faked capabilities, no consciousness claims.
 // Page-body half of the Living Entity Engine (Gemini #109). Three.js transparent
 // overlay + rigged GLB; his brain lives at wss://brain.provadiacoin.com/v1/solnik.
 // Constitutional fences: guidance/conversation only; summon/mute/dismiss/disable
@@ -106,6 +109,8 @@ export async function initSolnik(opts = {}) {
   const crystal = byName['heartcrystal'];
   const eyeL = byName['eyel'], eyeR = byName['eyer'];
   const headB = bone('head'), rootB = bone('root');
+  const browL = byName['browl'], browR = byName['browr']; // Brow.L / Brow.R — expression levers (offsets from their authored positions)
+  const browBaseL = browL ? browL.position.clone() : null, browBaseR = browR ? browR.position.clone() : null;
   const S = mobile ? 118 : 148; // model scale: ~1.42 units tall -> ~170-210 px
   model.scale.setScalar(S);
   const group = new THREE.Group(); group.add(model); scene.add(group);
@@ -115,11 +120,11 @@ export async function initSolnik(opts = {}) {
     const c = clips[name]; if (!c) return null;
     const act = mixer.clipAction(c);
     act.reset(); act.enabled = true; act.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce, Infinity);
-    act.clampWhenFinished = !loop; act.fadeIn(fade); act.play();
+    act.clampWhenFinished = !loop; act.fadeIn(fade); act.play(); clipNameNow = name;
     if (current && current !== act) current.fadeOut(fade);
     current = act; return act;
   }
-  let current = null;
+  let current = null, clipNameNow = 'idle';
   playClip('idle', 0, true);
 
   // ---------- particles (materialize / teleport bursts) ----------
@@ -166,7 +171,8 @@ export async function initSolnik(opts = {}) {
   const SEAT = 0.44; // local Y of his pelvis (what rests on an edge)
   const pos = { x: VW / 2, y: VH * 0.4 };
   let travel = null, perchId = null, visibleWanted = true, asleep = false;
-  function place() { group.position.set(pos.x, pos.y - SEAT * S, 8); }
+  let bobY = 0, bobEnv = 0; // speech bob (px) + its voice-envelope driver, composed here so every place() caller (travel, scroll re-pin, resize) keeps it
+  function place() { group.position.set(pos.x, pos.y + bobY - SEAT * S, 8); }
   function perchAt(a, instant) {
     perchId = a.id;
     const dest = { x: a.x, y: a.topY };
@@ -188,8 +194,145 @@ export async function initSolnik(opts = {}) {
     place();
   }
 
+
+  // ---------- LOCOMOTION LAYER (v2, completion-01) ----------
+  // He follows the visitor's reading, relocates instead of stranding, and shows
+  // small idle life — always yielding to travel, sleep, Dismiss and the brain's
+  // own 'guide' manoeuvres. Driven only from the frame loop, so reduced motion
+  // (no loop runs) and Disable (loop cancelled, root removed) stop it by
+  // construction. REAL AS POSSIBLE: every beat below is a real relocation or a
+  // real clip on the real body — nothing is simulated or faked.
+  const hasPointer = matchMedia('(pointer: fine)').matches;
+  let lastInteractAt = performance.now(), lastPointerMoveAt = 0, lastBrainAt = 0;
+  let lastLifeAt = 0, lastMoveAt = performance.now(), nextLifeGap = 10000 + Math.random() * 8000;
+  let followMode = 'idle', guideBusyUntil = 0, gestureTok = 0;
+  let scrolling = false, lastScrollAt = 0, lastFollowCheckAt = performance.now(), wasTravelling = false; // follow-check clock starts at load, so the entrance perch is not instantly re-hopped by the first periodic check
+  let dwellSince = 0, dwellArmX = null, dwellCoolUntil = 0, virtualFlip = false;
+  let anchorsCache = null, anchorsCacheAt = 0;
+  function anchorsCached() { const n = performance.now(); if (!anchorsCache || n - anchorsCacheAt > 550) { anchorsCache = anchors(); anchorsCacheAt = n; } return anchorsCache; } // anchors() is DOM-heavy: at most ~2 calls/sec, cached between checks
+  addEventListener('scroll', () => { scrolling = true; lastScrollAt = performance.now(); lastInteractAt = lastScrollAt; }, { passive: true });
+  function locoFree(now) { return !reduced && visibleWanted && !asleep && !travel && now > guideBusyUntil && !document.hidden; }
+  function locoGo(a, mode, now) { perchAt(a, false); followMode = mode; lastMoveAt = now; lastLifeAt = now; }
+  function bestVisibleAnchor() { // the visible anchor nearest the viewport's vertical centre band
+    const a = anchorsCached(); let best = null, bs = 1e12;
+    for (const k in a) { const p = a[k]; if (p.topY < 30 || p.topY > VH - 20) continue; const s = Math.abs(p.topY - VH * 0.52); if (s < bs) { bs = s; best = { id: k, ...p }; } }
+    return best;
+  }
+  function tryFollow(now, mode) {
+    const b = bestVisibleAnchor();
+    if (b && b.id !== perchId && Math.hypot(b.x - pos.x, b.topY - pos.y) > 120) { locoGo(b, mode, now); return true; }
+    if (!b) { // no visible anchor: a safe virtual perch beats stranding — but only when actually stranded or long-parked
+      const stranded = pos.y < -50 || pos.y > VH + 50 || pos.x < -50 || pos.x > VW + 50;
+      if (stranded || now - lastMoveAt > 22000) {
+        virtualFlip = !virtualFlip;
+        const m = Math.max(64, S * 0.55);
+        const v = virtualFlip ? { id: 'virtual-left', x: m, topY: VH * 0.34 } : { id: 'virtual-right', x: VW - m, topY: VH * 0.74 }; // lower-left / upper-right: clear of the bottom-right pill zone; 0.74 (not 0.8) keeps his head off the top edge at 568 px-tall viewports
+        if (Math.hypot(v.x - pos.x, v.topY - pos.y) > 120) { locoGo(v, 'virtual', now); return true; }
+      }
+    }
+    return false;
+  }
+  function stepLoco(now) {
+    if (wasTravelling && !travel) lastMoveAt = now;
+    wasTravelling = !!travel;
+    if (!locoFree(now)) return;
+    if (scrolling) { if (now - lastScrollAt > 620) { scrolling = false; tryFollow(now, 'scroll'); } return; } // never start a travel mid-scroll; he follows after the pause (the re-pin keeps him glued meanwhile)
+    if (now - lastFollowCheckAt > 4000) { lastFollowCheckAt = now; if (!speaking && !listening) tryFollow(now, 'scroll'); } // stranded-recovery yields while he is talking or listening; the scroll-quiet follow above stays live
+    // follow-the-visitor (pointer devices): a pointer dwelling far away for seconds earns a hop to its side
+    if (hasPointer && mouse.seen && !speaking && now > dwellCoolUntil && Math.abs(mouse.x - pos.x) > VW * 0.55) {
+      if (!dwellSince) { dwellSince = now; dwellArmX = mouse.x; }
+      else if (Math.abs(mouse.x - dwellArmX) > 80) { dwellSince = now; dwellArmX = mouse.x; } // pointer moved on: the dwell restarts — he follows attention, not a parked cursor
+      else if (now - dwellSince > 3200 && now - lastLifeAt > 9000) {
+        const a = anchorsCached(); let best = null, bd = 1e12;
+        for (const k in a) { if (k === perchId || a[k].topY < 30 || a[k].topY > VH - 20) continue; const d = Math.abs(a[k].x - mouse.x); if (d < bd) { bd = d; best = { id: k, ...a[k] }; } }
+        if (best && Math.hypot(best.x - pos.x, best.topY - pos.y) > 120) locoGo(best, 'pointer', now);
+        dwellSince = 0; dwellCoolUntil = now + 15000; // long cooldown after a pointer hop: two anchors near the pointer can never ping-pong him (critic B8)
+      }
+    } else dwellSince = 0;
+    // idle life: one small beat after a long quiet — a neighbour hop or a 'listen' head-tilt — never chained
+    if (!speaking && !listening && now - lastInteractAt > nextLifeGap && now - lastLifeAt > nextLifeGap) {
+      lastLifeAt = now; nextLifeGap = 10000 + Math.random() * 8000;
+      const a = anchorsCached(); let hop = null, bd = VH * 0.45;
+      for (const k in a) { if (k === perchId || a[k].topY < 30 || a[k].topY > VH - 20) continue; const d = Math.hypot(a[k].x - pos.x, a[k].topY - pos.y); if (d < bd) { bd = d; hop = { id: k, ...a[k] }; } }
+      if (hop && Math.random() < 0.6) { locoGo(hop, 'life', now); return; }
+      if (clipNameNow === 'idle') { playClip('listen', 0.3); const tok = ++gestureTok; setTimeout(() => { if (tok === gestureTok && visibleWanted && clipNameNow === 'listen') playClip('idle', 0.5, true); }, 1600); }
+    }
+  }
+  function stepBody(dt, now) { // group yaw (travel direction, else pointer side) + speech sway/bob — eased here; travel lean (rotation.z) stays stepTravel's while travelling
+    let yawT = 0;
+    if (travel) yawT = clamp((travel.x1 - travel.x0) * 0.0016, -0.45, 0.45);
+    else if (hasPointer && mouse.seen && !asleep) yawT = clamp((mouse.x - pos.x) * 0.0004, -0.3, 0.3);
+    group.rotation.y = lerp(group.rotation.y, yawT, Math.min(1, dt * 3.2));
+    // speech bob driven by his ACTUAL voice envelope (last frame's analyser snapshot), not a clock:
+    // a metronomic sine reads as a machine; an envelope makes the body move when the voice moves (critic B14)
+    const envT = (speaking && analyser && !travel) ? clamp(band(85, 320) * 5.0, 0, 1) : 0;
+    bobEnv = lerp(bobEnv, envT, Math.min(1, dt * 9));
+    const bobT = bobEnv > 0.03 ? Math.sin(now * 0.011) * 2.2 * bobEnv : 0;
+    if (bobT !== bobY) { bobY = bobT; if (!travel) place(); }
+    if (!travel) group.rotation.z = speaking ? Math.sin(now * 0.006) * 0.02 : lerp(group.rotation.z, 0, Math.min(1, dt * 5));
+  }
+
+  // ---------- FACIAL EXPRESSION LIBRARY (v2, completion-01) ----------
+  // Composed, because the body carries no smile morphs — only the 15 speech
+  // visemes on the Mouth mesh. Levers: Brow.L/Brow.R node offsets (small
+  // translations; pivots unverified, so no brow rotations), eye openness
+  // (composed with blink in stepFace), head offsets (consumed by stepFace's
+  // single head-quaternion write, so expression never fights gaze), and a held
+  // mouth base blend (consumed by stepVisemes; live speech visemes override it
+  // while audio plays and it returns as speech decays — no popping, all eased).
+  // Head pitch sign follows stepFace's gaze convention: +pitch = face down.
+  const EXPRS = {
+    neutral:  { browL: 0.012,  browR: 0.012,  eye: 1.0,  pitch: 0,      yaw: 0,    roll: 0,     E: 0.06, I: 0.03, PP: 0 },
+    welcome:  { browL: 0.055,  browR: 0.055,  eye: 0.85, pitch: 0.01,   yaw: 0,    roll: 0.06,  E: 0.35, I: 0.3,  PP: 0 },
+    grin:     { browL: 0.03,   browR: 0.03,   eye: 0.88, pitch: 0.005,  yaw: 0,    roll: 0.02,  E: 0.45, I: 0.22, PP: 0 },
+    chuckle:  { browL: 0.06,   browR: 0.06,   eye: 0.8,  pitch: 0.01,   yaw: 0,    roll: 0.03,  E: 0.4,  I: 0.3,  PP: 0 },
+    curious:  { browL: 0.065,  browR: 0.015,  eye: 1.05, pitch: 0,      yaw: 0,    roll: 0.1,   E: 0.05, I: 0.05, PP: 0 },
+    teaching: { browL: 0.02,   browR: 0.02,   eye: 0.97, pitch: 0.01,   yaw: 0,    roll: 0,     E: 0.18, I: 0.1,  PP: 0 },
+    serious:  { browL: -0.038, browR: -0.038, eye: 0.95, pitch: 0.045,  yaw: 0,    roll: 0,     E: 0,    I: 0,    PP: 0.12 },
+    pride:    { browL: 0.045,  browR: 0.045,  eye: 0.9,  pitch: -0.055, yaw: 0,    roll: 0,     E: 0.42, I: 0.25, PP: 0 },
+    refusal:  { browL: 0.05,   browR: 0.05,   eye: 0.92, pitch: 0.02,   yaw: 0,    roll: 0,     E: 0,    I: 0,    PP: 0.3 },
+    thinking: { browL: 0.06,   browR: 0.02,   eye: 0.94, pitch: -0.02,  yaw: 0.3,  roll: 0.07,  E: 0,    I: 0,    PP: 0.22 },
+    sleepy:   { browL: -0.01,  browR: -0.01,  eye: 0.4,  pitch: 0.09,   yaw: 0,    roll: 0.04,  E: 0,    I: 0,    PP: 0 },
+  };
+  let exprName = 'neutral', exprPrio = 0, exprT0 = 0, exprUntil = Infinity, exprChain = null, pendingMood = null, nodAt = 0;
+  const exprCur = { browL: 0, browR: 0, eye: 1, pitch: 0, yaw: 0, roll: 0, E: 0, I: 0, PP: 0 };
+  const exprHead = { pitch: 0, yaw: 0, roll: 0 };   // read by stepFace
+  const exprMouth = { E: 0, I: 0, PP: 0 };          // read by stepVisemes
+  const exprDyn = { mE: 0 };                        // chuckle mouth pulses, read by stepVisemes
+  let exprEye = 1, nextFlickerAt = 6000, flickerT0 = -1, flickerKind = 'brow';
+  function setExpr(name, holdMs, prio) {
+    if (reduced || !visibleWanted || !EXPRS[name]) return; // calm specimen and Dismiss are sovereign: no faces
+    const now = performance.now();
+    prio = prio || 1;
+    if (prio < exprPrio && now < exprUntil) return;
+    if (name !== 'welcome') exprChain = null; // the chained chuckle belongs to welcome only — a later face must never inherit it (e.g. chuckle firing after a refusal expires)
+    exprName = name; exprPrio = prio; exprT0 = now; exprUntil = holdMs ? now + holdMs : Infinity;
+  }
+  const EXPR_KEYS = ['browL', 'browR', 'eye', 'pitch', 'yaw', 'roll', 'E', 'I', 'PP']; // hoisted: stepExpr runs every frame and must not allocate
+  function stepExpr(dt, now) {
+    if (!visibleWanted) return; // frozen while dismissed (invisible anyway); Summon force-sets welcome on return, so no expiry is owed
+    if (now > exprUntil) { const next = exprChain; exprChain = null; exprPrio = 0; if (next) setExpr(next, 1600, 2); else setExpr(asleep ? 'sleepy' : 'neutral'); }
+    const d = EXPRS[exprName] || EXPRS.neutral, k = Math.min(1, dt * 5.5);
+    for (const key of EXPR_KEYS) exprCur[key] = lerp(exprCur[key], d[key], k);
+    let dPitch = 0, dYaw = 0, dBrow = 0, eyeF = 1; exprDyn.mE = 0;
+    const nodT = (now - nodAt) / 650; if (nodAt && nodT >= 0 && nodT < 1) dPitch += Math.sin(nodT * Math.PI) * 0.07; // teaching nod pulse at sentence starts
+    const el = now - exprT0;
+    if (exprName === 'refusal' && el < 1500) dYaw += Math.sin(el * 0.0084) * 0.075 * (1 - el / 1500); // two gentle head-shake oscillations, decaying (0.0084 rad/ms reaches 4π at 1500 ms = exactly two cycles; the builder's 0.021 ran ~5 cycles — a theatrical rattle, not a gentle no)
+    if (exprName === 'chuckle' && el < 1500) { const p = Math.abs(Math.sin(el * Math.PI / 700)); exprDyn.mE = p * 0.3; dPitch += p * 0.028; } // two-beat chuckle: two E/I pulses + two tiny head bobs
+    if ((exprName === 'neutral' || exprName === 'grin') && !asleep) { // idle micro-expression flickers — he never looks frozen
+      if (now > nextFlickerAt) { flickerT0 = now; flickerKind = Math.random() < 0.6 ? 'brow' : 'squint'; nextFlickerAt = now + 4500 + Math.random() * 5000; }
+      const ft = (now - flickerT0) / 550; if (flickerT0 > 0 && ft >= 0 && ft < 1) { const s = Math.sin(ft * Math.PI); if (flickerKind === 'brow') dBrow += s * 0.03; else eyeF = 1 - s * 0.1; }
+    }
+    exprHead.pitch = exprCur.pitch + dPitch; exprHead.yaw = exprCur.yaw + dYaw; exprHead.roll = exprCur.roll;
+    exprEye = exprCur.eye * eyeF;
+    exprMouth.E = exprCur.E; exprMouth.I = exprCur.I; exprMouth.PP = exprCur.PP;
+    if (browL && browBaseL) browL.position.y = browBaseL.y + exprCur.browL + dBrow;
+    if (browR && browBaseR) browR.position.y = browBaseR.y + exprCur.browR + dBrow;
+  }
+
   // ---------- arm IK: grip the edge he sits on ----------
   const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion();
+  const _exprEuler = new THREE.Euler();
   function aim(b, eff, tgt) {
     b.getWorldPosition(_v);
     const d1 = eff.clone().sub(_v).normalize(), d2 = tgt.clone().sub(_v).normalize();
@@ -218,22 +361,23 @@ export async function initSolnik(opts = {}) {
 
   // ---------- gaze + blink + heart ----------
   const mouse = { x: VW / 2, y: VH / 2, seen: false };
-  addEventListener('pointermove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.seen = true; }, { passive: true });
+  addEventListener('pointermove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.seen = true; lastPointerMoveAt = performance.now(); lastInteractAt = lastPointerMoveAt; }, { passive: true });
   let blinkAt = 1800, blinking = 0;
   function stepFace(dt, now) {
-    if (headB && mouse.seen && !asleep) {
-      const yaw = clamp((mouse.x - pos.x) * 0.0009, -0.5, 0.5);
-      const pitch = clamp((mouse.y - (VH - pos.y)) * 0.0007, -0.3, 0.35);
-      headB.quaternion.copy(baseHeadQ).multiply(_q.setFromEuler(new THREE.Euler(pitch, yaw, 0)));
+    if (headB) { // gaze (pointer devices) + expression head offsets, composed onto the clip pose in a single write — they never fight
+      const yaw = (mouse.seen && !asleep) ? clamp((mouse.x - pos.x) * 0.0009, -0.5, 0.5) : 0;
+      const pitch = (mouse.seen && !asleep) ? clamp((mouse.y - (VH - pos.y)) * 0.0007, -0.3, 0.35) : 0;
+      // composed totals stay inside neck-plausible limits (gaze alone never reaches these clamps, so proven gaze behaviour is unchanged; only gaze+expression extremes are trimmed)
+      headB.quaternion.copy(baseHeadQ).multiply(_q.setFromEuler(_exprEuler.set(clamp(pitch + exprHead.pitch, -0.38, 0.45), clamp(yaw + exprHead.yaw, -0.7, 0.7), exprHead.roll)));
     }
     if (now > blinkAt) { blinking = 130; blinkAt = now + 2300 + Math.random() * 2800; }
     if (blinking > 0 || asleep) {
-      const s = asleep ? 0.22 : Math.max(0.08, Math.abs(blinking - 65) / 65);
+      const s = asleep ? 0.22 : Math.max(0.08, Math.abs(blinking - 65) / 65) * exprEye;
       if (eyeL) eyeL.scale.y = s; if (eyeR) eyeR.scale.y = s;
       blinking -= dt * 1000;
-    } else { if (eyeL) eyeL.scale.y = 1; if (eyeR) eyeR.scale.y = 1; }
+    } else { if (eyeL) eyeL.scale.y = exprEye; if (eyeR) eyeR.scale.y = exprEye; }
     if (crystal) {
-      const base = asleep ? 0.6 : speaking ? 2.7 : listening ? 2.2 : 1.7;
+      const base = (asleep ? 0.6 : speaking ? 2.7 : listening ? 2.2 : 1.7) + (exprName === 'pride' ? 0.55 : 0);
       crystal.material.emissiveIntensity = base + Math.sin(now * (speaking ? 0.02 : 0.004)) * 0.35;
     }
   }
@@ -248,7 +392,7 @@ export async function initSolnik(opts = {}) {
     masterGain = actx.createGain(); masterGain.gain.value = store.muted ? 0 : 1;
     analyser.connect(masterGain); masterGain.connect(actx.destination);
   }
-  addEventListener('pointerdown', () => { ensureAudio(); pumpAudio(); }, { passive: true });
+  addEventListener('pointerdown', () => { ensureAudio(); pumpAudio(); lastInteractAt = performance.now(); }, { passive: true });
   async function pumpAudio() {
     if (playing || !actx || !audioQ.length) return;
     playing = true; speaking = true;
@@ -281,10 +425,12 @@ export async function initSolnik(opts = {}) {
   function stepVisemes() {
     if (!mouth) return;
     const target = { viseme_sil: 1 };
+    let voiceActive = false;
     if (speaking && analyser) {
       analyser.getByteFrequencyData(freqData); // one snapshot per frame for all five band reads
       const lo = band(85, 320), mid = band(320, 1250), hi = band(2000, 6400), amp = band(85, 6400);
       if (amp > 0.03) {
+        voiceActive = true;
         target.viseme_sil = 0;
         target.viseme_aa = clamp(lo * 2.4, 0, 1);
         target.viseme_O = clamp(lo * 1.5 - mid * 0.7, 0, 0.9);
@@ -293,6 +439,13 @@ export async function initSolnik(opts = {}) {
         target.viseme_SS = clamp(hi * 2.2 - 0.25, 0, 0.9);
         target.viseme_FF = clamp(hi * 1.4 - 0.3, 0, 0.6);
       }
+    }
+    if (!voiceActive) { // expression mouth base: live speech visemes win while audio plays; the held expression returns as speech decays
+      const breathe = 0.85 + 0.15 * Math.sin(performance.now() * 0.0011) * Math.sin(performance.now() * 0.00037 + 1.7); // two incommensurate sines: the held smile breathes ±15% instead of freezing mid-word (critic B30)
+      const mE = clamp((exprMouth.E + exprDyn.mE) * breathe, 0, 1), mI = clamp(exprMouth.I * breathe, 0, 1), mPP = clamp(exprMouth.PP, 0, 1);
+      if (mE > 0.01) { target.viseme_E = mE; target.viseme_sil = Math.min(target.viseme_sil, 1 - mE * 0.8); }
+      if (mI > 0.01) target.viseme_I = mI;
+      if (mPP > 0.01) target.viseme_PP = mPP;
     }
     for (const k in visemeIdx) {
       const t = target[k] || 0, cur = visSmooth[k] || 0;
@@ -304,10 +457,11 @@ export async function initSolnik(opts = {}) {
   // ---------- brain link ----------
   let ws = null, wsTries = 0, greeted = false;
   function guide(anchorId, scroll = true) {
-    const a = anchors(true)[anchorId];
+    const a = anchors(true)[anchorId]; // fresh read (never the 550 ms locomotion cache): a stale rect here would perch him at a pre-scroll position
     if (!a) return;
+    guideBusyUntil = performance.now() + 8000; // locomotion yields while the brain is driving (scroll + 650 ms settle + travel ≤1.9 s + point ≈2 s, with margin for long smooth scrolls)
     if (scroll) a.el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
-    setTimeout(() => { const b = anchors(true)[anchorId]; if (b) { const dur = perchAt({ id: anchorId, ...b }, false) || 0; const arrive = dur ? dur * 1000 + 60 : 950; setTimeout(() => playClip('point', 0.15), arrive); setTimeout(() => playClip('idle', 0.4, true), arrive + 1950); } }, reduced ? 60 : 650);
+    setTimeout(() => { if (!visibleWanted) return; const b = anchors(true)[anchorId]; if (b) { const dur = perchAt({ id: anchorId, ...b }, false) || 0; const arrive = dur ? dur * 1000 + 60 : 950; setTimeout(() => { if (visibleWanted) { gestureTok++; playClip('point', 0.15); } }, arrive); setTimeout(() => { if (!visibleWanted) return; playClip('idle', 0.4, true); if (!travel && perchId === anchorId) { const c = anchors(true)[anchorId]; if (c) { pos.x = c.x; pos.y = c.topY; place(); } } }, arrive + 1950); } }, reduced ? 60 : 650); // Dismiss mid-guide cancels the perch (sovereignty); the final fresh re-pin corrects any rect read mid-smooth-scroll once everything has settled
   }
   function connectBrain() {
     try { ws = new WebSocket(BRAIN); } catch (e) { return; }
@@ -318,13 +472,21 @@ export async function initSolnik(opts = {}) {
       if (ev.data instanceof ArrayBuffer) { audioQ.push(ev.data); pumpAudio(); return; }
       let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
       if (m.type === 'sentence') {
+        lastBrainAt = performance.now(); lastInteractAt = lastBrainAt;
         if (m.text) say(m.text);
-        if (m.intent === 'greet' && !greeted) { greeted = true; playClip('greet', 0.2); setTimeout(() => playClip('idle', 0.5, true), 3100); }
+        if (exprName === 'thinking') { exprPrio = 0; setExpr(pendingMood === 'serious' ? 'serious' : pendingMood === 'question' ? 'curious' : 'grin', 2800); pendingMood = null; } // the waiting face resolves into the answer's face
+        if (m.intent === 'greet' && !greeted) { greeted = true; playClip('greet', 0.2); setTimeout(() => { if (visibleWanted) playClip('idle', 0.5, true); }, 3100); setExpr('welcome', 3000); if (greetingVariant === 'family') exprChain = 'chuckle'; }
+        else if (m.intent === 'guide') { nodAt = performance.now(); if (m.anchor) setExpr('pride', 3200); else setExpr('teaching', 3200); }
+        else if (m.intent !== 'refuse_fence' && exprName !== 'thinking') nodAt = performance.now();
         if (m.anchor) guide(m.anchor, m.intent === 'guide');
-        if (m.intent === 'refuse_fence') playClip('listen', 0.2);
+        if (m.intent === 'refuse_fence') { playClip('listen', 0.2); setExpr('refusal', 2800, 3); }
+        else if (!reduced && !travel && !m.anchor && performance.now() > guideBusyUntil && clipNameNow !== 'greet' && clipNameNow !== 'point' && Math.random() < 0.4) { // speech punctuation: a short point on some sentences, then back to idle (never on anchor sentences — guide() points on arrival, at the thing itself; never while a guide manoeuvre is in its window — critic B11)
+          const tok = ++gestureTok; playClip('point', 0.15);
+          setTimeout(() => { if (tok === gestureTok && visibleWanted && clipNameNow === 'point') playClip('idle', 0.4, true); }, 900);
+        }
       }
-      if (m.type === 'sleep') { asleep = true; say('Zzz… tap Summon when you need me.'); }
-      if (m.type === 'awake') asleep = false;
+      if (m.type === 'sleep') { asleep = true; pendingMood = null; setExpr('sleepy', 0, 3); say('Zzz… tap Summon when you need me.'); } // a mood queued before sleep must not leak into the next waking answer
+      if (m.type === 'awake') { asleep = false; exprPrio = 0; setExpr('neutral'); }
       if (m.type === 'voice_capped') say('My voice is resting for today — but I can still chat in writing.');
       if (m.type === 'stt_unavailable') say("I heard you — but turning voice into words isn't ready on my side yet. You can type to me, and I'll speak back.");
       if (m.type === 'interrupted') stopSpeaking(false);
@@ -334,6 +496,12 @@ export async function initSolnik(opts = {}) {
   }
   function sendSay(text, utt) {
     ensureAudio();
+    lastInteractAt = performance.now();
+    if (asleep) exprPrio = 0; // he is waking to answer; the sleepy face must not outrank the reply
+    const sentText = String(text || '');
+    if (/(ha\s*ha|lol|😄|😂|🤣)/i.test(sentText)) setExpr('chuckle', 1700, 2); // a reaction face only — no fake laugh behaviour beyond the face
+    else if (sentText.trim().endsWith('?')) { pendingMood = sentText.length > 160 ? 'serious' : 'question'; setExpr('thinking', 9000, 2); }
+    else { pendingMood = null; setExpr('thinking', 9000, 2); } // the waiting gap wears the thinking face until his first sentence lands — with a 9 s bound, so a brain that never answers cannot leave the lip-press face on forever (it relaxes to neutral instead)
     if (asleep && ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'wake' }));
     asleep = false;
     if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'say', text, utt: utt || null }));
@@ -379,12 +547,13 @@ export async function initSolnik(opts = {}) {
   // ---------- controls (constitutional: always within reach) ----------
   const pill = $('#solnik-pill', root);
   $('#sk-mute', root).onclick = (e) => { const b = e.currentTarget; store.muted = !store.muted; b.setAttribute('aria-pressed', String(store.muted)); if (masterGain) masterGain.gain.value = store.muted ? 0 : 1; if (store.muted) stopSpeaking(true); };
-  $('#sk-dismiss', root).onclick = () => { visibleWanted = false; group.visible = false; caption.classList.remove('on'); stopSpeaking(true); };
+  $('#sk-dismiss', root).onclick = () => { visibleWanted = false; travel = null; followMode = 'idle'; gestureTok++; group.visible = false; caption.classList.remove('on'); stopSpeaking(true); };
   $('#sk-summon', root).onclick = () => {
     ensureAudio();
     if (!ws || ws.readyState > 1) { wsTries = 0; connectBrain(); } // Summon also revives a dead brain link
     if (asleep && ws && ws.readyState === 1) { ws.send(JSON.stringify({ type: 'wake' })); asleep = false; }
     visibleWanted = true; group.visible = true;
+    exprPrio = 0; setExpr('welcome', 2600);
     const a = nearestAnchor(); if (a) perchAt(a, false);
     if (!greeted && ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'hello', visitorId: store.visitor(), variant: greetingVariant }));
   };
@@ -417,10 +586,10 @@ export async function initSolnik(opts = {}) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
     mixer.update(dt);
     if (headB) baseHeadQ.copy(headB.quaternion); // the clip's pose this frame; gaze composes onto it, never onto last frame's gaze
-    stepTravel(dt); stepGrip(); stepBurst(dt); stepFace(dt, now); stepVisemes(); stepCaption();
+    stepTravel(dt); stepBody(dt, now); stepLoco(now); stepExpr(dt, now); stepGrip(); stepBurst(dt); stepFace(dt, now); stepVisemes(); stepCaption();
     renderer.render(scene, camera);
   }
-  addEventListener('resize', () => { fit(); const a = anchors()[perchId]; if (a) { pos.x = a.x; pos.y = a.topY; place(); } });
+  addEventListener('resize', () => { anchorsCache = null; fit(); const a = anchors()[perchId]; if (a) { pos.x = a.x; pos.y = a.topY; place(); } }); // anchorsCache=null: pre-resize rects must never steer a follow hop (critic B7)
   document.addEventListener('scroll', () => { if (!travel && perchId) { const a = anchors()[perchId]; if (a) { pos.x = a.x; pos.y = a.topY; place(); } } }, { passive: true });
 
   // ---------- entrance ----------
@@ -437,7 +606,7 @@ export async function initSolnik(opts = {}) {
   } else {
     raf = requestAnimationFrame(frame);
   }
-  window.__solnik = { version: 'specimen-01', anchors, state: () => ({ perchId, speaking, asleep, visibleWanted }) };
+  window.__solnik = { version: 'completion-01', anchors, state: () => ({ perchId, speaking, asleep, visibleWanted, travelling: !!travel, lastLifeAt, followMode, expr: exprName }) };
 }
 
 function renderReenable(note) {
