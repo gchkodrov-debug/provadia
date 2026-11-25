@@ -343,8 +343,9 @@ export async function initSolnik() {
       if (!vad) { const bridge = await import('./vad-bridge.js'); vad = await bridge.startVAD(BASE + 'vad/', {
         onSpeechStart: () => { if (speaking) stopSpeaking(true); listening = true; },
         onSpeechEnd: (audio) => { if (!sr) sendPcm(audio); },
-      }); }
+      }); window.__solnikVad = 'on'; }
       else vad.resume();
+      window.__solnikVad = 'on';
     } catch (e) { say('My ears could not open here — the microphone or its models were blocked. You can type to me instead.'); }
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SR && !sr) {
