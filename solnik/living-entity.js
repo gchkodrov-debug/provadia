@@ -104,9 +104,10 @@ export async function initSolnik(opts = {}) {
   const SW = S, SH = Math.round(S * 260 / 220); // stage box: viewBox 220x260
   const stage = document.createElement('div');
   stage.id = 'solnik-stage'; stage.setAttribute('aria-hidden', 'true');
-  document.body.appendChild(stage); // body-level SIBLING of the root: the sovereignty layer must never sink, but HE must be able to pass BEHIND the world's foreground — two planes, two elements
+  const luMount = document.querySelector('#solnik-mount'); // a Living Universe engine page offers him its CHARACTER PLANE: he lives inside it, and the engine's own layers (near particles z35, occluders z40, shade z45 — all above character z30) do the occluding for real
+  if (luMount) luMount.appendChild(stage); else document.body.appendChild(stage); // body-level SIBLING of the root: the sovereignty layer must never sink, but HE must be able to pass BEHIND the world's foreground — two planes, two elements
   stage.style.width = SW + 'px'; stage.style.height = SH + 'px';
-  stage.style.zIndex = '2147482999';
+  stage.style.zIndex = luMount ? '0' : '2147482999'; if (luMount) stage.style.position = 'absolute'; // in the character plane his own z stays out of the way — the engine's layer order is the physics there
   let toon;
   try { if (!Toon) throw new Error('cartoon rig unavailable'); toon = new Toon(stage); } catch (e) { return posterMode(root, say, greetingVariant); } // a body that cannot be drawn degrades to the portrait, never to a dead pill
 
@@ -137,6 +138,7 @@ export async function initSolnik(opts = {}) {
   function stepBurst(dt) { if (burstT < 0) return; burstT += dt / 0.9; if (burstT > 1) burstT = -1; }
 
   // ---------- anchors (the DOM Anchor Graph, specimen slice) ----------
+  function luTargetFor(id) { try { const cfg = window.__livingUniverse && window.__livingUniverse.config; const a = cfg && (cfg.anchors || []).find(x => x.id === id); return (a && a.interact && a.interact.target) || null; } catch (e) { return null; } } // the engine keeps target selectors in its config, not on the element
   function anchors(all) {
     const out = {};
     document.querySelectorAll('[data-solnik-anchor]').forEach(el => {
@@ -144,9 +146,12 @@ export async function initSolnik(opts = {}) {
       if (r.width < 30) return;
       if (!all && (r.bottom < -80 || r.top > VH + 80)) return;
       const fx = parseFloat(el.dataset.solnikX || '0.5');
+      const luI = el.dataset.luInteract || ''; // the engine's dialect: data-lu-anchor-kind + data-lu-interact="verb:label" — the same contract, honoured both ways
       out[el.dataset.solnikAnchor] = { x: r.left + r.width * fx, topY: VH - r.top, el,
-        kind: el.dataset.solnikKind || 'perch', verb: el.dataset.solnikVerb || null,
-        label: el.dataset.solnikLabel || '', target: el.dataset.solnikTarget || null,
+        kind: el.dataset.solnikKind || el.dataset.luAnchorKind || 'perch',
+        verb: el.dataset.solnikVerb || (luI ? luI.split(':')[0] : null),
+        label: el.dataset.solnikLabel || (luI && luI.indexOf(':') > 0 ? luI.slice(luI.indexOf(':') + 1) : ''),
+        target: el.dataset.solnikTarget || luTargetFor(el.dataset.solnikAnchor),
         depth: el.dataset.solnikDepth || null };
     });
     return out;
@@ -174,8 +179,9 @@ export async function initSolnik(opts = {}) {
   // while perched on a depth="behind" anchor, or while his body crosses an
   // occluder's box during travel.
   let plane = 'front', occCache = [], occCacheAt = 0, planeCheckAt = 0;
-  document.querySelectorAll('[data-solnik-occluder]').forEach(el => { const cs = getComputedStyle(el); if (cs.position === 'static') el.style.position = 'relative'; if (cs.zIndex === 'auto') el.style.zIndex = '6'; });
-  function setPlane(p) { if (p === plane) return; plane = p; stage.style.zIndex = p === 'behind' ? '3' : '2147482999'; stage.style.filter = p === 'behind' ? 'brightness(.87) saturate(.94)' : ''; stage.dataset.plane = p; }
+  if (!luMount) document.querySelectorAll('[data-solnik-occluder]').forEach(el => { const cs = getComputedStyle(el); if (cs.position === 'static') el.style.position = 'relative'; if (cs.zIndex === 'auto') el.style.zIndex = '6'; }); // engine pages occlude with their own layers — his hands stay off them
+  function setPlane(p) { if (luMount) { plane = p; stage.dataset.plane = 'character'; return; } // in the plane there is no front/behind switch — the gear covers him or it doesn't, by geometry
+    if (p === plane) return; plane = p; stage.style.zIndex = p === 'behind' ? '3' : '2147482999'; stage.style.filter = p === 'behind' ? 'brightness(.87) saturate(.94)' : ''; stage.dataset.plane = p; }
   function stepPlane(now) {
     if (now - planeCheckAt < 120) return; planeCheckAt = now;
     if (now - occCacheAt > 250) { occCacheAt = now; occCache = [...document.querySelectorAll('[data-solnik-occluder]')].map(el => { const r = el.getBoundingClientRect(); return { l: r.left - 4, r: r.right + 4, t: r.top - 4, b: r.bottom + 4 }; }); }
@@ -196,14 +202,18 @@ export async function initSolnik(opts = {}) {
     const tgt = a.target ? document.querySelector(a.target) : null;
     if (tgt) { const r = tgt.getBoundingClientRect(); facingT = (r.left + r.width / 2) >= pos.x ? 1 : -1; } // he turns to face the instrument itself
     const tok = ++arriveTok;
+    interactHoldUntil = performance.now() + 480;
     setTimeout(() => { if (tok !== arriveTok || !visibleWanted || travel || perchId !== pid) return; // he has moved on — a gesture for a place he left must not play or be announced
       if (performance.now() > guideBusyUntil) playClip(VERB_CLIP[a.verb] || 'point'); // a brain guide plays its own arrival gesture; the event below fires either way
       document.dispatchEvent(new CustomEvent('solnik:interact', { detail: { anchorId: pid, verb: a.verb, label: a.label || '', target: a.target || null } }));
+      try { if (luMount && window.__livingUniverse && window.__livingUniverse.interact) window.__livingUniverse.interact(pid); } catch (e) {} // the engine's consumer contract, called by the character system when the inhabitant works an instrument — the specimen flashes the real target card for HIM (probe: false — it is really Solnik, not the token)
     }, 480);
   }
   let portalAnim = null, portalAfterTravel = null, portalResolve = null, throughPortal = false, enteredVia = 'drop';
   let engagedUntil = 0; // while he works an instrument/object, voluntary locomotion must not drag him off it
-  function place() { stage.style.transform = 'translate(' + Math.round(pos.x - SW / 2) + 'px,' + Math.round(VH - pos.y - SH + 7) + 'px)'; }
+  let interactHoldUntil = 0; // an interaction's gesture+event land ~480 ms after arrival; a new interact() waits out the window so back-to-back calls SERIALIZE instead of the first being superseded and silently dropped (delta verifier D-Δ1)
+  function place() { if (luMount) { const mr = luMount.getBoundingClientRect(); stage.style.transform = 'translate(' + Math.round(pos.x - SW / 2 - mr.left) + 'px,' + Math.round(VH - pos.y - SH + 7 - mr.top) + 'px)'; return; } // viewport coords in, character-plane coords out (the mount rect carries the plane's parallax with it)
+    stage.style.transform = 'translate(' + Math.round(pos.x - SW / 2) + 'px,' + Math.round(VH - pos.y - SH + 7) + 'px)'; }
   function makeLeg(type, x0, y0, x1, y1) {
     const dist = Math.hypot(x1 - x0, y1 - y0);
     let dur;
@@ -647,6 +657,7 @@ export async function initSolnik(opts = {}) {
   else if (reduced) { pos.y = start.topY; place(); }
   else { // swing-in entrance (the founder's clip list names swing/drop-in): he swings in on a ribbon cable, lets go, and drops the last stretch to his perch
     const L = Math.min(300, VH * 0.44);
+    enteredVia = 'swing'; // state() tells the truth about how he arrived (delta verifier observation)
     swingIn = { t0: performance.now(), dur: 1400, px: start.x, py: start.topY + L, L, th0: -0.62, ang: -0.62, cableVb: L * 220 / S, start: { id: start.id, x: start.x, topY: start.topY } };
     pos.x = swingIn.px + L * Math.sin(-0.62); pos.y = swingIn.py - L * Math.cos(-0.62); place();
     engagedUntil = performance.now() + 2600; // the entrance is his — no follow hop may cut the swing short
@@ -660,8 +671,8 @@ export async function initSolnik(opts = {}) {
   } else {
     raf = requestAnimationFrame(frame);
   }
-  window.__solnik = { version: 'cartoon-02', anchors, state: () => ({ perchId, perchKind, plane, lastVerb, throughPortal, enteredVia, speaking, asleep, visibleWanted, travelling: !!travel, locoMode: portalAnim ? portalAnim.mode : (swingIn ? 'swing' : (travel ? travel.legs[travel.i].type : (asleep ? 'sleep' : 'idle'))), facing, lastLifeAt, followMode, expr: exprName, gesture: gesture.name }),
-    interact: (anchorId) => { const a = anchors(true)[anchorId]; if (!a) return false; perchAt({ id: anchorId, ...a }, false); if (!travel) setTimeout(() => arriveInteract(anchorId), 60); return true; },
+  window.__solnik = { version: 'cartoon-02', anchors, state: () => ({ engineMount: !!luMount, perchId, perchKind, plane: luMount ? 'character' : plane, lastVerb, throughPortal, enteredVia, speaking, asleep, visibleWanted, travelling: !!travel, locoMode: portalAnim ? portalAnim.mode : (swingIn ? 'swing' : (travel ? travel.legs[travel.i].type : (asleep ? 'sleep' : 'idle'))), facing, lastLifeAt, followMode, expr: exprName, gesture: gesture.name }),
+    interact: (anchorId) => { const a = anchors(true)[anchorId]; if (!a) return false; let tries = 0; const attempt = () => { if (!visibleWanted) return; if ((travel || performance.now() < interactHoldUntil) && ++tries < 100) { setTimeout(attempt, 200); return; } const b = anchors(true)[anchorId]; if (!b) return; perchAt({ id: anchorId, ...b }, false); if (!travel) { interactHoldUntil = performance.now() + 700; setTimeout(() => arriveInteract(anchorId), 60); } }; attempt(); return true; }, // the hold is set NOW, not at arrival+60 ms — a same-tick second call must see the first call's window already open, or it slips through and supersedes it // back-to-back calls queue behind the current travel + gesture window (D-Δ1): every call gets its arrival, its gesture and its event, in order
     enterPortal: (anchorId) => new Promise((res) => { const a = anchors(true)[anchorId]; if (!a) { res(false); return; } if (reduced) { perchAt({ id: anchorId, ...a }, true); stage.style.display = 'none'; throughPortal = true; res(true); return; } portalResolve = res; const begin = () => { portalAnim = { mode: 'enter', t0: performance.now(), dur: 900 }; }; if (perchId === anchorId && !travel) begin(); else { perchAt({ id: anchorId, ...a }, false); if (!travel) begin(); else portalAfterTravel = begin; } }), // perchAt starts no route within 30 px — begin at once or the promise hangs (critic #9)
     emerge: (anchorId) => { const a = anchors(true)[anchorId]; if (!a) return false; throughPortal = false; stage.style.display = ''; visibleWanted = true; perchId = anchorId; perchKind = a.kind || 'perch'; perchDepth = a.depth || null; pos.x = a.x; pos.y = a.topY; place(); portalAnim = reduced ? null : { mode: 'emerge', t0: performance.now(), dur: 1150 }; fireBurst(a.x, a.topY + 30); return true; } };
 }
