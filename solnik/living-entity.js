@@ -186,18 +186,19 @@ export async function initSolnik(opts = {}) {
   // ---------- arrival interaction (approach + operate/touch/inspect, page-synced) ----------
   const VERB_CLIP = { operate: 'operate', touch: 'touch', open: 'touch', inspect: 'inspect', read: 'inspect', point: 'point', emerge: 'greet' };
   let arriveTok = 0;
-  function arriveInteract() {
-    const a = anchors(true)[perchId]; if (!a) return;
-    document.dispatchEvent(new CustomEvent('solnik:arrive', { detail: { anchorId: perchId, kind: a.kind } }));
+  function arriveInteract(id) {
+    const pid = id || perchId; // the anchor THIS arrival belongs to — never the global at fire time: back-to-back interact() calls overwrote perchId before the deferred call ran and misannounced arrivals (live-wired-doors probe, 2026-11-25)
+    const a = anchors(true)[pid]; if (!a) return;
+    document.dispatchEvent(new CustomEvent('solnik:arrive', { detail: { anchorId: pid, kind: a.kind } }));
     if (!a.verb) return;
     lastVerb = a.verb;
     engagedUntil = performance.now() + 6000; // he stays with the thing he is operating while the interaction plays out
     const tgt = a.target ? document.querySelector(a.target) : null;
     if (tgt) { const r = tgt.getBoundingClientRect(); facingT = (r.left + r.width / 2) >= pos.x ? 1 : -1; } // he turns to face the instrument itself
     const tok = ++arriveTok;
-    setTimeout(() => { if (tok !== arriveTok || !visibleWanted || travel) return;
+    setTimeout(() => { if (tok !== arriveTok || !visibleWanted || travel || perchId !== pid) return; // he has moved on — a gesture for a place he left must not play or be announced
       if (performance.now() > guideBusyUntil) playClip(VERB_CLIP[a.verb] || 'point'); // a brain guide plays its own arrival gesture; the event below fires either way
-      document.dispatchEvent(new CustomEvent('solnik:interact', { detail: { anchorId: perchId, verb: a.verb, label: a.label || '', target: a.target || null } }));
+      document.dispatchEvent(new CustomEvent('solnik:interact', { detail: { anchorId: pid, verb: a.verb, label: a.label || '', target: a.target || null } }));
     }, 480);
   }
   let portalAnim = null, portalAfterTravel = null, portalResolve = null, throughPortal = false, enteredVia = 'drop';
@@ -633,6 +634,8 @@ export async function initSolnik(opts = {}) {
     if (visibleWanted) place();
   }
   addEventListener('resize', () => { anchorsCache = null; fit(); const a = anchors()[perchId]; if (a) { pos.x = a.x; pos.y = a.topY; place(); } }); // anchorsCache=null: pre-resize rects must never steer a follow hop (critic B7)
+  addEventListener('load', () => { anchorsCache = null; }); // late layout (the Mint gallery's inline images) must not leave the anchor graph pointing at pre-load rects — found by the live-wired-doors probe, 2026-11-25
+  setTimeout(() => { anchorsCache = null; }, 3500); // one settling pass for lazy content that lands after load
   document.addEventListener('scroll', () => { if (!travel && perchId) { const a = anchors()[perchId]; if (a) { pos.x = a.x; pos.y = a.topY; place(); } } }, { passive: true });
 
   // ---------- entrance (drop-in: he falls to his first perch and lands) ----------
@@ -658,7 +661,7 @@ export async function initSolnik(opts = {}) {
     raf = requestAnimationFrame(frame);
   }
   window.__solnik = { version: 'cartoon-02', anchors, state: () => ({ perchId, perchKind, plane, lastVerb, throughPortal, enteredVia, speaking, asleep, visibleWanted, travelling: !!travel, locoMode: portalAnim ? portalAnim.mode : (swingIn ? 'swing' : (travel ? travel.legs[travel.i].type : (asleep ? 'sleep' : 'idle'))), facing, lastLifeAt, followMode, expr: exprName, gesture: gesture.name }),
-    interact: (anchorId) => { const a = anchors(true)[anchorId]; if (!a) return false; perchAt({ id: anchorId, ...a }, false); if (!travel) setTimeout(arriveInteract, 60); return true; },
+    interact: (anchorId) => { const a = anchors(true)[anchorId]; if (!a) return false; perchAt({ id: anchorId, ...a }, false); if (!travel) setTimeout(() => arriveInteract(anchorId), 60); return true; },
     enterPortal: (anchorId) => new Promise((res) => { const a = anchors(true)[anchorId]; if (!a) { res(false); return; } if (reduced) { perchAt({ id: anchorId, ...a }, true); stage.style.display = 'none'; throughPortal = true; res(true); return; } portalResolve = res; const begin = () => { portalAnim = { mode: 'enter', t0: performance.now(), dur: 900 }; }; if (perchId === anchorId && !travel) begin(); else { perchAt({ id: anchorId, ...a }, false); if (!travel) begin(); else portalAfterTravel = begin; } }), // perchAt starts no route within 30 px — begin at once or the promise hangs (critic #9)
     emerge: (anchorId) => { const a = anchors(true)[anchorId]; if (!a) return false; throughPortal = false; stage.style.display = ''; visibleWanted = true; perchId = anchorId; perchKind = a.kind || 'perch'; perchDepth = a.depth || null; pos.x = a.x; pos.y = a.topY; place(); portalAnim = reduced ? null : { mode: 'emerge', t0: performance.now(), dur: 1150 }; fireBurst(a.x, a.topY + 30); return true; } };
 }
