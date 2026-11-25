@@ -46,9 +46,9 @@ function eye(cx, cy, r, pfx) {
   </g>`;
 }
 
-function leg(side, hipX, pfx, far) {
+function leg(side, hipX, pfx, far, rot = 0) {
   const fill = far ? '#5d4718' : 'url(#tnBronze)';
-  return `<g class="tn-leg" data-hip="${hipX}" transform="translate(${hipX} 196)">
+  return `<g class="tn-leg" data-hip="${hipX}" transform="translate(${hipX} 196) rotate(${rot})">
     <path d="M -8 0 Q -9 16 -6 26 L 6 26 Q 9 16 8 0 Z" fill="${fill}" stroke="${INK}" stroke-width="2"/>
     <circle cx="0" cy="27" r="6.5" fill="#8A6D2F" stroke="${INK}" stroke-width="2"/>
     <g class="tn-shin" transform="translate(0 27)">
@@ -64,7 +64,7 @@ function arm(side, shX, pfx, far) {
   const rib = side < 0
     ? 'M 0 52 Q -16 84 -6 108 Q 1 124 -8 132'
     : 'M 0 52 Q 16 84 6 108 Q -1 124 8 132';
-  return `<g class="tn-arm" transform="translate(${shX} 138)">
+  return `<g class="tn-arm" data-sh="${shX}" transform="translate(${shX} 138)">
     <path d="M -7 -2 Q -9 14 -6 26 L 6 26 Q 9 14 7 -2 Z" fill="${fill}" stroke="${INK}" stroke-width="2"/>
     <circle cx="0" cy="27" r="6" fill="#8A6D2F" stroke="${INK}" stroke-width="2"/>
     <g class="tn-fore" transform="translate(0 27)">
@@ -89,6 +89,28 @@ export function toonSVG(view = 'front', uid = 'a') {
   const eyeNear = eye(side ? 128 : 136 - hx * 0.2, 74, 19.5, uid);
   const browFar = side ? '' : `<path class="tn-browL" d="M 68 46 Q 84 39 100 45" fill="none" stroke="#3A2A0E" stroke-width="5" stroke-linecap="round"/>`;
   const browNear = `<path class="tn-browR" d="M ${side ? 112 : 120} 45 Q ${side ? 129 : 137} 38 ${side ? 146 : 154} 44" fill="none" stroke="#3A2A0E" stroke-width="5" stroke-linecap="round"/>`;
+  // view-true drawing plan: a profile gets a profile torso (narrow bell, crystal
+  // as a slim front-chest facet), ONE ear, a nose, a forward mouth, clustered
+  // limbs in stride; three-quarter narrows and offsets the same parts partway.
+  const bodyD = side
+    ? 'M 110 118 Q 145 121 150 150 Q 154 184 140 201 Q 124 212 105 211 Q 87 208 83 185 Q 79 150 92 131 Q 100 119 110 118 Z'
+    : tq
+    ? 'M 110 118 Q 149 119 154 151 Q 158 185 143 201 Q 126 211 109 211 Q 91 210 78 200 Q 62 185 67 152 Q 73 119 110 118 Z'
+    : 'M 110 118 Q 152 118 158 152 Q 163 186 146 202 Q 128 212 110 212 Q 92 212 74 202 Q 57 186 62 152 Q 68 118 110 118 Z';
+  const crystalTf = side ? ' transform="translate(136 0) scale(0.5 1) translate(-110 0)"' : tq ? ' transform="translate(119 0) scale(0.8 1) translate(-110 0)"' : ''; // scale about the chest centre (110) THEN shift: outer translate = 110 + shift
+  const earCaps = side
+    ? `<circle cx="90" cy="74" r="9" fill="#8A6D2F" stroke="${INK}" stroke-width="2"/><circle cx="90" cy="74" r="4" fill="#4A3812"/>`
+    : tq
+    ? `<circle cx="60" cy="74" r="8" fill="#8A6D2F" stroke="${INK}" stroke-width="2"/><circle cx="60" cy="74" r="3.5" fill="#4A3812"/><circle cx="166" cy="74" r="9" fill="#8A6D2F" stroke="${INK}" stroke-width="2"/><circle cx="166" cy="74" r="4" fill="#4A3812"/>`
+    : `<circle cx="54" cy="74" r="9" fill="#8A6D2F" stroke="${INK}" stroke-width="2"/><circle cx="54" cy="74" r="4" fill="#4A3812"/><circle cx="166" cy="74" r="9" fill="#8A6D2F" stroke="${INK}" stroke-width="2"/><circle cx="166" cy="74" r="4" fill="#4A3812"/>`;
+  const noseD = side ? 'M 161 90 Q 170 96 161 102' : 'M 106 96 Q 110 100 114 96';
+  const mouthX = side ? 128 : tq ? 116 : 110;
+  const legsSVG = side ? leg(-1, 102, uid, true, 13) + leg(1, 118, uid, false, -16)
+    : tq ? leg(-1, 98, uid, true) + leg(1, 122, uid, false)
+    : leg(-1, 94, uid, side) + leg(1, 126, uid, false);
+  const armsSVG = side ? arm(-1, 130, uid, true) + arm(1, 147, uid, false)
+    : tq ? arm(-1, 70, uid, true) + arm(1, 150, uid, false)
+    : arm(-1, 64, uid, side) + arm(1, 156, uid, false);
   return `<svg class="tn-svg" viewBox="0 0 220 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Solnik, the brass sprite of Provadia">
   <defs>
     <radialGradient id="tnBrass" cx="38%" cy="30%" r="80%">
@@ -107,14 +129,14 @@ export function toonSVG(view = 'front', uid = 'a') {
       <stop offset="0%" stop-color="#FFF3B0"/><stop offset="55%" stop-color="#FFC21F"/><stop offset="100%" stop-color="#E07F00"/>
     </linearGradient>
   </defs>
-  <g class="tn-flip"><ellipse class="tn-portal" cx="110" cy="243" rx="46" ry="11" fill="url(#tnPortal)" opacity="0"/><g class="tn-squash">
+  <g class="tn-flip"><ellipse class="tn-portal" cx="110" cy="243" rx="46" ry="11" fill="url(#tnPortal)" opacity="0"/><g class="tn-pend"><line class="tn-cable" x1="110" y1="-400" x2="110" y2="97" stroke="#A8823A" stroke-width="3" stroke-linecap="round" opacity="0"/><g class="tn-squash">
     <ellipse class="tn-shadow" cx="110" cy="250" rx="46" ry="6" fill="#000" opacity="0.28"/>
-    ${leg(-1, 94, uid, side)}${leg(1, 126, uid, false)}
+    ${legsSVG}
     <g class="tn-bodyG">
-      <path d="M 110 118 Q 152 118 158 152 Q 163 186 146 202 Q 128 212 110 212 Q 92 212 74 202 Q 57 186 62 152 Q 68 118 110 118 Z" fill="url(#tnBronze)" stroke="${INK}" stroke-width="2.5"/>
+      <path d="${bodyD}" fill="url(#tnBronze)" stroke="${INK}" stroke-width="2.5"/>
       <path d="M 76 138 Q 110 126 144 138" fill="none" stroke="#2A1E0C" stroke-width="2" opacity="0.55"/>
       <ellipse cx="110" cy="182" rx="26" ry="18" fill="#3A2C12" opacity="0.5"/>
-      <g class="tn-crystalG">
+      <g class="tn-crystalG"${crystalTf}>
         <circle class="tn-crystalGlow" cx="110" cy="160" r="24" fill="#FFC21F" opacity="0.35"/>
         <path d="M 110 134 Q 128 146 128 162 Q 128 180 110 188 Q 92 180 92 162 Q 92 146 110 134 Z" fill="none" stroke="#C9A227" stroke-width="3"/>
         <path class="tn-crystal" d="M 110 140 L 122 154 L 116 176 L 110 182 L 104 176 L 98 154 Z" fill="url(#tnCrystal)" stroke="#8A5A00" stroke-width="1.6"/>
@@ -122,7 +144,7 @@ export function toonSVG(view = 'front', uid = 'a') {
       </g>
       <circle cx="76" cy="128" r="2.2" fill="#2A1E0C"/><circle cx="144" cy="128" r="2.2" fill="#2A1E0C"/>
     </g>
-    ${arm(-1, 64, uid, side)}${arm(1, 156, uid, false)}
+    ${armsSVG}
     <g class="tn-headG">
       <path d="M 100 116 L 120 116 L 118 128 L 102 128 Z" fill="#6B5626" stroke="${INK}" stroke-width="2"/>
       <path d="M 99 121 L 121 121 M 100 125 L 120 125" stroke="#2A1E0C" stroke-width="1.6"/>
@@ -132,20 +154,16 @@ export function toonSVG(view = 'front', uid = 'a') {
       <circle cx="86" cy="27" r="5" fill="none" stroke="#5d4718" stroke-width="2"/>
       <circle cx="134" cy="27" r="5" fill="none" stroke="#5d4718" stroke-width="2"/>
       <circle cx="110" cy="20" r="6" fill="none" stroke="#5d4718" stroke-width="2"/>
-      <circle cx="54" cy="74" r="9" fill="#8A6D2F" stroke="${INK}" stroke-width="2"/>
-      <circle cx="54" cy="74" r="4" fill="#4A3812"/>
-      <circle cx="166" cy="74" r="9" fill="#8A6D2F" stroke="${INK}" stroke-width="2"/>
-      <circle cx="166" cy="74" r="4" fill="#4A3812"/>
-      <ellipse cx="76" cy="102" rx="11" ry="6" fill="#FF9A3C" opacity="0.28"/>
-      <ellipse cx="144" cy="102" rx="11" ry="6" fill="#FF9A3C" opacity="0.28"/>
+      ${earCaps}
+      ${side ? '' : '<ellipse cx="76" cy="102" rx="11" ry="6" fill="#FF9A3C" opacity="0.28"/>'}<ellipse cx="${side ? 150 : 144}" cy="102" rx="11" ry="6" fill="#FF9A3C" opacity="0.28"/>
       ${eyeFar}${eyeNear}
       ${browFar}${browNear}
-      <path d="M 106 96 Q 110 100 114 96" fill="none" stroke="#7A5C14" stroke-width="2.2" stroke-linecap="round"/>
-      <g class="tn-mouthG" transform="translate(110 112)"><path class="tn-mouth" d="M -8 0 Q 0 2.5 8 0" fill="none" stroke="#4A2E08" stroke-width="2.6" stroke-linecap="round"/><path class="tn-teeth" d="" fill="#FFF6D8"/></g>
+      <path d="${noseD}" fill="none" stroke="#7A5C14" stroke-width="2.2" stroke-linecap="round"/>
+      <g class="tn-mouthG" transform="translate(${mouthX} 112)"><path class="tn-mouth" d="M -8 0 Q 0 2.5 8 0" fill="none" stroke="#4A2E08" stroke-width="2.6" stroke-linecap="round"/><path class="tn-teeth" d="" fill="#FFF6D8"/></g>
     </g>
     <g class="tn-zzz" opacity="0"><text x="168" y="34" font-family="Georgia,serif" font-size="17" fill="#C9A227">Z</text><text x="180" y="20" font-family="Georgia,serif" font-size="12" fill="#C9A227">z</text></g>
     <g class="tn-burst"></g>
-  </g></g></svg>`;
+  </g></g></g></svg>`;
 }
 
 const D2R = Math.PI / 180;
@@ -159,9 +177,9 @@ export class Toon {
     host.innerHTML = toonSVG(view);
     this.svg = host.querySelector('svg');
     const q = (s) => this.svg.querySelector(s), qa = (s) => [...this.svg.querySelectorAll(s)];
-    this.flip = q('.tn-flip'); this.squashG = q('.tn-squash');
-    this.legs = qa('.tn-leg').map(g => ({ g, shin: g.querySelector('.tn-shin') }));
-    this.arms = qa('.tn-arm').map(g => ({ g, fore: g.querySelector('.tn-fore') }));
+    this.flip = q('.tn-flip'); this.squashG = q('.tn-squash'); this.pend = q('.tn-pend'); this.cable = q('.tn-cable'); this.view = view;
+    this.legs = qa('.tn-leg').map(g => ({ g, shin: g.querySelector('.tn-shin'), hip: +g.dataset.hip || 110 }));
+    this.arms = qa('.tn-arm').map(g => ({ g, fore: g.querySelector('.tn-fore'), sh: +g.dataset.sh || 110 }));
     this.headG = q('.tn-headG'); this.bodyG = q('.tn-bodyG');
     this.eyes = qa('.tn-eye'); this.pupils = qa('.tn-pupil');
     this.browL = q('.tn-browL'); this.browR = q('.tn-browR');
@@ -182,7 +200,8 @@ export class Toon {
       else { this.mouth.setAttribute('fill', 'none'); this.mouth.setAttribute('stroke', '#4A2E08'); this.mouth.setAttribute('stroke-width', m.stroke || 2.6); }
       this.teeth.setAttribute('d', m.teeth ? 'M -11 -3.4 Q 0 -5.4 11 -3.4 L 10 -0.6 Q 0 -2.4 -10 -0.6 Z' : '');
     }
-    this.mouthG.setAttribute('transform', `translate(110 ${112 + (1 - open) * 1.5}) scale(1 ${(0.3 + 0.85 * open).toFixed(3)})`);
+    const mx = this.view === 'side' ? 128 : this.view === 'tq' ? 116 : 110;
+    this.mouthG.setAttribute('transform', `translate(${mx} ${112 + (1 - open) * 1.5}) scale(1 ${(0.3 + 0.85 * open).toFixed(3)})`);
   }
   render(s) {
     const t = s.t;
@@ -197,6 +216,7 @@ export class Toon {
     if (loco === 'drop') { sy = 1.07; sx = 0.95; }                               // falling stretch
     if (loco === 'land') { const k = clampN(s.loco.landT / 0.23, 0, 1); sy = 1 - 0.17 * k; sx = 1 + 0.13 * k; } // landT counts DOWN from ~0.23 s at impact: full squash at impact, recovering to 0
     if (loco === 'sleep') sy += Math.sin(t * 0.9) * 0.02;
+    if (loco === 'swing') { sy = 1.03; sx = 0.98; } // hanging stretch on the cable
     if (s.gesture.name === 'chuckleBody') { const p = Math.abs(Math.sin(s.gesture.el * Math.PI / 350)); sy -= p * 0.05; sx += p * 0.04; }
     const bob = (s.bobPx || 0) + (loco === 'walk' ? Math.abs(Math.sin(s.loco.phase)) * 3.2 : loco === 'run' ? Math.abs(Math.sin(s.loco.phase)) * 4.6 : 0);
     // portal transit: he grows out of the doorway light (emerge) or is taken by it (enter)
@@ -208,6 +228,9 @@ export class Toon {
     this.portalEl.setAttribute('opacity', (pv * 0.92).toFixed(2));
     this.portalEl.setAttribute('rx', (38 + pv * 26).toFixed(0));
     this.flip.setAttribute('transform', `translate(110 0) scale(${fx.toFixed(3)} 1) translate(-110 0)`);
+    const sw = s.swing;
+    if (sw) { this.pend.setAttribute('transform', `rotate(${(sw.ang * 57.2958).toFixed(2)} 110 ${(110 - sw.cableVb).toFixed(1)})`); this.cable.setAttribute('y1', (110 - sw.cableVb).toFixed(1)); this.cable.setAttribute('opacity', 0.92); }
+    else { this.pend.setAttribute('transform', ''); this.cable.setAttribute('opacity', 0); }
     this.squashG.setAttribute('transform', `translate(0 ${(-bob).toFixed(2)}) translate(110 246) scale(${sx.toFixed(3)} ${sy.toFixed(3)}) translate(-110 -246)`);
     const airK = clampN(1 - (s.airPx || 0) / 320, 0.12, 1);
     this.shadow.setAttribute('rx', (46 * airK).toFixed(1)); this.shadow.setAttribute('opacity', (0.28 * airK).toFixed(2));
@@ -223,9 +246,10 @@ export class Toon {
       kneeL = 16 + Math.max(0, Math.sin(ph + 0.7)) * 40; kneeR = 16 + Math.max(0, Math.sin(ph + Math.PI + 0.7)) * 40;
     } else if (loco === 'drop') { hipL = -10; hipR = 10; kneeL = 42; kneeR = 42; }
     else if (loco === 'land') { kneeL = 20; kneeR = 20; hipL = -6; hipR = 6; }
-    this.legs[0].g.setAttribute('transform', `translate(94 196) rotate(${hipL.toFixed(1)})`);
+    else if (loco === 'swing') { hipL = -7; hipR = 5; kneeL = 14; kneeR = 20; } // legs dangle from the cable
+    this.legs[0].g.setAttribute('transform', `translate(${this.legs[0].hip} 196) rotate(${hipL.toFixed(1)})`);
     this.legs[0].shin.setAttribute('transform', `translate(0 27) rotate(${kneeL.toFixed(1)})`);
-    this.legs[1].g.setAttribute('transform', `translate(126 196) rotate(${hipR.toFixed(1)})`);
+    this.legs[1].g.setAttribute('transform', `translate(${this.legs[1].hip} 196) rotate(${hipR.toFixed(1)})`);
     this.legs[1].shin.setAttribute('transform', `translate(0 27) rotate(${kneeR.toFixed(1)})`);
     // ---- arms: locomotion swing, gesture overrides (local-right arm leads;
     // the flip mirrors it to his facing side)
@@ -235,6 +259,7 @@ export class Toon {
     if (loco === 'climb') { shL = -148 + Math.sin(ph) * 34; shR = -148 + Math.sin(ph + Math.PI) * 34; elL = 14; elR = 14; }
     if (loco === 'drop') { shL = -128; shR = -152; elL = 8; elR = 8; }
     if (loco === 'sleep') { shL = 12; shR = -12; elL = 16; elR = 16; }
+    if (loco === 'swing') { shL = -156; shR = -164; elL = 6; elR = 6; } // both arms up, gripping the cable
     const g = s.gesture;
     if (g.name === 'wave' || g.name === 'greet') { shR = -168 + Math.sin(t * 9.5) * 16; elR = 12; }
     if (g.name === 'point') { shR = -82; elR = 3; }
@@ -244,9 +269,9 @@ export class Toon {
     if (g.name === 'touch') { shR = -60 - (g.el > 220 && g.el < 460 ? Math.sin((g.el - 220) / 240 * Math.PI) * 9 : 0); elR = 7; }
     if (g.name === 'inspect') { shR = -48; elR = 22; shL = 10; elL = 10; }
     if (g.name === 'listen') { shR = -18; elR = 20; }
-    this.arms[0].g.setAttribute('transform', `translate(64 138) rotate(${shL.toFixed(1)})`);
+    this.arms[0].g.setAttribute('transform', `translate(${this.arms[0].sh} 138) rotate(${shL.toFixed(1)})`);
     this.arms[0].fore.setAttribute('transform', `translate(0 27) rotate(${elL.toFixed(1)})`);
-    this.arms[1].g.setAttribute('transform', `translate(156 138) rotate(${shR.toFixed(1)})`);
+    this.arms[1].g.setAttribute('transform', `translate(${this.arms[1].sh} 138) rotate(${shR.toFixed(1)})`);
     this.arms[1].fore.setAttribute('transform', `translate(0 27) rotate(${elR.toFixed(1)})`);
     // ---- head: gaze + expression offsets composed in one write
     const lean = (loco === 'run' ? 4 : loco === 'climb' ? -5 : loco === 'drop' ? -3 : 0) + (g.name === 'operate' ? 3 : 0);
