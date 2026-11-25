@@ -1,14 +1,21 @@
-// SOLNIK — living-entity.js (SPECIMEN 01, preview-only)
-// v2 (completion-01): Surfer locomotion layer + composed facial-expression library.
+// SOLNIK — living-entity.js (CARTOON BODY, cartoon-01, 2026-11-25)
+// The founder's cartoon re-founding: the same brain, voice, sovereignty pill,
+// anchors, locomotion decisions and expression triggers as completion-01 —
+// cartoon-02 adds the ENVIRONMENT-INTERACTION layer (partner challenge,
+// 2026-11-25): depth planes + occlusion, portal emerge/enter, and page-synced
+// object interaction, on the Living Universe anchor contract (engine/universes.js:
+// kinds perch/portal/instrument/object; verbs emerge/operate/inspect/read/open).
+// but the body is a hand-drawn 2D cartoon (solnik-toon.js, SVG rig, zero image
+// assets) with REAL locomotion: he walks, runs, climbs and drops between
+// perches instead of gliding. The 3D body remains deployed as
+// living-entity-3d.js for instant rollback.
 // Judging standard (founder, 2026-11-25): REAL AS POSSIBLE — where realism trades
 // against convenience, realism wins; no faked capabilities, no consciousness claims.
 // Page-body half of the Living Entity Engine (Gemini #109). Three.js transparent
 // overlay + rigged GLB; his brain lives at wss://brain.provadiacoin.com/v1/solnik.
 // Constitutional fences: guidance/conversation only; summon/mute/dismiss/disable
 // are the visitor's, always within reach. Loads ONLY behind ?solnik=preview.
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { Toon } from './solnik-toon.js';
 
 const BASE = new URL('.', import.meta.url).pathname; // /solnik/
 const BRAIN = 'wss://brain.provadiacoin.com/v1/solnik';
@@ -33,7 +40,7 @@ export async function initSolnik(opts = {}) {
   root.innerHTML = `
   <style>
     #solnik-root{position:fixed;inset:0;z-index:2147483000;pointer-events:none;font-family:Georgia,serif}
-    #solnik-canvas{position:absolute;inset:0;width:100%;height:100%}
+    #solnik-stage{position:fixed;left:0;top:0;pointer-events:none;will-change:transform}#solnik-stage svg{display:block;width:100%;height:100%}
     #solnik-caption{position:absolute;max-width:290px;background:rgba(20,16,10,.92);color:#E9DDC6;border:1px solid #C9A227;
       border-radius:12px;padding:9px 12px;font-size:14.5px;line-height:1.45;opacity:0;transition:opacity .25s;pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.45)}
     #solnik-caption.on{opacity:1}
@@ -57,7 +64,6 @@ export async function initSolnik(opts = {}) {
       #solnik-talk{right:8px;bottom:104px}
     }
   </style>
-  <canvas id="solnik-canvas" aria-hidden="true"></canvas>
   <div id="solnik-caption" role="status" aria-live="polite"></div>
   <div id="solnik-talk"><input id="solnik-input" type="text" maxlength="300" placeholder="Type to Solnik…" aria-label="Type to Solnik"><button id="solnik-send">Send</button></div>
   <div id="solnik-pill" role="group" aria-label="Solnik controls">
@@ -88,84 +94,45 @@ export async function initSolnik(opts = {}) {
   };
   say.flush = () => { say._q.length = 0; }; // barge-in / dismiss: pending sentences never surface after the moment has passed
 
-  // ---------- renderer / scene (pixel-space: 1 unit = 1 CSS px at z=0) ----------
-  let renderer;
-  try {
-    renderer = new THREE.WebGLRenderer({ canvas: $('#solnik-canvas', root), alpha: true, antialias: true, powerPreference: 'high-performance' });
-  } catch (e) { return posterMode(root, say, greetingVariant); }
-  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
-  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.06;
-  const scene = new THREE.Scene();
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  const camera = new THREE.PerspectiveCamera(35, 1, 1, 6000);
-  const key = new THREE.DirectionalLight(0xffe2ae, 2.4); key.position.set(300, 500, 700); scene.add(key);
-  scene.add(new THREE.AmbientLight(0x57431f, 0.9));
+  // ---------- cartoon stage (SVG rig; no WebGL, no model files) ----------
   let VW = innerWidth, VH = innerHeight;
-  function fit() {
-    VW = innerWidth; VH = innerHeight;
-    renderer.setSize(VW, VH, false);
-    camera.aspect = VW / VH;
-    const dist = (VH / 2) / Math.tan(THREE.MathUtils.degToRad(17.5));
-    camera.position.set(VW / 2, VH / 2, dist); camera.lookAt(VW / 2, VH / 2, 0);
-    camera.updateProjectionMatrix();
-  }
-  fit();
-
-  // ---------- load the body ----------
+  function fit() { VW = innerWidth; VH = innerHeight; }
   const mobile = Math.min(VW, VH) < 620 || (navigator.hardwareConcurrency || 8) <= 4;
-  let gltf;
-  try {
-    gltf = await new GLTFLoader().loadAsync(BASE + 'assets/' + (mobile ? 'solnik-v1-mobile.glb' : 'solnik-v1.glb'));
-  } catch (e) { return posterMode(root, say, greetingVariant); } // a failed body load degrades to the portrait, never to a dead pill
-  const model = gltf.scene;
-  const byName = {};
-  model.traverse(o => { byName[o.name.replace(/[^a-z0-9]/gi, '').toLowerCase()] = o; });
-  const bone = (n) => byName[n.toLowerCase()];
-  const mouth = byName['mouth'];
-  const visemeIdx = {}; if (mouth) for (const k in mouth.morphTargetDictionary) visemeIdx[k] = mouth.morphTargetDictionary[k];
-  const crystal = byName['heartcrystal'];
-  const eyeL = byName['eyel'], eyeR = byName['eyer'];
-  const headB = bone('head'), rootB = bone('root');
-  const browL = byName['browl'], browR = byName['browr']; // Brow.L / Brow.R — expression levers (offsets from their authored positions)
-  const browBaseL = browL ? browL.position.clone() : null, browBaseR = browR ? browR.position.clone() : null;
-  const S = mobile ? 118 : 148; // model scale: ~1.42 units tall -> ~170-210 px
-  model.scale.setScalar(S);
-  const group = new THREE.Group(); group.add(model); scene.add(group);
-  const mixer = new THREE.AnimationMixer(model);
-  const clips = {}; gltf.animations.forEach(a => clips[a.name] = a);
-  function playClip(name, fade = 0.25, loop = false) {
-    const c = clips[name]; if (!c) return null;
-    const act = mixer.clipAction(c);
-    act.reset(); act.enabled = true; act.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce, Infinity);
-    act.clampWhenFinished = !loop; act.fadeIn(fade); act.play(); clipNameNow = name;
-    if (current && current !== act) current.fadeOut(fade);
-    current = act; return act;
-  }
-  let current = null, clipNameNow = 'idle';
-  playClip('idle', 0, true);
+  const S = mobile ? 118 : 148; // his on-page width in px (the 3D body's scale, kept so caption/perch math is unchanged)
+  const SW = S, SH = Math.round(S * 260 / 220); // stage box: viewBox 220x260
+  const stage = document.createElement('div');
+  stage.id = 'solnik-stage'; stage.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(stage); // body-level SIBLING of the root: the sovereignty layer must never sink, but HE must be able to pass BEHIND the world's foreground — two planes, two elements
+  stage.style.width = SW + 'px'; stage.style.height = SH + 'px';
+  stage.style.zIndex = '2147482999';
+  let toon;
+  try { toon = new Toon(stage); } catch (e) { return posterMode(root, say, greetingVariant); } // a body that cannot be drawn degrades to the portrait, never to a dead pill
 
-  // ---------- particles (materialize / teleport bursts) ----------
-  const P = 90, pGeo = new THREE.BufferGeometry();
-  const pPos = new Float32Array(P * 3); pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-  const points = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0xE4C65B, size: 3.2, transparent: true, opacity: 0, depthWrite: false }));
-  points.frustumCulled = false; scene.add(points);
-  let burst = null;
-  function fireBurst(cx, cy) {
-    if (reduced) return;
-    const seeds = [];
-    for (let i = 0; i < P; i++) { const a = Math.random() * Math.PI * 2, r = 20 + Math.random() * 90; seeds.push({ x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r * 0.7, vx: -Math.cos(a) * r * 1.6, vy: -Math.sin(a) * r * 1.1, life: Math.random() * 0.35 }); }
-    burst = { seeds, t: 0 };
-    points.material.opacity = 0.95;
+  // ---------- gesture system (the cartoon's clips) ----------
+  // playClip keeps the completion-01 call contract; names map to cartoon
+  // gestures: greet/wave, point, listen (head tilt), perch (grip/settle).
+  let clipNameNow = 'idle';
+  let gesture = { name: 'none', until: 0 };
+  let gripUntil = 0;
+  function gripArms() { gripUntil = performance.now() + 2400; }
+  function playClip(name, fade = 0.25, loop = false) {
+    clipNameNow = name;
+    const now = performance.now();
+    if (name === 'greet') gesture = { name: 'greet', until: now + 2900 };
+    else if (name === 'point') gesture = { name: 'point', until: now + 900 };
+    else if (name === 'listen') gesture = { name: 'listen', until: now + 1600 };
+    else if (name === 'perch') gesture = { name: 'grip', until: now + 1100 };
+    else if (name === 'operate') gesture = { name: 'operate', until: now + 1500 };
+    else if (name === 'touch') gesture = { name: 'touch', until: now + 900 };
+    else if (name === 'inspect') gesture = { name: 'inspect', until: now + 1600 };
+    else if (name === 'idle') gesture = { name: 'none', until: 0 };
+    return null;
   }
-  function stepBurst(dt) {
-    if (!burst) return;
-    burst.t += dt; const t = burst.t;
-    burst.seeds.forEach((s, i) => { const k = Math.max(0, 1 - (t - s.life) * 1.5); pPos[i * 3] = s.x + s.vx * t * k; pPos[i * 3 + 1] = s.y + s.vy * t * k; pPos[i * 3 + 2] = 30; });
-    pGeo.attributes.position.needsUpdate = true;
-    points.material.opacity = Math.max(0, 0.95 - t * 1.1);
-    if (t > 1.1) { burst = null; points.material.opacity = 0; }
-  }
+
+  // ---------- materialise burst (rig-drawn gold sparks) ----------
+  let burstT = -1;
+  function fireBurst(cx, cy) { if (reduced) return; burstT = 0; }
+  function stepBurst(dt) { if (burstT < 0) return; burstT += dt / 0.9; if (burstT > 1) burstT = -1; }
 
   // ---------- anchors (the DOM Anchor Graph, specimen slice) ----------
   function anchors(all) {
@@ -175,7 +142,10 @@ export async function initSolnik(opts = {}) {
       if (r.width < 30) return;
       if (!all && (r.bottom < -80 || r.top > VH + 80)) return;
       const fx = parseFloat(el.dataset.solnikX || '0.5');
-      out[el.dataset.solnikAnchor] = { x: r.left + r.width * fx, topY: VH - r.top, el };
+      out[el.dataset.solnikAnchor] = { x: r.left + r.width * fx, topY: VH - r.top, el,
+        kind: el.dataset.solnikKind || 'perch', verb: el.dataset.solnikVerb || null,
+        label: el.dataset.solnikLabel || '', target: el.dataset.solnikTarget || null,
+        depth: el.dataset.solnikDepth || null };
     });
     return out;
   }
@@ -185,33 +155,99 @@ export async function initSolnik(opts = {}) {
     return best;
   }
 
-  // ---------- placement + travel ----------
-  const SEAT = 0.44; // local Y of his pelvis (what rests on an edge)
+  // ---------- placement + travel (ROUTE WALKER: real locomotion) ----------
+  // He no longer glides on an arc. A route is built from legs: walk/run along
+  // his level, then climb (up) or drop (down) to the target level. perchAt
+  // keeps the completion-01 contract: returns the route duration in seconds.
   const pos = { x: VW / 2, y: VH * 0.4 };
   let travel = null, perchId = null, visibleWanted = true, asleep = false;
-  let bobY = 0, bobEnv = 0; // speech bob (px) + its voice-envelope driver, composed here so every place() caller (travel, scroll re-pin, resize) keeps it
-  function place() { group.position.set(pos.x, pos.y + bobY - SEAT * S, 8); }
+  let bobY = 0, bobEnv = 0; // speech bob (px) + its voice-envelope driver
+  let locoPhase = 0, landUntil = 0, facing = 1, facingT = 1;
+  let perchKind = 'perch', perchDepth = null, lastVerb = null;
+  // ---------- depth planes + occlusion ----------
+  // front: above the page (z 2147482999, under the sovereignty root). behind:
+  // z 3 — page elements marked data-solnik-occluder sit at z 6 and cover him,
+  // so walking behind machinery is REAL occlusion, not a fade. He is behind
+  // while perched on a depth="behind" anchor, or while his body crosses an
+  // occluder's box during travel.
+  let plane = 'front', occCache = [], occCacheAt = 0, planeCheckAt = 0;
+  document.querySelectorAll('[data-solnik-occluder]').forEach(el => { const cs = getComputedStyle(el); if (cs.position === 'static') el.style.position = 'relative'; if (cs.zIndex === 'auto') el.style.zIndex = '6'; });
+  function setPlane(p) { if (p === plane) return; plane = p; stage.style.zIndex = p === 'behind' ? '3' : '2147482999'; stage.style.filter = p === 'behind' ? 'brightness(.87) saturate(.94)' : ''; stage.dataset.plane = p; }
+  function stepPlane(now) {
+    if (now - planeCheckAt < 120) return; planeCheckAt = now;
+    if (now - occCacheAt > 250) { occCacheAt = now; occCache = [...document.querySelectorAll('[data-solnik-occluder]')].map(el => { const r = el.getBoundingClientRect(); return { l: r.left - 4, r: r.right + 4, t: r.top - 4, b: r.bottom + 4 }; }); }
+    let behind = perchDepth === 'behind' && !travel;
+    if (!behind) { const feetTop = VH - pos.y; for (const o of occCache) { if (pos.x > o.l && pos.x < o.r && feetTop > o.t && feetTop - SH < o.b) { behind = true; break; } } }
+    setPlane(behind ? 'behind' : 'front');
+  }
+  // ---------- arrival interaction (approach + operate/touch/inspect, page-synced) ----------
+  const VERB_CLIP = { operate: 'operate', touch: 'touch', open: 'touch', inspect: 'inspect', read: 'inspect', point: 'point', emerge: 'greet' };
+  let arriveTok = 0;
+  function arriveInteract() {
+    const a = anchors(true)[perchId]; if (!a) return;
+    document.dispatchEvent(new CustomEvent('solnik:arrive', { detail: { anchorId: perchId, kind: a.kind } }));
+    if (!a.verb) return;
+    lastVerb = a.verb;
+    engagedUntil = performance.now() + 6000; // he stays with the thing he is operating while the interaction plays out
+    const tgt = a.target ? document.querySelector(a.target) : null;
+    if (tgt) { const r = tgt.getBoundingClientRect(); facingT = (r.left + r.width / 2) >= pos.x ? 1 : -1; } // he turns to face the instrument itself
+    const tok = ++arriveTok;
+    setTimeout(() => { if (tok !== arriveTok || !visibleWanted || travel) return;
+      if (performance.now() > guideBusyUntil) playClip(VERB_CLIP[a.verb] || 'point'); // a brain guide plays its own arrival gesture; the event below fires either way
+      document.dispatchEvent(new CustomEvent('solnik:interact', { detail: { anchorId: perchId, verb: a.verb, label: a.label || '', target: a.target || null } }));
+    }, 480);
+  }
+  let portalAnim = null, portalAfterTravel = null, portalResolve = null, throughPortal = false, enteredVia = 'drop';
+  let engagedUntil = 0; // while he works an instrument/object, voluntary locomotion must not drag him off it
+  function place() { stage.style.transform = 'translate(' + Math.round(pos.x - SW / 2) + 'px,' + Math.round(VH - pos.y - SH + 7) + 'px)'; }
+  function makeLeg(type, x0, y0, x1, y1) {
+    const dist = Math.hypot(x1 - x0, y1 - y0);
+    let dur;
+    if (type === 'run') dur = clamp(dist / 620, 0.3, 2.6);
+    else if (type === 'walk') dur = clamp(dist / 300, 0.28, 3.2);
+    else if (type === 'climb') dur = clamp(dist / 175, 0.45, 2.6);
+    else dur = clamp(dist / 950, 0.22, 0.75); // drop: gravity, not a motor
+    return { type, x0, y0, x1, y1, dur, t: 0 };
+  }
   function perchAt(a, instant) {
-    perchId = a.id;
+    perchId = a.id; perchKind = a.kind || 'perch'; perchDepth = a.depth || null;
     const dest = { x: a.x, y: a.topY };
     if (instant || reduced) { pos.x = dest.x; pos.y = dest.y; place(); fireBurst(dest.x, dest.y + 30); return 0; }
-    const dx = dest.x - pos.x, dy = dest.y - pos.y, distPx = Math.hypot(dx, dy);
-    // long vertical hops step through intermediate anchors (his graph edges)
-    travel = { x0: pos.x, y0: pos.y, x1: dest.x, y1: dest.y, apex: Math.max(pos.y, dest.y) + 120 + distPx * 0.12, t: 0, dur: clamp(distPx / 620, 0.65, 1.9) };
-    return travel.dur;
+    const dx = dest.x - pos.x, dy = dest.y - pos.y, dist = Math.hypot(dx, dy);
+    if (dist < 30) return 0;
+    const legs = [];
+    const vert = Math.abs(dy) > 110, horiz = Math.abs(dx) > 70;
+    if (vert && horiz) legs.push(makeLeg(dist > 430 ? 'run' : 'walk', pos.x, pos.y, dest.x, pos.y));
+    else if (horiz) legs.push(makeLeg(dist > 430 ? 'run' : 'walk', pos.x, pos.y, dest.x, dest.y));
+    if (vert) legs.push(makeLeg(dy > 0 ? 'climb' : 'drop', horiz ? dest.x : pos.x, horiz ? pos.y : pos.y, dest.x, dest.y));
+    if (!legs.length) legs.push(makeLeg('walk', pos.x, pos.y, dest.x, dest.y));
+    travel = { legs, i: 0, face: dx !== 0 ? Math.sign(dx) : facingT };
+    return legs.reduce((s, l) => s + l.dur, 0);
   }
   function stepTravel(dt) {
     if (!travel) return;
-    travel.t += dt / travel.dur;
-    const t = Math.min(1, travel.t), e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-    pos.x = lerp(travel.x0, travel.x1, e);
-    const base = lerp(travel.y0, travel.y1, e);
-    pos.y = base + Math.sin(e * Math.PI) * (travel.apex - Math.max(travel.y0, travel.y1)) * 0.55;
-    group.rotation.z = clamp((travel.x1 - travel.x0) * -0.00022 * Math.sin(e * Math.PI), -0.14, 0.14);
-    if (t >= 1) { travel = null; group.rotation.z = 0; playClip('perch', 0.15); setTimeout(() => playClip('idle', 0.4, true), 1150); gripArms(); }
+    const leg = travel.legs[travel.i];
+    leg.t += dt;
+    const k = Math.min(1, leg.t / leg.dur);
+    let e = k;
+    if (leg.type === 'drop') e = k * k; // falls accelerate
+    else if (leg.type === 'climb') e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+    pos.x = lerp(leg.x0, leg.x1, e);
+    pos.y = lerp(leg.y0, leg.y1, e);
+    locoPhase += dt * (leg.type === 'walk' ? 10.5 : leg.type === 'run' ? 15 : leg.type === 'climb' ? 5.4 : 0);
+    if (k >= 1) {
+      travel.i++;
+      if (travel.i >= travel.legs.length) {
+        const lastType = leg.type;
+        travel = null;
+        if (lastType === 'drop') landUntil = performance.now() + 230;
+        playClip('perch', 0.15); setTimeout(() => { if (clipNameNow === 'perch') playClip('idle', 0.4, true); }, 1150); gripArms(); // ends the perch settle only — an interaction gesture started on arrival outranks it
+        arriveInteract();
+        if (portalAfterTravel) { const f = portalAfterTravel; portalAfterTravel = null; setTimeout(f, 350); }
+      }
+    }
     place();
   }
-
 
   // ---------- LOCOMOTION LAYER (v2, completion-01) ----------
   // He follows the visitor's reading, relocates instead of stranding, and shows
@@ -229,7 +265,7 @@ export async function initSolnik(opts = {}) {
   let anchorsCache = null, anchorsCacheAt = 0;
   function anchorsCached() { const n = performance.now(); if (!anchorsCache || n - anchorsCacheAt > 550) { anchorsCache = anchors(); anchorsCacheAt = n; } return anchorsCache; } // anchors() is DOM-heavy: at most ~2 calls/sec, cached between checks
   addEventListener('scroll', () => { scrolling = true; lastScrollAt = performance.now(); lastInteractAt = lastScrollAt; }, { passive: true });
-  function locoFree(now) { return !reduced && visibleWanted && !asleep && !travel && now > guideBusyUntil && !document.hidden; }
+  function locoFree(now) { return !reduced && visibleWanted && !asleep && !travel && now > guideBusyUntil && now > engagedUntil && !document.hidden; }
   function locoGo(a, mode, now) { perchAt(a, false); followMode = mode; lastMoveAt = now; lastLifeAt = now; }
   function bestVisibleAnchor() { // the visible anchor nearest the viewport's vertical centre band
     const a = anchorsCached(); let best = null, bs = 1e12;
@@ -276,18 +312,13 @@ export async function initSolnik(opts = {}) {
       if (clipNameNow === 'idle') { playClip('listen', 0.3); const tok = ++gestureTok; setTimeout(() => { if (tok === gestureTok && visibleWanted && clipNameNow === 'listen') playClip('idle', 0.5, true); }, 1600); }
     }
   }
-  function stepBody(dt, now) { // group yaw (travel direction, else pointer side) + speech sway/bob — eased here; travel lean (rotation.z) stays stepTravel's while travelling
-    let yawT = 0;
-    if (travel) yawT = clamp((travel.x1 - travel.x0) * 0.0016, -0.45, 0.45);
-    else if (hasPointer && mouse.seen && !asleep) yawT = clamp((mouse.x - pos.x) * 0.0004, -0.3, 0.3);
-    group.rotation.y = lerp(group.rotation.y, yawT, Math.min(1, dt * 3.2));
-    // speech bob driven by his ACTUAL voice envelope (last frame's analyser snapshot), not a clock:
-    // a metronomic sine reads as a machine; an envelope makes the body move when the voice moves (critic B14)
+  function stepBody(dt, now) { // facing (travel direction, else the visitor's side) + speech bob from the ACTUAL voice envelope (last frame's analyser snapshot — a metronome reads as a machine; the envelope moves when the voice moves)
+    if (travel) facingT = travel.face;
+    else if (hasPointer && mouse.seen && !asleep && Math.abs(mouse.x - pos.x) > 90) facingT = mouse.x > pos.x ? 1 : -1;
+    facing = lerp(facing, facingT, Math.min(1, dt * 5));
     const envT = (speaking && analyser && !travel) ? clamp(band(85, 320) * 5.0, 0, 1) : 0;
     bobEnv = lerp(bobEnv, envT, Math.min(1, dt * 9));
-    const bobT = bobEnv > 0.03 ? Math.sin(now * 0.011) * 2.2 * bobEnv : 0;
-    if (bobT !== bobY) { bobY = bobT; if (!travel) place(); }
-    if (!travel) group.rotation.z = speaking ? Math.sin(now * 0.006) * 0.02 : lerp(group.rotation.z, 0, Math.min(1, dt * 5));
+    bobY = bobEnv > 0.03 ? Math.sin(now * 0.007) * 2.0 * bobEnv : 0;
   }
 
   // ---------- FACIAL EXPRESSION LIBRARY (v2, completion-01) ----------
@@ -316,7 +347,7 @@ export async function initSolnik(opts = {}) {
   const exprCur = { browL: 0, browR: 0, eye: 1, pitch: 0, yaw: 0, roll: 0, E: 0, I: 0, PP: 0 };
   const exprHead = { pitch: 0, yaw: 0, roll: 0 };   // read by stepFace
   const exprMouth = { E: 0, I: 0, PP: 0 };          // read by stepVisemes
-  const exprDyn = { mE: 0 };                        // chuckle mouth pulses, read by stepVisemes
+  const exprDyn = { mE: 0, brow: 0 };                        // chuckle mouth pulses, read by stepVisemes
   let exprEye = 1, nextFlickerAt = 6000, flickerT0 = -1, flickerKind = 'brow';
   function setExpr(name, holdMs, prio) {
     if (reduced || !visibleWanted || !EXPRS[name]) return; // calm specimen and Dismiss are sovereign: no faces
@@ -344,60 +375,32 @@ export async function initSolnik(opts = {}) {
     exprHead.pitch = exprCur.pitch + dPitch; exprHead.yaw = exprCur.yaw + dYaw; exprHead.roll = exprCur.roll;
     exprEye = exprCur.eye * eyeF;
     exprMouth.E = exprCur.E; exprMouth.I = exprCur.I; exprMouth.PP = exprCur.PP;
-    if (browL && browBaseL) browL.position.y = browBaseL.y + exprCur.browL + dBrow;
-    if (browR && browBaseR) browR.position.y = browBaseR.y + exprCur.browR + dBrow;
+    exprDyn.brow = dBrow; // the cartoon rig reads exprCur + exprDyn.brow in the frame assembly (no bones to write)
   }
 
-  // ---------- arm IK: grip the edge he sits on ----------
-  const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion();
-  const _exprEuler = new THREE.Euler();
-  function aim(b, eff, tgt) {
-    b.getWorldPosition(_v);
-    const d1 = eff.clone().sub(_v).normalize(), d2 = tgt.clone().sub(_v).normalize();
-    if (d1.lengthSq() < 0.5 || d2.lengthSq() < 0.5) return;
-    _q.setFromUnitVectors(d1, d2);
-    b.parent.getWorldQuaternion(_q2).invert();
-    const wq = b.getWorldQuaternion(new THREE.Quaternion());
-    b.quaternion.copy(_q2.multiply(_q.multiply(wq)));
-    b.updateWorldMatrix(true, true);
-  }
-  function ik(side, tx, ty) {
-    const up = bone('upperarm' + side), fo = bone('forearm' + side), hd = bone('hand' + side);
-    if (!up || !fo || !hd) return;
-    const tgt = new THREE.Vector3(tx, ty, 26);
-    for (let i = 0; i < 3; i++) {
-      aim(fo, hd.getWorldPosition(_v2.set(0, 0, 0)).clone(), tgt);
-      aim(up, hd.getWorldPosition(new THREE.Vector3()), tgt);
-    }
-  }
-  let gripUntil = 0;
-  function gripArms() { gripUntil = performance.now() + 2400; }
-  function stepGrip() {
-    if (performance.now() > gripUntil || travel) return;
-    ik('l', pos.x - S * 0.42, pos.y - 2); ik('r', pos.x + S * 0.42, pos.y - 2);
-  }
+  // ---------- face state (gaze + blink + heart, composed for the rig) ----------
+  const faceState = { pupilX: 0, pupilY: 0, eyeScale: 1, crystal: 0.85, headRoll: 0, headPitchPx: 0, headYawPx: 0 };
+  function stepGrip() {} // grip is a gesture in the cartoon body — the frame assembly reads gripUntil
 
   // ---------- gaze + blink + heart ----------
   const mouse = { x: VW / 2, y: VH / 2, seen: false };
   addEventListener('pointermove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.seen = true; lastPointerMoveAt = performance.now(); lastInteractAt = lastPointerMoveAt; }, { passive: true });
   let blinkAt = 1800, blinking = 0;
   function stepFace(dt, now) {
-    if (headB) { // gaze (pointer devices) + expression head offsets, composed onto the clip pose in a single write — they never fight
-      const yaw = (mouse.seen && !asleep) ? clamp((mouse.x - pos.x) * 0.0009, -0.5, 0.5) : 0;
-      const pitch = (mouse.seen && !asleep) ? clamp((mouse.y - (VH - pos.y)) * 0.0007, -0.3, 0.35) : 0;
-      // composed totals stay inside neck-plausible limits (gaze alone never reaches these clamps, so proven gaze behaviour is unchanged; only gaze+expression extremes are trimmed)
-      headB.quaternion.copy(baseHeadQ).multiply(_q.setFromEuler(_exprEuler.set(clamp(pitch + exprHead.pitch, -0.38, 0.45), clamp(yaw + exprHead.yaw, -0.7, 0.7), exprHead.roll)));
-    }
+    // gaze: pupils lead, head follows a little; expression head offsets compose
+    // on top (single state write — gaze and expression never fight)
+    let gx = 0, gy = 0;
+    if (mouse.seen && !asleep) { gx = clamp((mouse.x - pos.x) * 0.006, -4.5, 4.5); gy = clamp((mouse.y - (VH - pos.y)) * 0.005, -3.5, 4); }
+    faceState.pupilX = gx + exprHead.yaw * 7;
+    faceState.pupilY = gy + exprHead.pitch * 24;
+    faceState.headYawPx = clamp(mouse.seen && !asleep ? (mouse.x - pos.x) * 0.008 : 0, -5, 5) + exprHead.yaw * 8;
+    faceState.headPitchPx = exprHead.pitch * 26;
+    faceState.headRoll = exprHead.roll * 57 + (gesture.name === 'listen' ? 7 : 0) + (speaking ? Math.sin(now * 0.006) * 1.3 : 0);
     if (now > blinkAt) { blinking = 130; blinkAt = now + 2300 + Math.random() * 2800; }
-    if (blinking > 0 || asleep) {
-      const s = asleep ? 0.22 : Math.max(0.08, Math.abs(blinking - 65) / 65) * exprEye;
-      if (eyeL) eyeL.scale.y = s; if (eyeR) eyeR.scale.y = s;
-      blinking -= dt * 1000;
-    } else { if (eyeL) eyeL.scale.y = exprEye; if (eyeR) eyeR.scale.y = exprEye; }
-    if (crystal) {
-      const base = (asleep ? 0.6 : speaking ? 2.7 : listening ? 2.2 : 1.7) + (exprName === 'pride' ? 0.55 : 0);
-      crystal.material.emissiveIntensity = base + Math.sin(now * (speaking ? 0.02 : 0.004)) * 0.35;
-    }
+    let bs = 1;
+    if (blinking > 0) { bs = Math.max(0.06, Math.abs(blinking - 65) / 65); blinking -= dt * 1000; }
+    faceState.eyeScale = (asleep ? 0.1 : bs) * exprEye;
+    faceState.crystal = (asleep ? 0.5 : speaking ? 1.35 : listening ? 1.1 : 0.85) + (exprName === 'pride' ? 0.45 : 0) + Math.sin(now * (speaking ? 0.02 : 0.004)) * 0.1;
   }
 
   // ---------- audio: playback queue + band-driven visemes ----------
@@ -439,38 +442,34 @@ export async function initSolnik(opts = {}) {
     let s = 0; for (let i = a; i <= b; i++) s += freqData[i];
     return s / Math.max(1, b - a + 1) / 255;
   }
-  function resetVisemes() { if (mouth) for (const k in visemeIdx) mouth.morphTargetInfluences[visemeIdx[k]] = 0; }
-  let visSmooth = {};
+  // ---------- mouth: band-driven viseme shapes for the cartoon mouth ----------
+  let mouthState = { name: 'smile', open: 0.22 };
+  let mouthOpenSm = 0.22, mouthNameSm = 'smile', candName = 'smile', candCount = 0;
+  function resetVisemes() { mouthNameSm = 'smile'; mouthOpenSm = 0.22; candName = 'smile'; candCount = 0; }
   function stepVisemes() {
-    if (!mouth) return;
-    const target = { viseme_sil: 1 };
-    let voiceActive = false;
+    let name = null, open = 0, voiceActive = false;
     if (speaking && analyser) {
-      analyser.getByteFrequencyData(freqData); // one snapshot per frame for all five band reads
+      analyser.getByteFrequencyData(freqData); // one snapshot per frame for all band reads
       const lo = band(85, 320), mid = band(320, 1250), hi = band(2000, 6400), amp = band(85, 6400);
       if (amp > 0.03) {
         voiceActive = true;
-        target.viseme_sil = 0;
-        target.viseme_aa = clamp(lo * 2.4, 0, 1);
-        target.viseme_O = clamp(lo * 1.5 - mid * 0.7, 0, 0.9);
-        target.viseme_E = clamp(mid * 1.9 - lo * 0.5, 0, 1);
-        target.viseme_I = clamp(mid * 1.2 * (hi + 0.4), 0, 0.8);
-        target.viseme_SS = clamp(hi * 2.2 - 0.25, 0, 0.9);
-        target.viseme_FF = clamp(hi * 1.4 - 0.3, 0, 0.6);
+        const w = { aa: lo * 2.4, O: Math.max(0, lo * 1.5 - mid * 0.7), E: Math.max(0, mid * 1.9 - lo * 0.5), I: mid * 1.2 * (hi + 0.4), SS: Math.max(0, hi * 2.2 - 0.25), FF: Math.max(0, hi * 1.4 - 0.3) };
+        let bw = -1; name = 'aa'; for (const k in w) if (w[k] > bw) { bw = w[k]; name = k; }
+        open = clamp(amp * 2.4, 0.3, 1);
       }
     }
-    if (!voiceActive) { // expression mouth base: live speech visemes win while audio plays; the held expression returns as speech decays
-      const breathe = 0.85 + 0.15 * Math.sin(performance.now() * 0.0011) * Math.sin(performance.now() * 0.00037 + 1.7); // two incommensurate sines: the held smile breathes ±15% instead of freezing mid-word (critic B30)
-      const mE = clamp((exprMouth.E + exprDyn.mE) * breathe, 0, 1), mI = clamp(exprMouth.I * breathe, 0, 1), mPP = clamp(exprMouth.PP, 0, 1);
-      if (mE > 0.01) { target.viseme_E = mE; target.viseme_sil = Math.min(target.viseme_sil, 1 - mE * 0.8); }
-      if (mI > 0.01) target.viseme_I = mI;
-      if (mPP > 0.01) target.viseme_PP = mPP;
+    if (!voiceActive) { // expression mouth base: live speech wins while audio plays; the held face returns as speech decays (no popping — openness is eased)
+      if (exprMouth.PP > 0.15) { name = 'PP'; open = 0.3; }
+      else if (exprDyn.mE > 0.12) { name = 'grin'; open = 0.55 + exprDyn.mE * 0.5; }
+      else if (exprMouth.E > 0.28) { name = 'smile'; open = 0.4 + exprMouth.E * 0.35; }
+      else if (exprMouth.E > 0.08 || exprMouth.I > 0.08) { name = 'smile'; open = 0.3; }
+      else if (exprName === 'neutral') { name = 'smile'; open = 0.2; } // his resting face is the portrait's gentle smile
+      else { name = 'sil'; open = 0.22; }
     }
-    for (const k in visemeIdx) {
-      const t = target[k] || 0, cur = visSmooth[k] || 0;
-      visSmooth[k] = lerp(cur, t, t > cur ? 0.5 : 0.28);
-      mouth.morphTargetInfluences[visemeIdx[k]] = visSmooth[k];
-    }
+    if (name === candName) candCount++; else { candName = name; candCount = 0; }
+    if (candCount >= 2 || !voiceActive) mouthNameSm = candName; // 2-frame hysteresis against shape flicker
+    mouthOpenSm = lerp(mouthOpenSm, open, voiceActive ? 0.55 : 0.2);
+    mouthState = { name: mouthNameSm, open: mouthOpenSm };
   }
 
   // ---------- brain link ----------
@@ -480,7 +479,7 @@ export async function initSolnik(opts = {}) {
     if (!a) return;
     guideBusyUntil = performance.now() + 8000; // locomotion yields while the brain is driving (scroll + 650 ms settle + travel ≤1.9 s + point ≈2 s, with margin for long smooth scrolls)
     if (scroll) a.el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
-    setTimeout(() => { if (!visibleWanted) return; const b = anchors(true)[anchorId]; if (b) { const dur = perchAt({ id: anchorId, ...b }, false) || 0; const arrive = dur ? dur * 1000 + 60 : 950; setTimeout(() => { if (visibleWanted) { gestureTok++; playClip('point', 0.15); } }, arrive); setTimeout(() => { if (!visibleWanted) return; playClip('idle', 0.4, true); if (!travel && perchId === anchorId) { const c = anchors(true)[anchorId]; if (c) { pos.x = c.x; pos.y = c.topY; place(); } } }, arrive + 1950); } }, reduced ? 60 : 650); // Dismiss mid-guide cancels the perch (sovereignty); the final fresh re-pin corrects any rect read mid-smooth-scroll once everything has settled
+    setTimeout(() => { if (!visibleWanted) return; const b = anchors(true)[anchorId]; if (b) { const dur = perchAt({ id: anchorId, ...b }, false) || 0; const arrive = dur ? dur * 1000 + 60 : 950; setTimeout(() => { if (visibleWanted) { gestureTok++; const ga = anchors(true)[anchorId]; playClip((ga && ga.verb && VERB_CLIP[ga.verb]) || 'point', 0.15); } }, arrive); setTimeout(() => { if (!visibleWanted) return; playClip('idle', 0.4, true); if (!travel && perchId === anchorId) { const c = anchors(true)[anchorId]; if (c) { pos.x = c.x; pos.y = c.topY; place(); } } }, arrive + 1950); } }, reduced ? 60 : 650); // Dismiss mid-guide cancels the perch (sovereignty); the final fresh re-pin corrects any rect read mid-smooth-scroll once everything has settled
   }
   function connectBrain() {
     try { ws = new WebSocket(BRAIN); } catch (e) { return; }
@@ -566,12 +565,12 @@ export async function initSolnik(opts = {}) {
   // ---------- controls (constitutional: always within reach) ----------
   const pill = $('#solnik-pill', root);
   $('#sk-mute', root).onclick = (e) => { const b = e.currentTarget; store.muted = !store.muted; b.setAttribute('aria-pressed', String(store.muted)); if (masterGain) masterGain.gain.value = store.muted ? 0 : 1; if (store.muted) stopSpeaking(true); };
-  $('#sk-dismiss', root).onclick = () => { visibleWanted = false; travel = null; followMode = 'idle'; gestureTok++; group.visible = false; caption.classList.remove('on'); stopSpeaking(true); };
+  $('#sk-dismiss', root).onclick = () => { visibleWanted = false; travel = null; followMode = 'idle'; gestureTok++; stage.style.display = 'none'; caption.classList.remove('on'); stopSpeaking(true); if (portalResolve) { portalResolve(false); portalResolve = null; } portalAnim = null; portalAfterTravel = null; }; // a dismissed boy does not slip through portals behind the visitor's back
   $('#sk-summon', root).onclick = () => {
     ensureAudio();
     if (!ws || ws.readyState > 1) { wsTries = 0; connectBrain(); } // Summon also revives a dead brain link
     if (asleep && ws && ws.readyState === 1) { ws.send(JSON.stringify({ type: 'wake' })); asleep = false; }
-    visibleWanted = true; group.visible = true;
+    visibleWanted = true; stage.style.display = '';
     exprPrio = 0; setExpr('welcome', 2600);
     const a = nearestAnchor(); if (a) perchAt(a, false);
     if (!greeted && ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'hello', visitorId: store.visitor(), variant: greetingVariant }));
@@ -583,7 +582,7 @@ export async function initSolnik(opts = {}) {
     if (sr) { try { sr.stop(); } catch (e) {} sr = null; }
     stopSpeaking(false);
     if (ws) { try { ws.close(); } catch (e) {} }
-    cancelAnimationFrame(raf); root.remove();
+    cancelAnimationFrame(raf); root.remove(); stage.remove();
     renderReenable('Solnik is off. He stays off until you call him back.');
   };
   $('#sk-type', root).onclick = () => { $('#solnik-talk', root).classList.toggle('on'); $('#solnik-input', root).focus(); };
@@ -599,33 +598,50 @@ export async function initSolnik(opts = {}) {
 
   // ---------- main loop ----------
   let raf = 0, last = performance.now();
-  const baseHeadQ = new THREE.Quaternion();
   function frame(now) {
     raf = requestAnimationFrame(frame);
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
-    mixer.update(dt);
-    if (headB) baseHeadQ.copy(headB.quaternion); // the clip's pose this frame; gaze composes onto it, never onto last frame's gaze
-    stepTravel(dt); stepBody(dt, now); stepLoco(now); stepExpr(dt, now); stepGrip(); stepBurst(dt); stepFace(dt, now); stepVisemes(); stepCaption();
-    renderer.render(scene, camera);
+    stepTravel(dt); stepBody(dt, now); stepLoco(now); stepExpr(dt, now); stepGrip(); stepBurst(dt); stepFace(dt, now); stepVisemes(); stepCaption(); stepPlane(now);
+    let portalK = -1;
+    if (portalAnim) { portalK = Math.min(1, (now - portalAnim.t0) / portalAnim.dur); if (portalK >= 1) { const doneMode = portalAnim.mode; portalAnim = null; if (doneMode === 'enter') { stage.style.display = 'none'; throughPortal = true; if (portalResolve) { portalResolve(true); portalResolve = null; } } } }
+    if (gesture.name !== 'none' && now > gesture.until) gesture = { name: 'none', until: 0 };
+    const gName = gesture.name !== 'none' ? gesture.name : (exprName === 'chuckle' ? 'chuckleBody' : (now < gripUntil && !travel ? 'grip' : 'none'));
+    const legType = travel ? travel.legs[travel.i].type : null;
+    if (visibleWanted) toon.render({
+      t: now / 1000, facing,
+      loco: { mode: portalAnim ? portalAnim.mode : (asleep ? 'sleep' : (legType || (now < landUntil ? 'land' : 'idle'))), phase: locoPhase, landT: Math.max(0, landUntil - now) / 1000, k: portalK < 0 ? 1 : portalK },
+      gesture: { name: gName, el: now - exprT0 },
+      head: { roll: faceState.headRoll, pitchPx: faceState.headPitchPx, yawPx: faceState.headYawPx },
+      face: { browL: (exprCur.browL + exprDyn.brow) * 130, browR: (exprCur.browR + exprDyn.brow) * 130, browAngL: exprName === 'serious' ? 9 : 0, browAngR: exprName === 'serious' ? 9 : 0, eyeOpen: faceState.eyeScale, pupilX: faceState.pupilX, pupilY: faceState.pupilY, mouth: mouthState.name, mouthOpen: mouthState.open },
+      crystal: faceState.crystal, bobPx: bobY, zzz: asleep ? 1 : 0, burstT, portal: portalAnim ? Math.sin(Math.max(0, portalK) * Math.PI) * 0.95 : 0,
+      airPx: legType === 'drop' ? Math.max(0, pos.y - travel.legs[travel.i].y1) : 0,
+    });
+    if (visibleWanted) place();
   }
   addEventListener('resize', () => { anchorsCache = null; fit(); const a = anchors()[perchId]; if (a) { pos.x = a.x; pos.y = a.topY; place(); } }); // anchorsCache=null: pre-resize rects must never steer a follow hop (critic B7)
   document.addEventListener('scroll', () => { if (!travel && perchId) { const a = anchors()[perchId]; if (a) { pos.x = a.x; pos.y = a.topY; place(); } } }, { passive: true });
 
-  // ---------- entrance ----------
-  const start = nearestAnchor() || { id: 'mint-entrance', x: VW / 2, topY: VH * 0.55 };
-  pos.x = start.x; pos.y = start.topY; place();
+  // ---------- entrance (drop-in: he falls to his first perch and lands) ----------
+  const allAnchors = anchors(true);
+  const portalAnchor = Object.keys(allAnchors).map(k => ({ id: k, ...allAnchors[k] })).find(a => a.kind === 'portal');
+  const start = portalAnchor || nearestAnchor() || { id: 'mint-entrance', x: VW / 2, topY: VH * 0.55 };
+  perchId = start.id; perchKind = start.kind || 'perch'; pos.x = start.x;
+  if (portalAnchor && !reduced) { enteredVia = 'portal'; pos.y = start.topY; place(); portalAnim = { mode: 'emerge', t0: performance.now(), dur: 1150 }; fireBurst(start.x, start.topY + 30); }
+  else if (reduced) { pos.y = start.topY; place(); }
+  else { pos.y = start.topY + Math.min(320, VH * 0.42); place(); perchAt({ id: start.id, x: start.x, topY: start.topY }, false); }
   fireBurst(start.x, start.topY + 40);
-  playClip('perch', 0.1); setTimeout(() => playClip('idle', 0.4, true), 1150);
   gripArms();
   connectBrain();
-  if (reduced) { // static specimen of the same state: render a few frames, no loop
-    mixer.update(0.4); renderer.render(scene, camera);
-    setTimeout(() => renderer.render(scene, camera), 700);
+  if (reduced) { // static specimen of the same state: one composed frame, no loop
+    toon.render({ t: 0.4, facing: 1, loco: { mode: 'idle', phase: 0, landT: 0 }, gesture: { name: 'none', el: 0 }, head: { roll: 0, pitchPx: 0, yawPx: 0 }, face: { browL: 2, browR: 2, browAngL: 0, browAngR: 0, eyeOpen: 1, pupilX: 0, pupilY: 0, mouth: 'smile', mouthOpen: 0.25 }, crystal: 0.85, bobPx: 0, zzz: 0, burstT: -1, airPx: 0 });
     say.now('Solnik is here (calm mode — reduced motion is on). Use the Type button to talk to me.');
   } else {
     raf = requestAnimationFrame(frame);
   }
-  window.__solnik = { version: 'completion-01', anchors, state: () => ({ perchId, speaking, asleep, visibleWanted, travelling: !!travel, lastLifeAt, followMode, expr: exprName }) };
+  window.__solnik = { version: 'cartoon-02', anchors, state: () => ({ perchId, perchKind, plane, lastVerb, throughPortal, enteredVia, speaking, asleep, visibleWanted, travelling: !!travel, locoMode: portalAnim ? portalAnim.mode : (travel ? travel.legs[travel.i].type : (asleep ? 'sleep' : 'idle')), facing, lastLifeAt, followMode, expr: exprName, gesture: gesture.name }),
+    interact: (anchorId) => { const a = anchors(true)[anchorId]; if (!a) return false; perchAt({ id: anchorId, ...a }, false); if (!travel) setTimeout(arriveInteract, 60); return true; },
+    enterPortal: (anchorId) => new Promise((res) => { const a = anchors(true)[anchorId]; if (!a) { res(false); return; } if (reduced) { perchAt({ id: anchorId, ...a }, true); stage.style.display = 'none'; throughPortal = true; res(true); return; } portalResolve = res; const begin = () => { portalAnim = { mode: 'enter', t0: performance.now(), dur: 900 }; }; if (perchId === anchorId && !travel) begin(); else { perchAt({ id: anchorId, ...a }, false); if (!travel) begin(); else portalAfterTravel = begin; } }), // perchAt starts no route within 30 px — begin at once or the promise hangs (critic #9)
+    emerge: (anchorId) => { const a = anchors(true)[anchorId]; if (!a) return false; throughPortal = false; stage.style.display = ''; visibleWanted = true; perchId = anchorId; perchKind = a.kind || 'perch'; perchDepth = a.depth || null; pos.x = a.x; pos.y = a.topY; place(); portalAnim = reduced ? null : { mode: 'emerge', t0: performance.now(), dur: 1150 }; fireBurst(a.x, a.topY + 30); return true; } };
 }
 
 function renderReenable(note) {
@@ -636,7 +652,8 @@ function renderReenable(note) {
   document.body.appendChild(d);
 }
 
-function posterMode(root, say, greetingVariant) { // no WebGL / no body: the adopted portrait + working text chat + full sovereignty pill
+function posterMode(root, say, greetingVariant) { // no drawable body: the adopted portrait + working text chat + full sovereignty pill
+  if (!window.__solnik) window.__solnik = { version: 'cartoon-02-poster', anchors: () => ({}), state: () => ({ poster: true }), interact: () => false, enterPortal: () => Promise.resolve(false), emerge: () => false }; // the API object exists in every mode; in portrait mode the travel answers are honestly 'no'
   if (root.dataset.posterWired) return;
   root.dataset.posterWired = '1';
   const p = document.createElement('div');
