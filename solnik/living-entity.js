@@ -416,7 +416,7 @@ export async function initSolnik(opts = {}) {
     raf = requestAnimationFrame(frame);
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
     mixer.update(dt);
-    if (bones.head) baseHeadQ.copy(bones.head.quaternion); // the clip's pose this frame; gaze composes onto it, never onto last frame's gaze
+    if (headB) baseHeadQ.copy(headB.quaternion); // the clip's pose this frame; gaze composes onto it, never onto last frame's gaze
     stepTravel(dt); stepGrip(); stepBurst(dt); stepFace(dt, now); stepVisemes(); stepCaption();
     renderer.render(scene, camera);
   }
