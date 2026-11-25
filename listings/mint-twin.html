@@ -613,7 +613,7 @@
 (function () {
   var q = new URLSearchParams(location.search);
   if (q.get('solnik') !== 'preview') return;
-  import('../solnik/living-entity.js').then(function (m) { m.initSolnik(); })
+  import('../solnik/living-entity.js').then(function (m) { m.initSolnik({ greeting: 'family' }); })
     .catch(function (e) { console.error('solnik load failed', e); });
 })();
 </script>
