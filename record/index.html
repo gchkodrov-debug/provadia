@@ -121,9 +121,10 @@
 <link rel="stylesheet" href="../design/vendor/driver.css">
 <link rel="stylesheet" href="../design/guide.css">
 <link rel="stylesheet" href="../design/keeper.css">
+<script type="importmap">{"imports":{"three":"/solnik/vendor/three.module.js","three/addons/":"/solnik/vendor/addons/"}}</script>
 </head>
 <body>
-<div id="stage" aria-hidden="true"></div>
+<div id="stage" aria-hidden="true" data-solnik-anchor="record-stage" data-solnik-x="0.5"></div>
 <div id="fade"><div id="wake" aria-hidden="true">The town is waking</div></div>
 <nav class="doors" aria-label="The doors of the town">
   <a class="door-link" href="../">The Town</a>
@@ -418,7 +419,7 @@
     <h4 class="rec-subtitle rec-subtitle-sm">Past anchors</h4>
     <p class="rec-note">No anchor has been written yet.</p>
   </div>
-</section><section class="rec-panel" id="registry-verification" data-station="registry">
+</section><section class="rec-panel" id="registry-verification" data-station="registry" data-solnik-anchor="record-verify" data-solnik-x="0.5">
   <header class="rec-head">
     <p class="rec-eyebrow">The Record · Registry</p>
     <h2 class="rec-title">The Registry of Houses — Verification</h2>
@@ -631,5 +632,6 @@
 <script src="../design/keeper.js"></script>
 <script src="../wall.js"></script>
 <script src="../nexus.js"></script>
+<script type="module">import('/solnik/living-entity.js').then(function(m){m.initSolnik({greeting:'visitor'});}).catch(function(){});</script>
 </body>
 </html>
