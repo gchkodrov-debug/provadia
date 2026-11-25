@@ -224,7 +224,7 @@ export async function initSolnik(opts = {}) {
     if (headB && mouse.seen && !asleep) {
       const yaw = clamp((mouse.x - pos.x) * 0.0009, -0.5, 0.5);
       const pitch = clamp((mouse.y - (VH - pos.y)) * 0.0007, -0.3, 0.35);
-      headB.quaternion.multiply(_q.setFromEuler(new THREE.Euler(pitch, yaw, 0)));
+      headB.quaternion.copy(baseHeadQ).multiply(_q.setFromEuler(new THREE.Euler(pitch, yaw, 0)));
     }
     if (now > blinkAt) { blinking = 130; blinkAt = now + 2300 + Math.random() * 2800; }
     if (blinking > 0 || asleep) {
@@ -332,11 +332,11 @@ export async function initSolnik(opts = {}) {
     ws.onclose = () => { if (wsTries < 2) { wsTries++; setTimeout(connectBrain, 2500 * wsTries); } else say('My brain is napping — the captain has the note. You can still look around; I will be back.'); };
     ws.onerror = () => { try { ws.close(); } catch (e) {} };
   }
-  function sendSay(text) {
+  function sendSay(text, utt) {
     ensureAudio();
     if (asleep && ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'wake' }));
     asleep = false;
-    if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'say', text }));
+    if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'say', text, utt: utt || null }));
     else say('One moment — my brain is still waking up.');
   }
 
@@ -349,7 +349,7 @@ export async function initSolnik(opts = {}) {
     say('Listening… talk to me. If I am speaking, just start — I will stop and listen.');
     try {
       if (!vad) { const bridge = await import('./vad-bridge.js'); vad = await bridge.startVAD(BASE + 'vad/', {
-        onSpeechStart: () => { if (speaking) stopSpeaking(true); listening = true; window.__speechStartAt = Date.now(); },
+        onSpeechStart: () => { if (speaking) stopSpeaking(true); listening = true; window.__speechStartAt = Date.now(); window.__utt = 'u' + Date.now().toString(36); },
         onSpeechEnd: (audio) => { // brain STT is the reliable path: use it whenever SR produced nothing for this utterance
           const srSilent = !window.__srResultAt || (window.__speechStartAt && window.__srResultAt < window.__speechStartAt);
           if (!sr) sendPcm(audio); else if (srSilent) setTimeout(() => { if (!window.__srResultAt || window.__srResultAt < window.__speechStartAt) sendPcm(audio); }, 1600);
@@ -361,7 +361,7 @@ export async function initSolnik(opts = {}) {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SR && !sr) {
       sr = new SR(); sr.lang = 'en-US'; sr.interimResults = false; sr.continuous = true;
-      sr.onresult = (ev) => { const t = ev.results[ev.results.length - 1][0].transcript.trim(); if (t) { window.__srResultAt = Date.now(); listening = false; sendSay(t); listening = true; } };
+      sr.onresult = (ev) => { const t = ev.results[ev.results.length - 1][0].transcript.trim(); if (t) { window.__srResultAt = Date.now(); listening = false; sendSay(t, window.__utt); listening = true; } };
       sr.onend = () => { if (speakOn) { try { sr.start(); } catch (e) {} } };
       sr.onerror = () => {};
     }
@@ -373,7 +373,7 @@ export async function initSolnik(opts = {}) {
     for (let i = 0; i < f32.length; i++) pcm[i] = clamp(f32[i], -1, 1) * 32767;
     let bin = ''; const bytes = new Uint8Array(pcm.buffer);
     for (let i = 0; i < bytes.length; i += 8192) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 8192));
-    ws.send(JSON.stringify({ type: 'stt_pcm', audio: btoa(bin), sampleRate: 16000 }));
+    ws.send(JSON.stringify({ type: 'stt_pcm', audio: btoa(bin), sampleRate: 16000, utt: window.__utt || null }));
   }
 
   // ---------- controls (constitutional: always within reach) ----------
@@ -411,10 +411,12 @@ export async function initSolnik(opts = {}) {
 
   // ---------- main loop ----------
   let raf = 0, last = performance.now();
+  const baseHeadQ = new THREE.Quaternion();
   function frame(now) {
     raf = requestAnimationFrame(frame);
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
     mixer.update(dt);
+    if (bones.head) baseHeadQ.copy(bones.head.quaternion); // the clip's pose this frame; gaze composes onto it, never onto last frame's gaze
     stepTravel(dt); stepGrip(); stepBurst(dt); stepFace(dt, now); stepVisemes(); stepCaption();
     renderer.render(scene, camera);
   }
@@ -478,7 +480,7 @@ function posterMode(root, say, greetingVariant) { // no WebGL / no body: the ado
   q('#solnik-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') doSend(); });
   q('#sk-speak').onclick = () => say('Voice needs my 3D body — but you can type to me, and I will answer in writing.');
   q('#sk-mute').onclick = (e) => { store.muted = !store.muted; e.currentTarget.setAttribute('aria-pressed', String(store.muted)); };
-  q('#sk-dismiss').onclick = () => { dismissed = true; p.style.display = 'none'; caption.classList.remove('on'); };
+  q('#sk-dismiss').onclick = () => { dismissed = true; if (pws && pws.readyState === 1) pws.send(JSON.stringify({ type: 'interrupt' })); p.style.display = 'none'; caption.classList.remove('on'); };
   q('#sk-summon').onclick = () => { dismissed = false; p.style.display = ''; if (!pws) connect(); };
   q('#sk-disable').onclick = () => { lsSet('solnik_disabled', '1'); if (pws) { try { pws.close(); } catch (e) {} } root.remove(); renderReenable('Solnik is off. He stays off until you call him back.'); };
 }
