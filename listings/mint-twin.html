@@ -1,0 +1,620 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The Mint — PROVADIA Catalogue</title><meta name="description" content="A small pilot to establish the brief, prepare agreed launch assets and document what remains."><link rel="stylesheet" href="../design/shared.css"><link rel="stylesheet" href="../catalogue/catalogue.css"><link rel="stylesheet" href="../catalogue/listing.css"><link rel="stylesheet" href="../design/space.css"><link rel="preload" as="font" type="font/ttf" href="../design/assets/fonts/cinzel-latin-500.ttf" crossorigin><link rel="preload" as="font" type="font/ttf" href="../design/assets/fonts/inter-latin-400.ttf" crossorigin><link rel="preload" as="image" fetchpriority="high" media="(min-width: 701px)" href="mint-assets/still-1.jpg"><link rel="stylesheet" href="../nexus.css">
+<!-- LM-T4A BEGIN: head -->
+<link rel="stylesheet" href="mint-living.css">
+<!-- LM-T4A END: head --><meta name="robots" content="noindex,nofollow">
+<script type="importmap">{"imports":{"three":"../solnik/vendor/three.module.js","three/addons/":"../solnik/vendor/addons/"}}</script>
+</head><body id="top" data-page="/catalogue/" data-listing-slug="mint" data-price-missing="false" data-purchase-enabled="false" data-motion-tier="3"><!-- CANONICAL SHELL v1 — include verbatim; active door is set by shared.js. -->
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="town-header" data-shell="header">
+  <div class="masthead wrap">
+    <a class="wordmark" href="/" data-town-path="/" aria-label="PROVADIA — The Town"><span class="threshold-mark" aria-hidden="true"></span>PROVADIA<span class="wordmark-sub">The Town of Record</span></a>
+    <button class="calm-toggle" type="button" data-calm-toggle aria-pressed="false" data-source="visitor.local" data-asof="not-applicable"><span class="calm-symbol" aria-hidden="true"></span>Calm<span class="calm-value" data-calm-label>Off</span></button>
+  </div>
+  <nav class="door-nav wrap" aria-label="The six doors">
+    <a href="/" data-town-path="/"><span aria-hidden="true" class="door-glyph"></span>The Town</a>
+    <a href="/record/" data-town-path="/record/"><span aria-hidden="true" class="door-glyph"></span>The Record</a>
+    <a href="/agora/" data-town-path="/agora/"><span aria-hidden="true" class="door-glyph"></span>The Forum</a>
+    <a href="/knock/" data-town-path="/knock/"><span aria-hidden="true" class="door-glyph"></span>The Knock</a>
+    <a href="/ecosystem/" data-town-path="/ecosystem/"><span aria-hidden="true" class="door-glyph"></span>The Ecosystem</a>
+    <a href="/about/" data-town-path="/about/"><span aria-hidden="true" class="door-glyph"></span>About Us</a>
+    <a href="/coin/" data-town-path="/coin/"><span aria-hidden="true" class="door-glyph"></span>The Coin</a>
+  </nav>
+</header>
+<main id="main" class="listing-main wrap"><style>
+/* THE MINT — GEMINI REVISION (2026-11-23). The journey rebuilt to Gemini's
+   Final Build-Ready Modification Document (founder-commissioned: "tell him
+   to modify whatever he wants to modify and make it better"). One pinned
+   full-viewport canvas carries arrival -> eight exploded layers -> closing
+   ledger. No translucent cards: text rides a bottom scrim; a radial vignette
+   feathers the film's edges into the Vault; leaders are 45-degree polylines
+   with tip dots at Gemini's anchors; a right-edge scrubber rail walks the
+   layers. Palette lock: Vault #141210, Antique gold #C9A227, Bone cream
+   #E9DDC6, Deep brown #30251B; bright gold #E4C65B reserved, unused here. */
+.gx-section{position:relative;height:780vh;width:100vw;margin-left:calc(50% - 50vw);background:#141210;border-bottom:1px solid rgba(201,162,39,.25);margin-bottom:2.5rem}
+.gx-stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#141210}
+.gx-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.gx-noscript-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.gx-vignette{position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,rgba(20,18,16,0) 32%,#141210 78%);pointer-events:none;z-index:1}
+.gx-scrim{position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(to top,#141210 58%,rgba(20,18,16,.82) 78%,rgba(20,18,16,0) 100%);pointer-events:none;z-index:2}
+.gx-arrival-scrim{display:none}
+.gx-closing-scrim{position:absolute;inset:0;background:linear-gradient(to top,#141210 64%,rgba(20,18,16,0) 76%);pointer-events:none}
+@media (max-width:767px){
+  .gx-arrival-scrim{display:block;position:absolute;left:0;right:0;bottom:0;height:62%;background:linear-gradient(to top,#141210 46%,rgba(20,18,16,.88) 66%,rgba(20,18,16,0) 92%);pointer-events:none;z-index:2}
+}
+.gx-leaders{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.gx-leader-line{stroke:#c9a227;stroke-width:1.5;fill:none}
+.gx-leader-tick{stroke:#c9a227;stroke-width:1}
+.gx-leader-halo{fill:rgba(201,162,39,.22)}
+.gx-leader-dot{fill:#c9a227;stroke:#ffefc1;stroke-width:2}
+.gx-beats{position:absolute;inset:0;pointer-events:none;z-index:4}
+.gx-callout{position:absolute;left:20px;right:36px;bottom:5.5%;max-width:36rem;margin:0;opacity:0;color:#e9ddc6}
+.gx-tag{display:block;font-family:Inter,sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#c9a227;margin-bottom:.45rem}
+.gx-name{display:block;font-family:Cinzel,serif;font-size:20px;line-height:1.2;margin-bottom:.4rem;color:#e9ddc6}
+.gx-body{display:block;font-family:Inter,sans-serif;font-size:14px;line-height:1.45;color:rgba(233,221,198,.9)}
+.gx-arrival{position:absolute;inset:0;z-index:6;pointer-events:none}
+.gx-coinlink{position:absolute;top:16px;left:16px;min-width:44px;min-height:44px;display:inline-flex;align-items:center;padding:0 10px;color:#c9a227;font-family:Inter,sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;pointer-events:auto}
+.gx-arrival-copy{position:absolute;left:20px;right:20px;bottom:11%;max-width:36rem}
+.gx-eyebrow{font-family:Inter,sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#c9a227;margin:0 0 .55rem}
+.gx-title{font-family:Cinzel,serif;font-weight:500;font-size:28px;line-height:1.15;color:#e9ddc6;margin:0}
+.gx-sub{font-family:Inter,sans-serif;font-size:14px;line-height:1.45;color:rgba(233,221,198,.85);max-width:32ch;margin:.6rem 0 0}
+.gx-chips{list-style:none;display:flex;flex-wrap:wrap;gap:.45rem;padding:0;margin:1rem 0 0}
+.gx-chips li{border:1px solid #30251b;background:rgba(20,18,16,.85);color:#e9ddc6;font-family:Inter,sans-serif;font-size:11px;letter-spacing:.05em;padding:6px 10px;border-radius:2px}
+.gx-scrollcue{position:absolute;left:50%;transform:translateX(-50%);bottom:24px;font-family:Inter,sans-serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#c9a227;margin:0;white-space:nowrap}
+.gx-rail{position:absolute;right:10px;top:50%;transform:translateY(-50%);height:220px;width:44px;z-index:7;opacity:0;transition:opacity .35s ease;pointer-events:none}
+.gx-rail-track{position:absolute;right:21px;top:0;width:1px;height:220px;background:#30251b}
+.gx-rail-fill{position:absolute;right:21px;top:0;width:1px;height:0;background:#c9a227}
+.gx-tick{position:absolute;right:0;width:44px;height:28px;background:none;border:0;padding:0;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent}
+.gx-tick .gx-tick-mark{position:absolute;top:50%;right:18px;width:8px;height:1px;margin-top:-.5px;background:rgba(201,162,39,.4)}
+.gx-tick .gx-tick-num{position:absolute;top:50%;transform:translateY(-50%);right:32px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:9px;color:#c9a227;opacity:0}
+.gx-tick.on .gx-tick-mark{width:16px;height:2px;margin-top:-1px;background:#c9a227}
+.gx-tick.on .gx-tick-num{opacity:1}
+.gx-closing{position:absolute;inset:0;z-index:5;opacity:0;pointer-events:none}
+.gx-closing-inner{position:absolute;left:20px;right:20px;bottom:5%;max-width:40rem}
+.gx-close-title{font-family:Cinzel,serif;font-weight:500;font-size:22px;line-height:1.2;color:#e9ddc6;margin:0}
+.gx-ledger{margin:1rem 0 0;border-top:1px solid #30251b}
+.gx-row{display:flex;gap:1rem;justify-content:space-between;align-items:baseline;padding:.55rem 0;border-bottom:1px solid #30251b;margin:0}
+.gx-row dt{font-family:Inter,sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#c9a227;white-space:nowrap;margin:0}
+.gx-row dd{font-family:Inter,sans-serif;font-size:13px;line-height:1.4;color:#e9ddc6;text-align:right;margin:0}
+.gx-notice{margin:1rem 0 0;font-family:Inter,sans-serif;font-size:13px;line-height:1.5;color:rgba(233,221,198,.8);border-left:2px solid #c9a227;padding-left:12px}
+.gx-arrival-copy .gx-eyebrow,.gx-arrival-copy .gx-title,.gx-arrival-copy .gx-sub{text-shadow:0 1px 12px rgba(0,0,0,.85),0 0 2px rgba(0,0,0,.9)}
+.gx-closing-inner .gx-eyebrow,.gx-close-title,.gx-row dt,.gx-row dd,.gx-notice{text-shadow:0 1px 10px rgba(0,0,0,.85),0 0 2px rgba(0,0,0,.9)}
+.gx-return{display:flex;width:fit-content;align-items:center;justify-content:center;height:48px;padding:0 24px;border:1px solid #c9a227;background:#141210;color:#e9ddc6;font-family:Inter,sans-serif;font-size:12px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;margin:1.4rem auto 0;pointer-events:none}
+@media (max-width:767px){
+  .gx-chips{gap:6px}
+  .gx-chips li{padding:5px 8px;font-size:10px}
+}
+@media (prefers-reduced-motion:reduce){
+  .gx-section{height:auto}
+  .gx-stage{position:static;height:auto;overflow:visible}
+  .gx-canvas{position:static;height:auto;aspect-ratio:16/9}
+  .gx-vignette,.gx-scrim,.gx-arrival-scrim,.gx-closing-scrim{display:none}
+  .gx-arrival,.gx-closing{position:static;opacity:1!important;transform:none!important;padding:1.2rem 0 .4rem}
+  .gx-arrival-copy,.gx-closing-inner{position:static}
+  .gx-coinlink{position:static}
+  .gx-beats{position:static;padding:.6rem 0}
+  .gx-callout{position:static;opacity:1!important;width:auto;max-width:none;margin:0 20px 1rem}
+  .gx-leaders,.gx-rail,.gx-scrollcue{display:none}
+  .gx-return{pointer-events:auto}
+}
+.gx-reduced{height:auto}
+.gx-reduced .gx-stage{position:static;height:auto;overflow:visible}
+.gx-reduced .gx-canvas{position:static;height:auto;aspect-ratio:16/9}
+.gx-reduced .gx-vignette,.gx-reduced .gx-scrim,.gx-reduced .gx-arrival-scrim,.gx-reduced .gx-closing-scrim{display:none}
+.gx-reduced .gx-arrival,.gx-reduced .gx-closing{position:static;opacity:1!important;transform:none!important;padding:1.2rem 0 .4rem}
+.gx-reduced .gx-arrival-copy,.gx-reduced .gx-closing-inner{position:static}
+.gx-reduced .gx-coinlink{position:static}
+.gx-reduced .gx-beats{position:static;padding:.6rem 0}
+.gx-reduced .gx-callout{position:static;opacity:1!important;width:auto;max-width:none;margin:0 20px 1rem}
+.gx-reduced .gx-leaders,.gx-reduced .gx-rail,.gx-reduced .gx-scrollcue{display:none}
+.gx-reduced .gx-return{pointer-events:auto}
+</style>
+<!-- LM-T4A BEGIN: entrance -->
+<section class="lm-entrance" id="living-mint-entrance" data-solnik-anchor="mint-entrance" data-solnik-x="0.78" aria-label="Entrance — The Great Striking Press">
+<div class="lm-filmslot" data-film-slot="mint-chamber-ignite-trans" data-film-state="not-run" aria-hidden="true"></div>
+<!-- Film slot: the captain's Flow ignite clip lands here later as a <video> element inside this slot — no markup rework required. -->
+<div class="lm-ambient" data-film-slot="mint-workshop-ambient-loop" data-film-state="not-run" aria-hidden="true">
+<!-- Ambient film slot: the captain's workshop ambient loop lands here later as a <video>; the ember spans below are the CSS stand-in until it does. -->
+<span class="lm-ember" style="left:6%;width:3px;height:3px;animation-duration:29s;animation-delay:-6s"></span>
+<span class="lm-ember" style="left:16%;width:5px;height:5px;animation-duration:36s;animation-delay:-19s"></span>
+<span class="lm-ember" style="left:27%;width:4px;height:4px;animation-duration:26s;animation-delay:-11s"></span>
+<span class="lm-ember" style="left:38%;width:3px;height:3px;animation-duration:33s;animation-delay:-24s"></span>
+<span class="lm-ember" style="left:49%;width:5px;height:5px;animation-duration:38s;animation-delay:-3s"></span>
+<span class="lm-ember" style="left:58%;width:4px;height:4px;animation-duration:27s;animation-delay:-15s"></span>
+<span class="lm-ember" style="left:68%;width:3px;height:3px;animation-duration:31s;animation-delay:-27s"></span>
+<span class="lm-ember" style="left:78%;width:5px;height:5px;animation-duration:35s;animation-delay:-8s"></span>
+<span class="lm-ember" style="left:87%;width:4px;height:4px;animation-duration:25s;animation-delay:-21s"></span>
+<span class="lm-ember" style="left:94%;width:3px;height:3px;animation-duration:30s;animation-delay:-13s"></span>
+</div>
+<div class="lm-wrap lm-entrance-inner">
+<svg class="lm-press" viewBox="0 0 300 380" role="img" aria-label="The Great Striking Press: an unmanned minting column — a sculpted die breathing above a cracked dark-stone anvil while a molten gold conduit pours into it from above">
+<ellipse class="lm-press-glow" cx="150" cy="46" rx="26" ry="40" fill="#E4C65B" opacity="0.35"/>
+<path class="lm-press-conduit" d="M143 0 L157 0 L153 90 L147 90 Z" fill="#E4C65B"/>
+<circle class="lm-press-conduit" cx="150" cy="94" r="3.5" fill="#E4C65B"/>
+<rect x="44" y="20" width="212" height="20" fill="#30251B" stroke="#C9A227" stroke-width="2"/>
+<line x1="64" y1="40" x2="64" y2="344" stroke="#C9A227" stroke-width="3"/>
+<line x1="236" y1="40" x2="236" y2="344" stroke="#C9A227" stroke-width="3"/>
+<line x1="82" y1="40" x2="82" y2="344" stroke="#C9A227" stroke-width="1" opacity="0.5"/>
+<line x1="218" y1="40" x2="218" y2="344" stroke="#C9A227" stroke-width="1" opacity="0.5"/>
+<circle cx="64" cy="66" r="12" fill="none" stroke="#C9A227" stroke-width="2"/>
+<circle cx="64" cy="66" r="3.5" fill="#C9A227"/>
+<line x1="64" y1="54" x2="64" y2="78" stroke="#C9A227" stroke-width="1.5"/>
+<line x1="52" y1="66" x2="76" y2="66" stroke="#C9A227" stroke-width="1.5"/>
+<circle cx="236" cy="66" r="12" fill="none" stroke="#C9A227" stroke-width="2"/>
+<circle cx="236" cy="66" r="3.5" fill="#C9A227"/>
+<line x1="236" y1="54" x2="236" y2="78" stroke="#C9A227" stroke-width="1.5"/>
+<line x1="224" y1="66" x2="248" y2="66" stroke="#C9A227" stroke-width="1.5"/>
+<g class="lm-press-die">
+<rect x="92" y="92" width="116" height="24" fill="#30251B" stroke="#C9A227" stroke-width="2"/>
+<rect x="139" y="116" width="22" height="34" fill="#30251B" stroke="#C9A227" stroke-width="2"/>
+<path d="M108 150 L192 150 L180 190 L120 190 Z" fill="#141210" stroke="#C9A227" stroke-width="2"/>
+<circle cx="150" cy="170" r="10" fill="none" stroke="#C9A227" stroke-width="2"/>
+<line x1="150" y1="160" x2="150" y2="180" stroke="#C9A227" stroke-width="1.5"/>
+</g>
+<ellipse cx="150" cy="290" rx="36" ry="7" fill="none" stroke="#E4C65B" stroke-width="2"/>
+<path d="M96 296 L204 296 L220 344 L80 344 Z" fill="#30251B" stroke="#C9A227" stroke-width="2"/>
+<polyline points="150,296 142,310 149,320 144,338" fill="none" stroke="#E9DDC6" stroke-width="1.5" opacity="0.45"/>
+<polyline points="178,296 184,308 179,322" fill="none" stroke="#E9DDC6" stroke-width="1" opacity="0.35"/>
+<line x1="30" y1="346" x2="270" y2="346" stroke="#C9A227" stroke-width="2" opacity="0.5"/>
+</svg>
+<p class="lm-eyebrow">INSIDE THE COIN · DOOR 01 · THE LIVING MINT</p>
+<h2 class="lm-entrance-title">The Mint — Full-Service Coin Creation</h2>
+<p class="lm-entrance-sub">Pump.fun is a vending machine; we are the mint with a Keeper — taking your idea through honesty checks, design, contract, mint, launch, record, and unaided handover.</p>
+<ul class="lm-chips">
+<li>STANDING PRICE: $245 USD · $196 IN PROVADIA (20% OFF)</li>
+<li>CHARGED AT COMPLETION ONLY · COIN HOLDING NEVER REQUIRED</li>
+<li>DELIVERY: HANDOVER TEST + 30-DAY SUPPORT WINDOW</li>
+<li>INTAKE GATE: CLOSED · CHECKOUT NOT CONNECTED</li>
+</ul>
+</div>
+</section>
+<!-- LM-T4A END: entrance --><section class="gx-section" id="mint-journey" aria-label="The Mint — presented in motion as you scroll: the coin turns, opens into the eight named layers of its making, closes whole, and rests whole">
+  <div class="gx-stage">
+    <noscript><img class="gx-noscript-img" src="mint-frames/f001.webp" alt="The PROVADIA coin, whole — a brick P on gold"></noscript>
+    <canvas class="gx-canvas" width="960" height="540" role="img" aria-label="The town's coin, filmed from its own two faces: as you scroll it turns in the centre, opens into a stack of gold layers, closes whole again, and rests whole — while eight bullets name the stages of the mint: the conversation, the honest question, the rehearsal, the covenant, the mark, the launch, the record, and the handover"></canvas>
+    <div class="gx-vignette" aria-hidden="true"></div>
+    <div class="gx-scrim" aria-hidden="true"></div>
+    <div class="gx-arrival-scrim" aria-hidden="true"></div>
+    <div class="gx-beats">
+      <p class="gx-callout" data-gx-from="0.08" data-gx-to="0.18" data-gx-tip="0.500,0.10"><span class="gx-tag">01 / 08 · THE CONVERSATION</span><span class="gx-name">The Conversation</span><span class="gx-body">An unhurried intake dialogue where the founder tells the Keeper his idea. It strips away noise and defines what the coin must actually do.</span></p>
+      <p class="gx-callout" data-gx-from="0.18" data-gx-to="0.28" data-gx-tip="0.500,0.19" data-gx-ticks="5"><span class="gx-tag">02 / 08 · THE HONEST QUESTION</span><span class="gx-name">The Honest Question</span><span class="gx-body">Five written viability checks before any work begins. It tests whether the premise holds — and explains any refusal in writing.</span></p>
+      <p class="gx-callout" data-gx-from="0.28" data-gx-to="0.38" data-gx-tip="0.500,0.27"><span class="gx-tag">03 / 08 · THE REHEARSAL</span><span class="gx-name">The Rehearsal</span><span class="gx-body">The entire coin launch run end-to-end in simulation first. It stress-tests every step and mechanic before anything real is struck.</span></p>
+      <p class="gx-callout" data-gx-from="0.38" data-gx-to="0.48" data-gx-tip="0.500,0.35"><span class="gx-tag">04 / 08 · THE COVENANT</span><span class="gx-name">The Covenant</span><span class="gx-body">Written terms read and agreed by both sides before anything real starts. It locks scope, rules, and completion criteria in plain sight.</span></p>
+      <p class="gx-callout" data-gx-from="0.48" data-gx-to="0.58" data-gx-tip="0.500,0.47"><span class="gx-tag">05 / 08 · THE MARK</span><span class="gx-name">The Mark</span><span class="gx-body">The coin's face, relief, and distinct visual identity crafted in metal. It turns the founder's verified idea into an unmistakable artifact.</span></p>
+      <p class="gx-callout" data-gx-from="0.58" data-gx-to="0.68" data-gx-tip="0.500,0.58"><span class="gx-tag">06 / 08 · THE LAUNCH</span><span class="gx-name">The Launch</span><span class="gx-body">Controlled live release of the coin into active circulation. It carries the finished work from private rehearsal into the open world.</span></p>
+      <p class="gx-callout" data-gx-from="0.68" data-gx-to="0.78" data-gx-tip="0.500,0.68"><span class="gx-tag">07 / 08 · THE RECORD</span><span class="gx-name">The Record</span><span class="gx-body">Every completed step written permanently into the town's public record. It receipts the entire build so trust is verifiable, not claimed.</span></p>
+      <p class="gx-callout" data-gx-from="0.78" data-gx-to="0.88" data-gx-tip="0.500,0.79"><span class="gx-tag">08 / 08 · THE HANDOVER</span><span class="gx-name">The Handover</span><span class="gx-body">Full operational transfer so the founder runs his coin unaided. It marks true completion — the moment the service ends and the fee is earned.</span></p>
+    </div>
+    <nav class="gx-rail" data-gx-rail aria-label="Jump to a layer">
+      <div class="gx-rail-track" aria-hidden="true"></div>
+      <div class="gx-rail-fill" data-gx-railfill aria-hidden="true"></div>
+      <button type="button" class="gx-tick" data-gx-target="0.13" aria-label="Layer 1 — The Conversation"><span class="gx-tick-num">01</span><span class="gx-tick-mark"></span></button>
+      <button type="button" class="gx-tick" data-gx-target="0.23" aria-label="Layer 2 — The Honest Question"><span class="gx-tick-num">02</span><span class="gx-tick-mark"></span></button>
+      <button type="button" class="gx-tick" data-gx-target="0.33" aria-label="Layer 3 — The Rehearsal"><span class="gx-tick-num">03</span><span class="gx-tick-mark"></span></button>
+      <button type="button" class="gx-tick" data-gx-target="0.43" aria-label="Layer 4 — The Covenant"><span class="gx-tick-num">04</span><span class="gx-tick-mark"></span></button>
+      <button type="button" class="gx-tick" data-gx-target="0.53" aria-label="Layer 5 — The Mark"><span class="gx-tick-num">05</span><span class="gx-tick-mark"></span></button>
+      <button type="button" class="gx-tick" data-gx-target="0.63" aria-label="Layer 6 — The Launch"><span class="gx-tick-num">06</span><span class="gx-tick-mark"></span></button>
+      <button type="button" class="gx-tick" data-gx-target="0.73" aria-label="Layer 7 — The Record"><span class="gx-tick-num">07</span><span class="gx-tick-mark"></span></button>
+      <button type="button" class="gx-tick" data-gx-target="0.83" aria-label="Layer 8 — The Handover"><span class="gx-tick-num">08</span><span class="gx-tick-mark"></span></button>
+    </nav>
+    <div class="gx-closing" data-gx-closing>
+      <div class="gx-closing-scrim" aria-hidden="true"></div>
+      <div class="gx-closing-inner">
+        <p class="gx-eyebrow">THE MINT · TERMS &amp; STATUS</p>
+        <h2 class="gx-close-title" data-solnik-anchor="mint-terms" data-solnik-x="0.5">Completion Means Unaided Operation.</h2>
+        <dl class="gx-ledger">
+          <div class="gx-row"><dt>PILOT FEE</dt><dd>$245 ($196 in PROVADIA)</dd></div>
+          <div class="gx-row"><dt>WHEN CHARGED</dt><dd>At completion only — once you operate your coin unaided</dd></div>
+          <div class="gx-row"><dt>COIN REQUIREMENT</dt><dd>Holding the coin is never required</dd></div>
+          <div class="gx-row"><dt>CURRENT STATUS</dt><dd>Intake gate is closed until the founder opens it · Checkout is not connected · Purchase is disabled</dd></div>
+        </dl>
+        <p class="gx-notice">No intake requests, bookings, or payments are accepted while the gate is sealed.</p>
+        <a class="gx-return" data-gx-return href="/next/">← RETURN TO THE COIN</a>
+      </div>
+    </div>
+    <div class="gx-arrival" data-gx-arrival>
+      <a class="gx-coinlink" data-gx-coinlink href="/next/">← THE COIN</a>
+      <div class="gx-arrival-copy">
+        <p class="gx-eyebrow">INSIDE THE COIN · THE MINT</p>
+        <h1 class="gx-title">The Mint</h1>
+        <p class="gx-sub">Full-service coin creation — from first conversation to unaided operation.</p>
+        <ul class="gx-chips"><li>PILOT FEE: $245 ($196 IN PROVADIA)</li><li>CHARGED AT COMPLETION ONLY</li><li>HOLDING THE COIN: NEVER REQUIRED</li><li>INTAKE GATE: CLOSED · CHECKOUT DISABLED</li></ul>
+      </div>
+      <p class="gx-scrollcue">SCROLL TO UNSEAL ↓</p>
+    </div>
+  </div>
+</section>
+<script>
+(function(){
+  var section=document.getElementById('mint-journey'); if(!section) return;
+  var stage=section.querySelector('.gx-stage');
+  var canvas=section.querySelector('.gx-canvas'), ctx=canvas.getContext('2d');
+  var callouts=Array.prototype.slice.call(section.querySelectorAll('.gx-callout'));
+  var beats=section.querySelector('.gx-beats');
+  var arrival=section.querySelector('[data-gx-arrival]');
+  var coinlink=section.querySelector('[data-gx-coinlink]');
+  var closing=section.querySelector('[data-gx-closing]');
+  var arrivalScrim=section.querySelector('.gx-arrival-scrim');
+  var ret=section.querySelector('[data-gx-return]');
+  var rail=section.querySelector('[data-gx-rail]');
+  var railfill=section.querySelector('[data-gx-railfill]');
+  var ticks=Array.prototype.slice.call(section.querySelectorAll('.gx-tick'));
+  ticks.forEach(function(t,i){ t.style.top=((i*(220/7))-14)+'px'; });
+  var TOTAL=379, pad=function(n){return ('00'+n).slice(-3);};
+  var small=window.matchMedia('(max-width: 700px)').matches;
+  var narrow=window.matchMedia('(max-width: 767px)').matches;
+  var saveData=!!(navigator.connection&&navigator.connection.saveData);
+  var step=(small||saveData)?2:1;
+  var order=[]; for(var i=1;i<=TOTAL;i+=step){order.push(i);} if(order[order.length-1]!==TOTAL){order.push(TOTAL);}
+  var frames={}, started=false, current=-1;
+  var targetP=0, dispP=0, chasing=false;
+  var frameDir=small?'mint-frames/m/':'mint-frames/';
+  function src(n){return frameDir+'f'+pad(n)+'.webp';}
+  // Scroll -> film frame, piecewise. FILM INTEGRATION (Gemini's takes
+  // judgment, 2026-11-23): the source is now Mint Take 1 — a single-
+  // direction explosion (f1 closed -> f190 fully exploded) — fitted
+  // into the 960x540 frame space, sequenced forward f1-190, then
+  // CODE-MIRRORED home (sequence 191-379 = film frames 189-1), so the
+  // last frame is pixel-identical to the first, per the architect's
+  // verdict (zero extra credits). Measured on the film itself:
+  // whole coin + camera push f1-29, shear onset f30-33 (motion-energy
+  // peak), slices flare f34-73, first full-width gap f74, P face
+  // re-formed whole f81, gaps 2-3 open f91/f93, all eight strata
+  // present as segments f106, tilt-and-thin f113-145, settled stack
+  // f153, gentle drift to f190. The eight lock moments (window
+  // midpoints 0.13...0.83) land on f81, f91, f97, f106, f121, f137,
+  // f153, f169 — each a measured separation milestone; the push-in is
+  // compressed into the arrival fade, and the mirrored reassembly
+  // runs across the closing window 0.88-0.94.
+  var ANCH=[[0,1],[0.06,30],[0.08,40],[0.13,81],[0.23,91],[0.33,97],[0.43,106],[0.53,121],[0.63,137],[0.73,153],[0.83,169],[0.88,190],[0.94,379],[1,379]];
+  function frameFloat(p){
+    if(p<=0) return 1; if(p>=1) return TOTAL;
+    for(var i=1;i<ANCH.length;i++){
+      if(p<=ANCH[i][0]){ var a=ANCH[i-1], b=ANCH[i]; return a[1]+(b[1]-a[1])*((p-a[0])/(b[0]-a[0])); }
+    }
+    return TOTAL;
+  }
+  function frameIdx(p){
+    var f=frameFloat(p), idx=Math.round((f-1)/step);
+    if(idx<0) idx=0; if(idx>order.length-1) idx=order.length-1;
+    return idx;
+  }
+  function progress(){
+    var total=section.offsetHeight-window.innerHeight; if(total<=0) return 0;
+    var y=-section.getBoundingClientRect().top;
+    return Math.min(1,Math.max(0,y/total));
+  }
+  function sizeCanvas(){
+    var w=stage.clientWidth, h=stage.clientHeight;
+    var dpr=Math.min(window.devicePixelRatio||1,1.5);
+    canvas.width=Math.round(w*dpr); canvas.height=Math.round(h*dpr);
+    current=-1; targetP=progress(); dispP=targetP; draw(dispP); layoutLeaders();
+  }
+  var lastActive=-2, lastVib=0;
+  function winO(p,from,to){
+    if(p<from||p>to) return 0;
+    var a=(p-from)/0.018, b=(to-p)/0.018;
+    return Math.max(0,Math.min(1,a,b));
+  }
+  function draw(p){
+    var idx=frameIdx(p), n=order[idx], img=frames[n];
+    if(!img){
+      for(var d=1;d<order.length;d++){ if(frames[order[Math.max(0,idx-d)]]){img=frames[order[Math.max(0,idx-d)]];break;} if(frames[order[Math.min(order.length-1,idx+d)]]){img=frames[order[Math.min(order.length-1,idx+d)]];break;} }
+    }
+    if(img && n!==current || (img && !frames[n] && current!==-2)){
+      var cw=canvas.width, ch=canvas.height, iw=img.naturalWidth, ih=img.naturalHeight;
+      if(iw&&ih){
+        var s=Math.max(cw/iw,ch/ih), dw=iw*s, dh=ih*s;
+        var dx=(cw-dw)/2, dy=(ch-dh)/2;
+        if(narrow && p<0.08){
+          // Mobile arrival framing (Gemini judgment F1): the cover draw crops
+          // the coin's disc inside the backing store, so the arrival instead
+          // draws the frame at medallion size — the disc (27.9% of frame
+          // width, its centre at 49.0% of frame height, re-measured on
+          // the Take-1 f001) lands at ~72vw with its centre at ~34%
+          // of the stage — and blends back to the cover draw by p=0.08,
+          // before the first leader can show. Leader math is cover-only and
+          // never disturbed; desktop arrival is untouched.
+          var ft2=Math.max(0,Math.min(1,p/0.08)), e2=ft2*ft2*(3-2*ft2);
+          var mw=cw*2.583, mh=mw*(ih/iw), mdy=0.34*ch-0.490*mh;
+          dw=mw+(dw-mw)*e2; dh=mh+(dh-mh)*e2; dx=(cw-dw)/2; dy=mdy+(dy-mdy)*e2;
+        }
+        ctx.fillStyle='#141210'; ctx.fillRect(0,0,cw,ch);
+        ctx.drawImage(img,dx,dy,dw,dh);
+        if(frames[n]) current=n;
+      }
+    }
+    var active=-1;
+    for(var b=0;b<callouts.length;b++){
+      var c=callouts[b];
+      var from=parseFloat(c.getAttribute('data-gx-from')), to=parseFloat(c.getAttribute('data-gx-to'));
+      var o=winO(p,from,to);
+      c.style.opacity=o.toFixed(3);
+      if(o>0.5) active=b;
+      if(c._leader){
+        c._leader.g.setAttribute('opacity',o.toFixed(3));
+        c._leader.line.style.strokeDashoffset=(1-o).toFixed(3);
+      }
+    }
+    // Arrival: full to 0.06, gone by 0.09 (Gemini's fade window).
+    var ao=p<=0.06?1:Math.max(0,1-(p-0.06)/0.03);
+    arrival.style.opacity=ao.toFixed(3);
+    if(arrivalScrim) arrivalScrim.style.opacity=ao.toFixed(3);
+    coinlink.style.pointerEvents=ao>0.4?'auto':'none'; coinlink.tabIndex=ao>0.4?0:-1;
+    // Closing ledger: fades up 0.93 -> 0.99 over the held final frame.
+    var co=Math.max(0,Math.min(1,(p-0.93)/0.06));
+    closing.style.opacity=co.toFixed(3);
+    closing.style.transform='translateY('+((1-co)*14).toFixed(1)+'px)';
+    ret.style.pointerEvents=co>0.5?'auto':'none'; ret.tabIndex=co>0.5?0:-1;
+    // Scrubber rail: only inside the exploded range.
+    rail.style.opacity=(p>0.07&&p<0.89)?'1':'0';
+    var railOn=(p>0.07&&p<0.89); ticks.forEach(function(t){ t.style.pointerEvents=railOn?'auto':'none'; });
+    railfill.style.height=(Math.max(0,Math.min(1,(p-0.08)/0.80))*220).toFixed(1)+'px';
+    ticks.forEach(function(t,i){ t.classList.toggle('on', i===active); t.tabIndex=railOn?0:-1; });
+    if(active!==lastActive){
+      if(active>=0 && navigator.vibrate){
+        var now=Date.now();
+        if(now-lastVib>150){ try{ navigator.vibrate(6); }catch(e){} lastVib=now; }
+      }
+      lastActive=active;
+    }
+  }
+  // Leader lines: Gemini's geometry — a 1px polyline from a glowing tip dot
+  // on the active stratum, angling 45 degrees down to a horizontal shelf
+  // above the layer's title. Anchors are Gemini's viewport coordinates
+  // converted into frame space at the reference phone viewport, so the dot
+  // stays glued to the filmed part under the cover-fit transform on every
+  // screen (the v2 engine's mapping). Layer 2 carries five hairline ticks
+  // fanned beside its dot — the five written checks.
+  var leaderItems=[];
+  (function buildLeaders(){
+    var NS='http://www.w3.org/2000/svg';
+    var svg=document.createElementNS(NS,'svg');
+    svg.setAttribute('class','gx-leaders'); svg.setAttribute('aria-hidden','true');
+    callouts.forEach(function(c){
+      var tip=c.getAttribute('data-gx-tip'); if(!tip) return;
+      var xy=tip.split(',');
+      var g=document.createElementNS(NS,'g'); g.setAttribute('opacity','0');
+      var line=document.createElementNS(NS,'polyline');
+      line.setAttribute('class','gx-leader-line'); line.setAttribute('pathLength','1');
+      line.style.strokeDasharray='1'; line.style.strokeDashoffset='1';
+      var halo=document.createElementNS(NS,'circle'); halo.setAttribute('class','gx-leader-halo'); halo.setAttribute('r','14');
+      var dot=document.createElementNS(NS,'circle'); dot.setAttribute('class','gx-leader-dot'); dot.setAttribute('r','6.5');
+      g.appendChild(line); g.appendChild(halo); g.appendChild(dot);
+      var tickEls=[];
+      if(c.getAttribute('data-gx-ticks')){
+        var count=parseInt(c.getAttribute('data-gx-ticks'),10);
+        for(var k=0;k<count;k++){
+          var tl=document.createElementNS(NS,'line'); tl.setAttribute('class','gx-leader-tick');
+          g.appendChild(tl); tickEls.push(tl);
+        }
+      }
+      svg.appendChild(g);
+      var item={c:c,g:g,line:line,halo:halo,dot:dot,tickEls:tickEls,tx:parseFloat(xy[0]),ty:parseFloat(xy[1])};
+      c._leader=item; leaderItems.push(item);
+    });
+    if(leaderItems.length) stage.insertBefore(svg, beats);
+  })();
+  function layoutLeaders(){
+    if(!leaderItems.length) return;
+    var sr=stage.getBoundingClientRect(); if(!sr.width) return;
+    var dpr=canvas.width/stage.clientWidth; if(!isFinite(dpr)||!dpr) dpr=1;
+    var iw=960, ih=540;
+    var s=Math.max(canvas.width/iw,canvas.height/ih), dw=iw*s, dh=ih*s;
+    leaderItems.forEach(function(it){
+      var tx=((canvas.width-dw)/2 + it.tx*dw)/dpr, ty=((canvas.height-dh)/2 + it.ty*dh)/dpr;
+      tx=Math.max(14,Math.min(stage.clientWidth-14,tx));
+      ty=Math.max(10,Math.min(stage.clientHeight-10,ty));
+      var r=it.c.getBoundingClientRect();
+      var shelfX=Math.max(8,(r.left-sr.left)), shelfY=(r.top-sr.top)-12;
+      var dy=Math.abs(shelfY-ty);
+      var elbowX=Math.max(shelfX+28, tx-dy);
+      it.line.setAttribute('points', tx.toFixed(1)+','+ty.toFixed(1)+' '+elbowX.toFixed(1)+','+shelfY.toFixed(1)+' '+shelfX.toFixed(1)+','+shelfY.toFixed(1));
+      it.halo.setAttribute('cx',tx.toFixed(1)); it.halo.setAttribute('cy',ty.toFixed(1));
+      it.dot.setAttribute('cx',tx.toFixed(1)); it.dot.setAttribute('cy',ty.toFixed(1));
+      it.tickEls.forEach(function(tl,k){
+        var ang=(-64+k*32)*Math.PI/180, len=15;
+        tl.setAttribute('x1',tx.toFixed(1)); tl.setAttribute('y1',ty.toFixed(1));
+        tl.setAttribute('x2',(tx+len*Math.cos(ang)).toFixed(1)); tl.setAttribute('y2',(ty+len*Math.sin(ang)).toFixed(1));
+      });
+    });
+  }
+  // The chase (craft Rule 3): the shown frame lerps after the scroll target.
+  function chase(){
+    targetP=progress();
+    var diff=targetP-dispP;
+    if(Math.abs(diff)<0.00035){
+      // Always draw once on convergence: the arrival rests at p=0 before the
+      // first frame lands, and a neighbour shown mid-preload must upgrade to
+      // the exact frame when it arrives — neither moves the scroll.
+      dispP=targetP; draw(dispP);
+      chasing=false; return;
+    }
+    dispP+=diff*0.1;
+    draw(dispP);
+    requestAnimationFrame(chase);
+  }
+  function kick(){ if(!chasing){ chasing=true; requestAnimationFrame(chase); } }
+  // Priority-tier preload (craft Rule 4): first, last, midpoint, quartiles.
+  function prioritySeq(list){
+    var seq=[], placed={}, q=[], i;
+    function take(k){ if(k>=0&&k<list.length&&!placed[k]){ placed[k]=1; seq.push(list[k]); } }
+    take(0); take(list.length-1); take(list.length>>1);
+    q.push([0,list.length-1]);
+    while(q.length){ var ab=q.shift(), a=ab[0], b=ab[1]; if(b-a<2) continue; var m=(a+b)>>1; take(m); q.push([a,m]); q.push([m,b]); }
+    for(i=0;i<list.length;i++) take(i);
+    return seq;
+  }
+  function preload(){
+    if(started) return; started=true;
+    prioritySeq(order).forEach(function(n){ var im=new Image(); im.onload=function(){ kick(); }; im.src=src(n); frames[n]=im; });
+  }
+  ticks.forEach(function(t){
+    t.addEventListener('click', function(){
+      var p=parseFloat(t.getAttribute('data-gx-target'));
+      var total=section.offsetHeight-window.innerHeight;
+      var y=section.getBoundingClientRect().top+window.scrollY+p*total;
+      window.scrollTo({top:y, behavior:'smooth'});
+    });
+  });
+  window.__gxJourney={disp:function(){return dispP;}, target:function(){return targetP;}, frame:function(){return current;}};
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    section.classList.add('gx-reduced');
+    var im0=new Image();
+    im0.onload=function(){
+      canvas.width=960; canvas.height=540;
+      ctx.fillStyle='#141210'; ctx.fillRect(0,0,960,540);
+      ctx.drawImage(im0,0,0,960,540);
+    };
+    im0.src=src(1);
+    return;
+  }
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){ if(es[0].isIntersecting){ preload(); io.disconnect(); } },{rootMargin:'120% 0px'});
+    io.observe(section);
+  } else { preload(); }
+  window.addEventListener('scroll',kick,{passive:true});
+  window.addEventListener('resize',sizeCanvas);
+  window.addEventListener('load',layoutLeaders);
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(layoutLeaders);
+  if('ResizeObserver' in window){
+    var ro=new ResizeObserver(function(){ layoutLeaders(); });
+    ro.observe(stage); callouts.forEach(function(c){ ro.observe(c); });
+  }
+  sizeCanvas();
+})();
+</script>
+
+<!-- LM-T4A BEGIN: chamber -->
+<section class="lm-chamber" id="creation-chamber" data-solnik-anchor="mint-chamber" data-solnik-x="0.5" data-purchase-enabled="false" aria-label="The Interactive Creation Chamber">
+<div class="lm-wrap">
+<p class="lm-eyebrow">THE INTERACTIVE CREATION CHAMBER</p>
+<h2 class="lm-chamber-title">Shape your coin — as a concept</h2>
+<p class="lm-chamber-intro">Every preview here is a labeled concept, not finished artwork. Nothing here mints, deploys, or charges — the chamber only helps you shape the idea before you ask for scope.</p>
+<div class="lm-lantern" data-solnik-state="off-watch">
+<span class="lm-lantern-dot" aria-hidden="true"></span>
+<p class="lm-lantern-text">SOLNIK · OFF WATCH — SELF-GUIDED CREATION CHAMBER ACTIVE · HOST GUIDANCE OPENS WHEN FOUNDER KEY STEPS LAND</p>
+</div>
+
+<div class="lm-step">
+<h3 class="lm-step-title">Step 1 — Name &amp; Core Purpose</h3>
+<p class="lm-step-note">Give the concept a working name, a short ticker, and one honest sentence of purpose.</p>
+<div class="lm-field">
+<label for="lm-name">Working Coin Name</label>
+<input type="text" id="lm-name" autocomplete="off" placeholder="e.g. Salt of Provadia">
+</div>
+<div class="lm-field">
+<label for="lm-ticker">Ticker Symbol</label>
+<input type="text" id="lm-ticker" maxlength="6" autocomplete="off" placeholder="e.g. SALT">
+</div>
+<div class="lm-field">
+<label for="lm-purpose">One-Sentence Purpose</label>
+<input type="text" id="lm-purpose" autocomplete="off" placeholder="What must this coin actually do?">
+</div>
+</div>
+
+<div class="lm-step">
+<h3 class="lm-step-title">Step 2 — Artistic Direction</h3>
+<p class="lm-step-note">Choose the relief, the surface, and the rim. The concept preview below redraws itself with every choice.</p>
+<fieldset class="lm-radio-group">
+<legend>Relief Motif</legend>
+<div class="lm-radio-options">
+<label class="lm-radio-option"><input type="radio" name="lm-motif" value="masonry" checked> Architectural Masonry</label>
+<label class="lm-radio-option"><input type="radio" name="lm-motif" value="botanical"> Botanical / Natural</label>
+<label class="lm-radio-option"><input type="radio" name="lm-motif" value="celestial"> Celestial / Astrolabe</label>
+<label class="lm-radio-option"><input type="radio" name="lm-motif" value="minimal"> Minimal Emblem</label>
+</div>
+</fieldset>
+<fieldset class="lm-radio-group">
+<legend>Surface Finish</legend>
+<div class="lm-radio-options">
+<label class="lm-radio-option"><input type="radio" name="lm-finish" value="antique" checked> Struck Antique Gold</label>
+<label class="lm-radio-option"><input type="radio" name="lm-finish" value="bronze"> Brushed Bronze &amp; Obsidian</label>
+<label class="lm-radio-option"><input type="radio" name="lm-finish" value="salt"> Salt-Crystal Inlay</label>
+<label class="lm-radio-option"><input type="radio" name="lm-finish" value="silvergold"> Burnished Silver-Gold</label>
+</div>
+</fieldset>
+<fieldset class="lm-radio-group">
+<legend>Edge &amp; Rim</legend>
+<div class="lm-radio-options">
+<label class="lm-radio-option"><input type="radio" name="lm-edge" value="beaded" checked> Beaded Bullion Rim</label>
+<label class="lm-radio-option"><input type="radio" name="lm-edge" value="reeded"> Reeded Edge</label>
+<label class="lm-radio-option"><input type="radio" name="lm-edge" value="motto"> Engraved Motto Ring</label>
+</div>
+</fieldset>
+</div>
+
+<div class="lm-step">
+<h3 class="lm-step-title">Step 3 — Concept Preview</h3>
+<p class="lm-step-note">A concept medallion drawn live from your choices. The badge is part of the drawing itself — even a raw capture of the canvas carries it.</p>
+<div class="lm-preview-card">
+<canvas id="lm-preview" width="720" height="720" role="img" aria-label="Concept medallion preview drawn from your name, ticker, motif, finish and rim choices — a concept only, not finished artwork"></canvas>
+<div class="lm-concept-badge" aria-hidden="true">CONCEPT PREVIEW — NOT FINISHED ARTWORK · DOES NOT MINT OR DEPLOY</div>
+</div>
+<div class="lm-explode-row">
+<button class="lm-btn" id="lm-explode" type="button" aria-pressed="false">[ EXPLODE CONCEPT INTO 8 STAGES ]</button>
+<p class="lm-explode-caption">Separates into the eight stages of the service: 01 THE ORIGINAL IDEA · 02 COIN IDENTITY &amp; ARTISTIC DESIGN · 03 TOKEN SPECIFICATIONS · 04 BLOCKCHAIN CONTRACT PREPARATION · 05 TECHNICAL VERIFICATION · 06 MINTING · 07 LAUNCH PREPARATION · 08 FINAL DELIVERY.</p>
+</div>
+</div>
+
+<div class="lm-step">
+<h3 class="lm-step-title">Step 4 — Commission (scope request)</h3>
+<p class="lm-terms">$245 USD · $196 in PROVADIA · Charged at completion only · Gate currently closed — submitting records your scope request for founder review, no payment taken.</p>
+<div class="lm-field">
+<label for="lm-contact-name">Your Name</label>
+<input type="text" id="lm-contact-name" autocomplete="name">
+</div>
+<div class="lm-field">
+<label for="lm-contact">Contact Email / Handle</label>
+<input type="text" id="lm-contact" autocomplete="email" placeholder="Where the Keeper can reply">
+</div>
+<p class="lm-hash-line">Concept reference: #<span id="lm-hash">…</span></p>
+<button class="lm-btn" id="lm-submit" type="button">Submit scope request</button>
+<p class="lm-submit-note">Submitting opens your email app addressed to the Mint's existing intake (support@provadiacoin.com). It does not book, purchase, or trigger fulfilment — checkout is not connected and the gate stays closed.</p>
+<p class="lm-status" id="lm-status" role="status" aria-live="polite"></p>
+</div>
+
+</div>
+</section>
+<!-- LM-T4A END: chamber --><nav class="breadcrumb" aria-label="Breadcrumb"><a href="../catalogue/index.html">Catalogue</a><span aria-hidden="true">/</span><a href="../catalogue/index.html#heading-services">Services</a></nav><header class="listing-heading"><p class="eyebrow">Services / pilot offer</p><p class="listing-title">The Mint — Full-Service Coin Creation</p><p class="listing-lead">A pilot for a deliberate beginning.</p><p class="proposal-label">pilot · gate closed — scope and availability confirmed with the Keeper before booking</p></header><div class="listing-hero"><div class="listing-media" data-hero-image-slot><style>
+.mint-gallery{display:grid;gap:.6rem}
+.mint-gallery figure{margin:0}
+.mint-gallery img{width:100%;height:auto;aspect-ratio:16/9;display:block;border:1px solid rgba(201,162,39,.35)}
+.mint-gallery figcaption{font-size:.78rem;color:var(--muted,#a8977a);margin-top:.35rem}
+.mint-gallery .mg-row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.mint-gallery video{width:100%;height:auto;aspect-ratio:16/9;display:block;border:1px solid rgba(201,162,39,.35);background:#141210}
+.listing-title{font-family:var(--display);font-size:clamp(34px,4.6vw,64px);line-height:1.18;margin:18px 0 20px;max-width:22ch;overflow-wrap:break-word;color:var(--pale)}
+</style><div class="mint-gallery" aria-label="The Mint — gallery">
+<figure><picture><source media="(max-width: 700px)" srcset="data:image/webp;base64,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" type="image/webp"><img src="mint-assets/still-1.jpg" width="960" height="540" alt="The PROVADIA coin, whole — its front face, a brick P on gold" loading="eager" fetchpriority="high" decoding="async"></picture><figcaption>The coin, whole — its front face.</figcaption></figure>
+<div class="mg-row">
+<figure><img src="mint-assets/still-2.jpg" width="960" height="540" alt="The coin turning on its edge as the presentation begins" loading="lazy" decoding="async"><figcaption>It turns.</figcaption></figure>
+<figure><img src="mint-assets/still-3.jpg" width="960" height="540" alt="The coin opened into a stack of gold layers, mid-presentation" loading="lazy" decoding="async"><figcaption>It opens into its layers.</figcaption></figure>
+<figure><img src="mint-assets/still-4.jpg" width="960" height="540" alt="The gold layers converging as the coin re-forms" loading="lazy" decoding="async"><figcaption>The layers come home.</figcaption></figure>
+<figure><img src="mint-assets/still-5.jpg" width="960" height="540" alt="The coin resting open as an aligned stack of its layers — the mechanism, open" loading="lazy" decoding="async"><figcaption>The mechanism, open — every layer named in the scroll above.</figcaption></figure>
+</div>
+<figure><video controls preload="metadata" playsinline width="960" height="540" poster="mint-assets/still-3.jpg" src="mint-assets/mint-assembly-film.mp4" aria-label="The Mint assembly film: the coin turns, opens into its layers and closes whole — the same frames as the scroll presentation, played straight through"></video><figcaption>The assembly film — the same frames you scroll, played straight through. About sixteen seconds.</figcaption></figure>
+</div><p class="media-context">The film was made from the town's own anchored coin faces (Google Flow, from the start and end frames), and the stills are its frames. The layers it opens into are the stages of the service, named in the scroll presentation above.</p></div><aside class="scope-panel" aria-label="Price and scope request"><p class="eyebrow">Scope price</p><p class="offer-price" data-price data-price-missing="false">$245 pilot · or $196 in PROVADIA (20% off) · scope confirmation required</p><p class="price-note">The fee is charged at completion only — never before. Completion means the handover test: you operate your coin unaided. The gate is closed: the Mint takes no new pilots until the founder opens it. Holding PROVADIA is never required to buy a service.</p><a class="scope-link" data-request-scope href="mailto:support@provadiacoin.com?subject=Catalogue%20scope%3A%20The%20Mint">Request scope <span aria-hidden="true">↗</span></a><p class="checkout-note">Request scope opens email. It does not book, purchase or trigger fulfilment. Checkout is not connected — nothing on this page takes a payment.</p><h2>At a glance</h2><ul class="offer-bullets" data-six-bullets><li>Eight stages, one Keeper — idea to handover</li><li>Fixed pilot fee: $245 · $196 in PROVADIA</li><li>Charged at completion only — the handover test</li><li>30-day support window after handover</li><li>Every launch entered in the town's Record</li><li>Gate closed — the chamber stays open for concept work</li></ul></aside></div>
+
+<section class="listing-section description-section" data-full-description><p class="eyebrow">The service</p><h2>About this service</h2><p>The Mint is the town's full-service coin creation service. A founder brings an idea; the Mint carries it through every stage of becoming a working coin — the conversation that defines it, the honest question that tests it, the rehearsal that proves it on test ground, the covenant that fixes its terms, the mark struck as its face, the launch itself, its entry in the town's Record, and the handover that leaves the founder running it unaided. Idea, design, contract, mint, launch — carried by the Keeper and the town's crew, from first conversation to final delivery.</p><p>The service runs as a pilot at a fixed fee: $245, or $196 when paid in PROVADIA. The fee is charged at completion only — never before — and completion means the handover test: you operate your coin unaided. After handover, a 30-day support window covers questions and corrections on the delivered work; no response-time guarantee is made. The intake gate is currently closed — the Mint takes no new pilots until the founder opens it — and the Creation Chamber on this page stays open for self-guided concept work. Holding PROVADIA is never required to buy a service.</p></section><section class="listing-section inside-section"><div><p class="eyebrow">The service, stage by stage</p><h2 data-solnik-anchor="mint-stages" data-solnik-x="0.24">What’s inside</h2><p>The eight stages of the service, in order — the same stages the scroll presentation on this page opens into, and the same path the Creation Chamber walks.</p></div><ul data-deliverables><li>The Conversation — an unhurried intake where you tell the Keeper your idea, and the coin's real job is defined.</li><li>The Honest Question — five written viability checks test whether the premise holds, before any work begins; a refusal is explained in writing.</li><li>The Rehearsal — the full launch is practised on test ground first, so mistakes cost nothing.</li><li>The Covenant — scope, rules and completion criteria are read, agreed and fixed in writing by both sides before anything is struck.</li><li>The Mark — the coin's face, relief and visual identity are crafted, so the coin is unmistakably yours.</li><li>The Launch — the controlled live release of the coin into the open world, its contract prepared and verified beforehand.</li><li>The Record — every completed step is written permanently into the town's Day-Book, its public record — hash-chained and open to inspection.</li><li>The Handover — you take the keys and operate unaided; the 30-day support window opens.</li></ul></section><section class="listing-section boundary-section"><h2>Boundaries & prerequisites</h2><p>No promise of listing, liquidity, market demand or investment outcome.</p><p>When the till opens, the whole house takes card, PayPal and crypto alike — and paying in PROVADIA earns 20% off the pilot fee ($196 instead of $245). The split is 80% founder / 20% website & community, separate from gold fees. Any gold fees, source rights, operational work and acceptance terms require explicit agreement. No wallet connection or live backend is provided here.</p></section><nav class="listing-neighbours" aria-label="More catalogue offers"><a href="ancient-underground-mine-world.html"><span class="eyebrow">Previous offer</span>Ancient Underground Mine World</a><a href="../catalogue/index.html#browse">All 34 offers</a><a href="keeper.html"><span class="eyebrow">Next offer</span>The Keeper — Extended Audience</a></nav></main><!-- CANONICAL SHELL v1 — the honesty sentence is intentionally verbatim. -->
+<footer class="town-footer" data-shell="footer">
+  <div class="wrap">
+    <div class="footer-heading"><span class="threshold-mark" aria-hidden="true"></span><p class="carved">The Town of Record</p><a class="text-door" href="#top">Back to the threshold <span aria-hidden="true">↑</span></a></div>
+    <p class="foundation-law">PROVADIA is a place, not an investment. Holding it names you a Bricklayer in the town registry and gives you a vote on the Wall's fate — and nothing else: no redemption, no yield, no rights, no expected return.</p>
+    <div class="footer-bottom"><p>Support: <a href="mailto:support@provadiacoin.com">support@provadiacoin.com</a> — we never DM first.</p><nav aria-label="Legal"><a href="/privacy/" data-town-path="/privacy/">Privacy</a><a href="/terms/" data-town-path="/terms/">Terms</a></nav></div>
+    <p class="house-line" style="margin-top:16px;font-size:11px">Also from our house — <a href="https://onejobkits.com" style="color:#C9A227">OneJobKits: practical kits for every job →</a></p>
+  </div>
+</footer>
+<script src="../design/shared.js"></script><script src="../catalogue/delivered-media.js"></script><script src="../catalogue/media.js"></script><script src="../design/vendor/gsap.min.js"></script><script src="../design/vendor/ScrollTrigger.min.js"></script><script src="../design/space.js"></script><script type="application/json" id="nexus-share-manifest">{"title": "PROVADIA \u2014 The Mint", "text": "Pump.fun is a vending machine; we are the mint with a Keeper. The PROVADIA Coin Mint service \u2014 $245, or $196 in PROVADIA, charged at completion only.", "url": "https://provadiacoin.com/listings/mint.html", "media": "https://provadiacoin.com/marks/front-published.webp"}</script>
+<script src="../nexus.js"></script>
+<!-- LM-T4A BEGIN: script -->
+<script src="mint-living.js" defer></script>
+<!-- LM-T4A END: script -->
+<div style="position:fixed;left:12px;top:12px;z-index:2147482000;background:#C9A227;color:#141210;font:700 11px/1 Georgia,serif;letter-spacing:.08em;padding:6px 9px;border-radius:6px;pointer-events:none">PREVIEW · SOLNIK STAGING TWIN</div>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  if (q.get('solnik') !== 'preview') return;
+  import('../solnik/living-entity.js').then(function (m) { m.initSolnik(); })
+    .catch(function (e) { console.error('solnik load failed', e); });
+})();
+</script>
+</body></html>
