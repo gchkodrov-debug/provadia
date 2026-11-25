@@ -132,11 +132,12 @@ export async function initSolnik() {
   }
 
   // ---------- anchors (the DOM Anchor Graph, specimen slice) ----------
-  function anchors() {
+  function anchors(all) {
     const out = {};
     document.querySelectorAll('[data-solnik-anchor]').forEach(el => {
       const r = el.getBoundingClientRect();
-      if (r.width < 30 || r.bottom < -80 || r.top > VH + 80) return;
+      if (r.width < 30) return;
+      if (!all && (r.bottom < -80 || r.top > VH + 80)) return;
       const fx = parseFloat(el.dataset.solnikX || '0.5');
       out[el.dataset.solnikAnchor] = { x: r.left + r.width * fx, topY: VH - r.top, el };
     });
@@ -289,10 +290,10 @@ export async function initSolnik() {
   // ---------- brain link ----------
   let ws = null, wsTries = 0, greeted = false;
   function guide(anchorId, scroll = true) {
-    const a = anchors()[anchorId];
+    const a = anchors(true)[anchorId];
     if (!a) return;
     if (scroll) a.el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
-    setTimeout(() => { const b = anchors()[anchorId]; if (b) { perchAt({ id: anchorId, ...b }, false); setTimeout(() => playClip('point', 0.15), 950); setTimeout(() => playClip('idle', 0.4, true), 2900); } }, reduced ? 60 : 650);
+    setTimeout(() => { const b = anchors(true)[anchorId]; if (b) { perchAt({ id: anchorId, ...b }, false); setTimeout(() => playClip('point', 0.15), 950); setTimeout(() => playClip('idle', 0.4, true), 2900); } }, reduced ? 60 : 650);
   }
   function connectBrain() {
     try { ws = new WebSocket(BRAIN); } catch (e) { return; }
