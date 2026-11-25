@@ -341,8 +341,11 @@ export async function initSolnik() {
     say('Listening… talk to me. If I am speaking, just start — I will stop and listen.');
     try {
       if (!vad) { const bridge = await import('./vad-bridge.js'); vad = await bridge.startVAD(BASE + 'vad/', {
-        onSpeechStart: () => { if (speaking) stopSpeaking(true); listening = true; },
-        onSpeechEnd: (audio) => { if (!sr) sendPcm(audio); },
+        onSpeechStart: () => { if (speaking) stopSpeaking(true); listening = true; window.__speechStartAt = Date.now(); },
+        onSpeechEnd: (audio) => { // brain STT is the reliable path: use it whenever SR produced nothing for this utterance
+          const srSilent = !window.__srResultAt || (window.__speechStartAt && window.__srResultAt < window.__speechStartAt);
+          if (!sr) sendPcm(audio); else if (srSilent) setTimeout(() => { if (!window.__srResultAt || window.__srResultAt < window.__speechStartAt) sendPcm(audio); }, 1600);
+        },
       }); window.__solnikVad = 'on'; }
       else vad.resume();
       window.__solnikVad = 'on';
@@ -350,7 +353,7 @@ export async function initSolnik() {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SR && !sr) {
       sr = new SR(); sr.lang = 'en-US'; sr.interimResults = false; sr.continuous = true;
-      sr.onresult = (ev) => { const t = ev.results[ev.results.length - 1][0].transcript.trim(); if (t) { listening = false; sendSay(t); listening = true; } };
+      sr.onresult = (ev) => { const t = ev.results[ev.results.length - 1][0].transcript.trim(); if (t) { window.__srResultAt = Date.now(); listening = false; sendSay(t); listening = true; } };
       sr.onend = () => { if (speakOn) { try { sr.start(); } catch (e) {} } };
       sr.onerror = () => {};
     }
