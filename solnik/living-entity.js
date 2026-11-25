@@ -68,7 +68,25 @@ export async function initSolnik(opts = {}) {
   </div>`;
   document.body.appendChild(root);
   const caption = $('#solnik-caption', root);
-  const say = (t) => { caption.textContent = t; caption.classList.add('on'); clearTimeout(say._t); say._t = setTimeout(() => caption.classList.remove('on'), Math.max(3200, t.length * 95)); };
+  const say = (t) => { // conversation sentences QUEUE: the brain sends a reply's sentences in a burst, and instant overwrite flashed middle sentences for ~90 ms — unreadable (verifier re-probe, 2026-11-25). Each sentence now gets its reading time.
+    say._q.push(t); say._pump();
+  };
+  say._q = []; say._busy = false;
+  say._dwell = (t) => Math.min(5200, Math.max(1500, 1100 + t.length * 45)); // reading time per sentence, roughly his speaking pace
+  say._pump = () => {
+    if (say._busy || !say._q.length) return;
+    say._busy = true;
+    const t = say._q.shift();
+    caption.textContent = t; caption.classList.add('on');
+    clearTimeout(say._t);
+    say._t = setTimeout(() => { say._busy = false; if (say._q.length) say._pump(); else caption.classList.remove('on'); }, say._dwell(t));
+  };
+  say.now = (t) => { // state notices (napping, capped, listening…) show at once, dropping any queued sentences
+    say._q.length = 0; say._busy = false; clearTimeout(say._t);
+    caption.textContent = t; caption.classList.add('on');
+    say._t = setTimeout(() => caption.classList.remove('on'), Math.max(3200, t.length * 95));
+  };
+  say.flush = () => { say._q.length = 0; }; // barge-in / dismiss: pending sentences never surface after the moment has passed
 
   // ---------- renderer / scene (pixel-space: 1 unit = 1 CSS px at z=0) ----------
   let renderer;
@@ -407,6 +425,7 @@ export async function initSolnik(opts = {}) {
     } catch (e) { playing = false; speaking = audioQ.length > 0; pumpAudio(); }
   }
   function stopSpeaking(remote = true) {
+    say.flush(); // queued captions from the interrupted reply never surface
     audioQ.length = 0;
     if (curSource) { try { curSource.onended = null; curSource.stop(); } catch (e) {} curSource = null; }
     playing = false; speaking = false;
@@ -485,13 +504,13 @@ export async function initSolnik(opts = {}) {
           setTimeout(() => { if (tok === gestureTok && visibleWanted && clipNameNow === 'point') playClip('idle', 0.4, true); }, 900);
         }
       }
-      if (m.type === 'sleep') { asleep = true; pendingMood = null; setExpr('sleepy', 0, 3); say('Zzz… tap Summon when you need me.'); } // a mood queued before sleep must not leak into the next waking answer
+      if (m.type === 'sleep') { asleep = true; pendingMood = null; setExpr('sleepy', 0, 3); say.now('Zzz… tap Summon when you need me.'); } // a mood queued before sleep must not leak into the next waking answer
       if (m.type === 'awake') { asleep = false; exprPrio = 0; setExpr('neutral'); }
-      if (m.type === 'voice_capped') say('My voice is resting for today — but I can still chat in writing.');
-      if (m.type === 'stt_unavailable') say("I heard you — but turning voice into words isn't ready on my side yet. You can type to me, and I'll speak back.");
+      if (m.type === 'voice_capped') say.now('My voice is resting for today — but I can still chat in writing.');
+      if (m.type === 'stt_unavailable') say.now("I heard you — but turning voice into words isn't ready on my side yet. You can type to me, and I'll speak back.");
       if (m.type === 'interrupted') stopSpeaking(false);
     };
-    ws.onclose = () => { if (wsTries < 2) { wsTries++; setTimeout(connectBrain, 2500 * wsTries); } else say('My brain is napping — the captain has the note. You can still look around; I will be back.'); };
+    ws.onclose = () => { if (wsTries < 2) { wsTries++; setTimeout(connectBrain, 2500 * wsTries); } else say.now('My brain is napping — the captain has the note. You can still look around; I will be back.'); };
     ws.onerror = () => { try { ws.close(); } catch (e) {} };
   }
   function sendSay(text, utt) {
@@ -505,7 +524,7 @@ export async function initSolnik(opts = {}) {
     if (asleep && ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'wake' }));
     asleep = false;
     if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'say', text, utt: utt || null }));
-    else say('One moment — my brain is still waking up.');
+    else say.now('One moment — my brain is still waking up.');
   }
 
   // ---------- voice input: Silero VAD (lazy) + SpeechRecognition where present ----------
@@ -514,7 +533,7 @@ export async function initSolnik(opts = {}) {
     if (speakOn) { speakOn = false; btn.setAttribute('aria-pressed', 'false'); if (vad) vad.pause(); if (sr) { try { sr.stop(); } catch (e) {} } listening = false; return; }
     ensureAudio();
     speakOn = true; btn.setAttribute('aria-pressed', 'true'); listening = true;
-    say('Listening… talk to me. If I am speaking, just start — I will stop and listen.');
+    say.now('Listening… talk to me. If I am speaking, just start — I will stop and listen.');
     try {
       if (!vad) { const bridge = await import('./vad-bridge.js'); vad = await bridge.startVAD(BASE + 'vad/', {
         onSpeechStart: () => { if (speaking) stopSpeaking(true); listening = true; window.__speechStartAt = Date.now(); window.__utt = 'u' + Date.now().toString(36); },
@@ -525,7 +544,7 @@ export async function initSolnik(opts = {}) {
       }); window.__solnikVad = 'on'; }
       else vad.resume();
       window.__solnikVad = 'on';
-    } catch (e) { say('My ears could not open here — the microphone or its models were blocked. You can type to me instead.'); }
+    } catch (e) { say.now('My ears could not open here — the microphone or its models were blocked. You can type to me instead.'); }
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SR && !sr) {
       sr = new SR(); sr.lang = 'en-US'; sr.interimResults = false; sr.continuous = true;
@@ -602,7 +621,7 @@ export async function initSolnik(opts = {}) {
   if (reduced) { // static specimen of the same state: render a few frames, no loop
     mixer.update(0.4); renderer.render(scene, camera);
     setTimeout(() => renderer.render(scene, camera), 700);
-    say('Solnik is here (calm mode — reduced motion is on). Use the Type button to talk to me.');
+    say.now('Solnik is here (calm mode — reduced motion is on). Use the Type button to talk to me.');
   } else {
     raf = requestAnimationFrame(frame);
   }
@@ -626,7 +645,7 @@ function posterMode(root, say, greetingVariant) { // no WebGL / no body: the ado
   root.appendChild(p);
   const caption = $('#solnik-caption', root); // the main loop never runs here, so park the caption top-right
   if (caption) { caption.style.left = 'auto'; caption.style.right = '14px'; caption.style.top = '14px'; }
-  say('This is Solnik, in portrait form — my 3D body needs WebGL, which this device has off.');
+  say.now('This is Solnik, in portrait form — my 3D body needs WebGL, which this device has off.');
   // The pill and Type box were built with the root but the 3D path wires them — wire them here too,
   // or Summon/Mute/Dismiss/Disable and the promised text chat are dead buttons in this mode.
   let pws = null, dismissed = false;
@@ -637,19 +656,19 @@ function posterMode(root, say, greetingVariant) { // no WebGL / no body: the ado
       if (dismissed || ev.data instanceof ArrayBuffer) return; // portrait mode is text-only: voice frames are dropped
       let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
       if (m.type === 'sentence' && m.text) say(m.text);
-      if (m.type === 'voice_capped') say('My voice is resting for today — but I can still chat in writing.');
+      if (m.type === 'voice_capped') say.now('My voice is resting for today — but I can still chat in writing.');
     };
     pws.onclose = () => { pws = null; };
   };
   connect();
   const q = (s) => root.querySelector(s);
   q('#sk-type').onclick = () => { q('#solnik-talk').classList.toggle('on'); q('#solnik-input').focus(); };
-  const doSend = () => { const i = q('#solnik-input'); const t = i.value.trim(); if (!t) return; i.value = ''; if (!pws || pws.readyState !== 1) { connect(); say('One moment — my brain is still waking up. Try again in a second.'); return; } pws.send(JSON.stringify({ type: 'say', text: t })); };
+  const doSend = () => { const i = q('#solnik-input'); const t = i.value.trim(); if (!t) return; i.value = ''; if (!pws || pws.readyState !== 1) { connect(); say.now('One moment — my brain is still waking up. Try again in a second.'); return; } pws.send(JSON.stringify({ type: 'say', text: t })); };
   q('#solnik-send').onclick = doSend;
   q('#solnik-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') doSend(); });
-  q('#sk-speak').onclick = () => say('Voice needs my 3D body — but you can type to me, and I will answer in writing.');
+  q('#sk-speak').onclick = () => say.now('Voice needs my 3D body — but you can type to me, and I will answer in writing.');
   q('#sk-mute').onclick = (e) => { store.muted = !store.muted; e.currentTarget.setAttribute('aria-pressed', String(store.muted)); };
-  q('#sk-dismiss').onclick = () => { dismissed = true; if (pws && pws.readyState === 1) pws.send(JSON.stringify({ type: 'interrupt' })); p.style.display = 'none'; caption.classList.remove('on'); };
+  q('#sk-dismiss').onclick = () => { dismissed = true; say.flush(); if (pws && pws.readyState === 1) pws.send(JSON.stringify({ type: 'interrupt' })); p.style.display = 'none'; caption.classList.remove('on'); };
   q('#sk-summon').onclick = () => { dismissed = false; p.style.display = ''; if (!pws) connect(); };
   q('#sk-disable').onclick = () => { lsSet('solnik_disabled', '1'); if (pws) { try { pws.close(); } catch (e) {} } root.remove(); renderReenable('Solnik is off. He stays off until you call him back.'); };
 }
