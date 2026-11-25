@@ -106,6 +106,18 @@
 .gx-reduced .gx-callout{position:static;opacity:1!important;width:auto;max-width:none;margin:0 20px 1rem}
 .gx-reduced .gx-leaders,.gx-reduced .gx-rail,.gx-reduced .gx-scrollcue{display:none}
 .gx-reduced .gx-return{pointer-events:auto}
+.gx-inspect-btn{display:inline-flex;align-items:center;min-height:44px;margin-top:.7rem;padding:0 18px;border:1px solid #c9a227;background:rgba(20,18,16,.85);color:#e9ddc6;font-family:Inter,sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;pointer-events:none}
+.gx-inspect-btn:hover{background:#30251b}
+.gx-inspect-btn:focus-visible{outline:2px solid #c9a227;outline-offset:2px}
+.gx-reduced .gx-inspect-btn{pointer-events:auto}
+.gx-inspect-overlay{position:fixed;inset:0;z-index:2147483050;background:rgba(20,18,16,.97);display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+.gx-inspect-overlay[hidden]{display:none}
+.gx-inspect-card{width:100%;max-width:44rem;text-align:center}
+.gx-inspect-img{width:auto;height:auto;max-width:min(88vw,44rem);max-height:74vh;margin:0 auto;border:1px solid rgba(201,162,39,.55);background:#141210}
+.gx-inspect-caption{font-family:Inter,sans-serif;font-size:14px;line-height:1.55;color:rgba(233,221,198,.92);max-width:40rem;margin:1rem auto 0}
+.gx-inspect-close{position:absolute;top:16px;right:16px;display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border:1px solid #c9a227;background:#141210;color:#e9ddc6;font-family:Inter,sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
+.gx-inspect-close:hover{background:#30251b}
+.gx-inspect-close:focus-visible{outline:2px solid #c9a227;outline-offset:2px}
 </style>
 <!-- LM-T4A BEGIN: entrance -->
 <section class="lm-entrance" id="living-mint-entrance" data-solnik-anchor="mint-entrance" data-solnik-x="0.78" aria-label="Entrance — The Great Striking Press">
@@ -178,7 +190,7 @@
       <p class="gx-callout" data-gx-from="0.18" data-gx-to="0.28" data-gx-tip="0.500,0.19" data-gx-ticks="5"><span class="gx-tag">02 / 08 · THE HONEST QUESTION</span><span class="gx-name">The Honest Question</span><span class="gx-body">Five written viability checks before any work begins. It tests whether the premise holds — and explains any refusal in writing.</span></p>
       <p class="gx-callout" data-gx-from="0.28" data-gx-to="0.38" data-gx-tip="0.500,0.27"><span class="gx-tag">03 / 08 · THE REHEARSAL</span><span class="gx-name">The Rehearsal</span><span class="gx-body">The entire coin launch run end-to-end in simulation first. It stress-tests every step and mechanic before anything real is struck.</span></p>
       <p class="gx-callout" data-gx-from="0.38" data-gx-to="0.48" data-gx-tip="0.500,0.35"><span class="gx-tag">04 / 08 · THE COVENANT</span><span class="gx-name">The Covenant</span><span class="gx-body">Written terms read and agreed by both sides before anything real starts. It locks scope, rules, and completion criteria in plain sight.</span></p>
-      <p class="gx-callout" data-gx-from="0.48" data-gx-to="0.58" data-gx-tip="0.500,0.47"><span class="gx-tag">05 / 08 · THE MARK</span><span class="gx-name">The Mark</span><span class="gx-body">The coin's face, relief, and distinct visual identity crafted in metal. It turns the founder's verified idea into an unmistakable artifact.</span></p>
+      <p class="gx-callout" data-gx-from="0.48" data-gx-to="0.58" data-gx-tip="0.500,0.47"><span class="gx-tag">05 / 08 · THE MARK</span><span class="gx-name">The Mark</span><span class="gx-body">The coin's face, relief, and distinct visual identity crafted in metal. It turns the founder's verified idea into an unmistakable artifact.</span><button type="button" class="gx-inspect-btn" data-gx-inspect aria-haspopup="dialog" tabindex="-1">Inspect — see The Mark up close</button></p>
       <p class="gx-callout" data-gx-from="0.58" data-gx-to="0.68" data-gx-tip="0.500,0.58"><span class="gx-tag">06 / 08 · THE LAUNCH</span><span class="gx-name">The Launch</span><span class="gx-body">Controlled live release of the coin into active circulation. It carries the finished work from private rehearsal into the open world.</span></p>
       <p class="gx-callout" data-gx-from="0.68" data-gx-to="0.78" data-gx-tip="0.500,0.68"><span class="gx-tag">07 / 08 · THE RECORD</span><span class="gx-name">The Record</span><span class="gx-body">Every completed step written permanently into the town's public record. It receipts the entire build so trust is verifiable, not claimed.</span></p>
       <p class="gx-callout" data-gx-from="0.78" data-gx-to="0.88" data-gx-tip="0.500,0.79"><span class="gx-tag">08 / 08 · THE HANDOVER</span><span class="gx-name">The Handover</span><span class="gx-body">Full operational transfer so the founder runs his coin unaided. It marks true completion — the moment the service ends and the fee is earned.</span></p>
@@ -195,11 +207,11 @@
       <button type="button" class="gx-tick" data-gx-target="0.73" aria-label="Layer 7 — The Record"><span class="gx-tick-num">07</span><span class="gx-tick-mark"></span></button>
       <button type="button" class="gx-tick" data-gx-target="0.83" aria-label="Layer 8 — The Handover"><span class="gx-tick-num">08</span><span class="gx-tick-mark"></span></button>
     </nav>
-    <div class="gx-closing" data-gx-closing>
+    <div class="gx-closing" data-gx-closing data-solnik-anchor="mint-terms" data-solnik-x="0.93">
       <div class="gx-closing-scrim" aria-hidden="true"></div>
       <div class="gx-closing-inner">
         <p class="gx-eyebrow">THE MINT · TERMS &amp; STATUS</p>
-        <h2 class="gx-close-title" data-solnik-anchor="mint-terms" data-solnik-x="0.5">Completion Means Unaided Operation.</h2>
+        <h2 class="gx-close-title">Completion Means Unaided Operation.</h2>
         <dl class="gx-ledger">
           <div class="gx-row"><dt>PILOT FEE</dt><dd>$245 ($196 in PROVADIA)</dd></div>
           <div class="gx-row"><dt>WHEN CHARGED</dt><dd>At completion only — once you operate your coin unaided</dd></div>
@@ -237,6 +249,7 @@
   var rail=section.querySelector('[data-gx-rail]');
   var railfill=section.querySelector('[data-gx-railfill]');
   var ticks=Array.prototype.slice.call(section.querySelectorAll('.gx-tick'));
+  var inspectBtn=section.querySelector('[data-gx-inspect]');
   ticks.forEach(function(t,i){ t.style.top=((i*(220/7))-14)+'px'; });
   var TOTAL=379, pad=function(n){return ('00'+n).slice(-3);};
   var small=window.matchMedia('(max-width: 700px)').matches;
@@ -345,8 +358,16 @@
     closing.style.transform='translateY('+((1-co)*14).toFixed(1)+'px)';
     ret.style.pointerEvents=co>0.5?'auto':'none'; ret.tabIndex=co>0.5?0:-1;
     // Scrubber rail: only inside the exploded range.
-    rail.style.opacity=(p>0.07&&p<0.89)?'1':'0';
-    var railOn=(p>0.07&&p<0.89); ticks.forEach(function(t){ t.style.pointerEvents=railOn?'auto':'none'; });
+    // Layer rail (2026-11-25 fix pass): the jump buttons must be clickable
+    // from any scroll position — previously the rail slept until p>0.07 and
+    // away again after p>0.89, leaving the Layer buttons unreachable from
+    // the top and the end of the journey. The rail now rides the whole
+    // journey; it sits on the stage's right edge, clear of the copy.
+    rail.style.opacity='1';
+    var railOn=true; ticks.forEach(function(t){ t.style.pointerEvents=railOn?'auto':'none'; });
+    // The Inspect control is armed exactly while its stratum (05, The Mark,
+    // callout index 4) is the active one; otherwise it is inert and unfocusable.
+    if(inspectBtn){ var iOn=(active===4); inspectBtn.style.pointerEvents=iOn?'auto':'none'; inspectBtn.tabIndex=iOn?0:-1; }
     railfill.style.height=(Math.max(0,Math.min(1,(p-0.08)/0.80))*220).toFixed(1)+'px';
     ticks.forEach(function(t,i){ t.classList.toggle('on', i===active); t.tabIndex=railOn?0:-1; });
     if(active!==lastActive){
@@ -458,6 +479,7 @@
   window.__gxJourney={disp:function(){return dispP;}, target:function(){return targetP;}, frame:function(){return current;}};
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     section.classList.add('gx-reduced');
+    if(inspectBtn){ inspectBtn.style.pointerEvents='auto'; inspectBtn.tabIndex=0; }
     var im0=new Image();
     im0.onload=function(){
       canvas.width=960; canvas.height=540;
@@ -483,8 +505,42 @@
 })();
 </script>
 
+<div class="gx-inspect-overlay" data-gx-inspect-overlay role="dialog" aria-modal="true" aria-labelledby="gx-inspect-title" hidden>
+  <button type="button" class="gx-inspect-close" data-gx-inspect-close>Close ✕</button>
+  <div class="gx-inspect-card">
+    <p class="gx-tag" id="gx-inspect-title">05 / 08 · THE MARK — INSPECT</p>
+    <img class="gx-inspect-img" src="assets/inspect-mint-mark.webp" alt="Close crop of the real PROVADIA coin obverse: the brick-masonry P relief in struck gold" width="800" height="800">
+    <p class="gx-inspect-caption">The Mark, up close — a crop of the founder-approved PROVADIA obverse artwork: the brick-masonry 'P' relief the Mint strikes from. The real artifact face, not a rendering of one.</p>
+  </div>
+</div>
+<script>
+(function(){
+  var btn=document.querySelector('[data-gx-inspect]');
+  var ov=document.querySelector('[data-gx-inspect-overlay]');
+  if(!btn||!ov) return;
+  var closeBtn=ov.querySelector('[data-gx-inspect-close]');
+  var lastFocus=null;
+  function onKey(e){ if(e.key==='Escape'||e.keyCode===27){ e.preventDefault(); close(); } }
+  function open(){
+    lastFocus=document.activeElement;
+    ov.hidden=false;
+    document.body.style.overflow='hidden';
+    document.addEventListener('keydown',onKey,true);
+    if(closeBtn) closeBtn.focus();
+  }
+  function close(){
+    ov.hidden=true;
+    document.body.style.overflow='';
+    document.removeEventListener('keydown',onKey,true);
+    if(lastFocus&&lastFocus.focus) lastFocus.focus();
+  }
+  btn.addEventListener('click',open);
+  if(closeBtn) closeBtn.addEventListener('click',close);
+  ov.addEventListener('click',function(e){ if(e.target===ov) close(); });
+})();
+</script>
 <!-- LM-T4A BEGIN: chamber -->
-<section class="lm-chamber" id="creation-chamber" data-solnik-anchor="mint-chamber" data-solnik-x="0.5" data-purchase-enabled="false" aria-label="The Interactive Creation Chamber">
+<section class="lm-chamber" id="creation-chamber" data-solnik-anchor="mint-chamber" data-solnik-x="0.965" data-purchase-enabled="false" aria-label="The Interactive Creation Chamber">
 <div class="lm-wrap">
 <p class="lm-eyebrow">THE INTERACTIVE CREATION CHAMBER</p>
 <h2 class="lm-chamber-title">Shape your coin — as a concept</h2>
@@ -590,10 +646,10 @@
 <figure><img src="mint-assets/still-4.jpg" width="960" height="540" alt="The gold layers converging as the coin re-forms" loading="lazy" decoding="async"><figcaption>The layers come home.</figcaption></figure>
 <figure><img src="mint-assets/still-5.jpg" width="960" height="540" alt="The coin resting open as an aligned stack of its layers — the mechanism, open" loading="lazy" decoding="async"><figcaption>The mechanism, open — every layer named in the scroll above.</figcaption></figure>
 </div>
-<figure><video controls preload="metadata" playsinline width="960" height="540" poster="mint-assets/still-3.jpg" src="mint-assets/mint-assembly-film.mp4" aria-label="The Mint assembly film: the coin turns, opens into its layers and closes whole — the same frames as the scroll presentation, played straight through"></video><figcaption>The assembly film — the same frames you scroll, played straight through. About sixteen seconds.</figcaption></figure>
+<figure><video controls preload="metadata" playsinline width="960" height="540" poster="mint-assets/still-3.jpg" src="mint-assets/mint-assembly-film.mp4" aria-label="The Mint assembly film: the coin turns, opens into its layers and closes whole — the same frames as the scroll presentation, played straight through"></video><figcaption>The assembly film — the same frames you scroll, played straight through. About fifteen seconds.</figcaption></figure>
 </div><p class="media-context">The film was made from the town's own anchored coin faces (Google Flow, from the start and end frames), and the stills are its frames. The layers it opens into are the stages of the service, named in the scroll presentation above.</p></div><aside class="scope-panel" aria-label="Price and scope request"><p class="eyebrow">Scope price</p><p class="offer-price" data-price data-price-missing="false">$245 pilot · or $196 in PROVADIA (20% off) · scope confirmation required</p><p class="price-note">The fee is charged at completion only — never before. Completion means the handover test: you operate your coin unaided. The gate is closed: the Mint takes no new pilots until the founder opens it. Holding PROVADIA is never required to buy a service.</p><a class="scope-link" data-request-scope href="mailto:support@provadiacoin.com?subject=Catalogue%20scope%3A%20The%20Mint">Request scope <span aria-hidden="true">↗</span></a><p class="checkout-note">Request scope opens email. It does not book, purchase or trigger fulfilment. Checkout is not connected — nothing on this page takes a payment.</p><h2>At a glance</h2><ul class="offer-bullets" data-six-bullets><li>Eight stages, one Keeper — idea to handover</li><li>Fixed pilot fee: $245 · $196 in PROVADIA</li><li>Charged at completion only — the handover test</li><li>30-day support window after handover</li><li>Every launch entered in the town's Record</li><li>Gate closed — the chamber stays open for concept work</li></ul></aside></div>
 
-<section class="listing-section description-section" data-full-description><p class="eyebrow">The service</p><h2>About this service</h2><p>The Mint is the town's full-service coin creation service. A founder brings an idea; the Mint carries it through every stage of becoming a working coin — the conversation that defines it, the honest question that tests it, the rehearsal that proves it on test ground, the covenant that fixes its terms, the mark struck as its face, the launch itself, its entry in the town's Record, and the handover that leaves the founder running it unaided. Idea, design, contract, mint, launch — carried by the Keeper and the town's crew, from first conversation to final delivery.</p><p>The service runs as a pilot at a fixed fee: $245, or $196 when paid in PROVADIA. The fee is charged at completion only — never before — and completion means the handover test: you operate your coin unaided. After handover, a 30-day support window covers questions and corrections on the delivered work; no response-time guarantee is made. The intake gate is currently closed — the Mint takes no new pilots until the founder opens it — and the Creation Chamber on this page stays open for self-guided concept work. Holding PROVADIA is never required to buy a service.</p></section><section class="listing-section inside-section"><div><p class="eyebrow">The service, stage by stage</p><h2 data-solnik-anchor="mint-stages" data-solnik-x="0.24">What’s inside</h2><p>The eight stages of the service, in order — the same stages the scroll presentation on this page opens into, and the same path the Creation Chamber walks.</p></div><ul data-deliverables><li>The Conversation — an unhurried intake where you tell the Keeper your idea, and the coin's real job is defined.</li><li>The Honest Question — five written viability checks test whether the premise holds, before any work begins; a refusal is explained in writing.</li><li>The Rehearsal — the full launch is practised on test ground first, so mistakes cost nothing.</li><li>The Covenant — scope, rules and completion criteria are read, agreed and fixed in writing by both sides before anything is struck.</li><li>The Mark — the coin's face, relief and visual identity are crafted, so the coin is unmistakably yours.</li><li>The Launch — the controlled live release of the coin into the open world, its contract prepared and verified beforehand.</li><li>The Record — every completed step is written permanently into the town's Day-Book, its public record — hash-chained and open to inspection.</li><li>The Handover — you take the keys and operate unaided; the 30-day support window opens.</li></ul></section><section class="listing-section boundary-section"><h2>Boundaries & prerequisites</h2><p>No promise of listing, liquidity, market demand or investment outcome.</p><p>When the till opens, the whole house takes card, PayPal and crypto alike — and paying in PROVADIA earns 20% off the pilot fee ($196 instead of $245). The split is 80% founder / 20% website & community, separate from gold fees. Any gold fees, source rights, operational work and acceptance terms require explicit agreement. No wallet connection or live backend is provided here.</p></section><nav class="listing-neighbours" aria-label="More catalogue offers"><a href="ancient-underground-mine-world.html"><span class="eyebrow">Previous offer</span>Ancient Underground Mine World</a><a href="../catalogue/index.html#browse">All 34 offers</a><a href="keeper.html"><span class="eyebrow">Next offer</span>The Keeper — Extended Audience</a></nav></main><!-- CANONICAL SHELL v1 — the honesty sentence is intentionally verbatim. -->
+<section class="listing-section description-section" data-full-description><p class="eyebrow">The service</p><h2>About this service</h2><p>The Mint is the town's full-service coin creation service. A founder brings an idea; the Mint carries it through every stage of becoming a working coin — the conversation that defines it, the honest question that tests it, the rehearsal that proves it on test ground, the covenant that fixes its terms, the mark struck as its face, the launch itself, its entry in the town's Record, and the handover that leaves the founder running it unaided. Idea, design, contract, mint, launch — carried by the Keeper and the town's crew, from first conversation to final delivery.</p><p>The service runs as a pilot at a fixed fee: $245, or $196 when paid in PROVADIA. The fee is charged at completion only — never before — and completion means the handover test: you operate your coin unaided. After handover, a 30-day support window covers questions and corrections on the delivered work; no response-time guarantee is made. The intake gate is currently closed — the Mint takes no new pilots until the founder opens it — and the Creation Chamber on this page stays open for self-guided concept work. Holding PROVADIA is never required to buy a service.</p></section><section class="listing-section inside-section" data-solnik-anchor="mint-stages" data-solnik-x="0.985"><div><p class="eyebrow">The service, stage by stage</p><h2>What’s inside</h2><p>The eight stages of the service, in order — the same stages the scroll presentation on this page opens into, and the same path the Creation Chamber walks.</p></div><ul data-deliverables><li>The Conversation — an unhurried intake where you tell the Keeper your idea, and the coin's real job is defined.</li><li>The Honest Question — five written viability checks test whether the premise holds, before any work begins; a refusal is explained in writing.</li><li>The Rehearsal — the full launch is practised on test ground first, so mistakes cost nothing.</li><li>The Covenant — scope, rules and completion criteria are read, agreed and fixed in writing by both sides before anything is struck.</li><li>The Mark — the coin's face, relief and visual identity are crafted, so the coin is unmistakably yours.</li><li>The Launch — the controlled live release of the coin into the open world, its contract prepared and verified beforehand.</li><li>The Record — every completed step is written permanently into the town's Day-Book, its public record — hash-chained and open to inspection.</li><li>The Handover — you take the keys and operate unaided; the 30-day support window opens.</li></ul></section><section class="listing-section boundary-section"><h2>Boundaries & prerequisites</h2><p>No promise of listing, liquidity, market demand or investment outcome.</p><p>When the till opens, the whole house takes card, PayPal and crypto alike — and paying in PROVADIA earns 20% off the pilot fee ($196 instead of $245). The split is 80% founder / 20% website & community, separate from gold fees. Any gold fees, source rights, operational work and acceptance terms require explicit agreement. No wallet connection or live backend is provided here.</p></section><nav class="listing-neighbours" aria-label="More catalogue offers"><a href="ancient-underground-mine-world.html"><span class="eyebrow">Previous offer</span>Ancient Underground Mine World</a><a href="../catalogue/index.html#browse">All 34 offers</a><a href="keeper.html"><span class="eyebrow">Next offer</span>The Keeper — Extended Audience</a></nav></main><!-- CANONICAL SHELL v1 — the honesty sentence is intentionally verbatim. -->
 <footer class="town-footer" data-shell="footer">
   <div class="wrap">
     <div class="footer-heading"><span class="threshold-mark" aria-hidden="true"></span><p class="carved">The Town of Record</p><a class="text-door" href="#top">Back to the threshold <span aria-hidden="true">↑</span></a></div>
