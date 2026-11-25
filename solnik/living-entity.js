@@ -12,14 +12,17 @@ const BRAIN = 'wss://brain.provadiacoin.com/v1/solnik';
 const $ = (s, r) => (r || document).querySelector(s);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const lerp = (a, b, t) => a + (b - a) * t;
+const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }; // blocked storage must never kill the engine
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
 const store = {
-  get disabled() { return localStorage.getItem('solnik_disabled') === '1'; },
-  get muted() { return localStorage.getItem('solnik_muted') === '1'; },
-  set muted(v) { localStorage.setItem('solnik_muted', v ? '1' : '0'); },
-  visitor() { let v = localStorage.getItem('solnik_visitor'); if (!v) { v = 'v' + Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('solnik_visitor', v); } return v; },
+  get disabled() { return lsGet('solnik_disabled') === '1'; },
+  get muted() { return lsGet('solnik_muted') === '1'; },
+  set muted(v) { lsSet('solnik_muted', v ? '1' : '0'); },
+  visitor() { let v = lsGet('solnik_visitor'); if (!v) { v = 'v' + Math.random().toString(36).slice(2) + Date.now().toString(36); lsSet('solnik_visitor', v); } return v; },
 };
 
-export async function initSolnik() {
+export async function initSolnik(opts = {}) {
+  const greetingVariant = opts.greeting === 'family' ? 'family' : 'visitor';
   if (store.disabled) return renderReenable();
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const root = document.createElement('div');
@@ -33,20 +36,20 @@ export async function initSolnik() {
     #solnik-caption.on{opacity:1}
     #solnik-pill{position:absolute;right:14px;bottom:14px;pointer-events:auto;display:flex;gap:6px;align-items:center;
       background:rgba(20,16,10,.92);border:1px solid #C9A227;border-radius:999px;padding:6px 8px;box-shadow:0 6px 24px rgba(0,0,0,.45)}
-    #solnik-pill button{background:#30251B;color:#E9DDC6;border:1px solid #6b5626;border-radius:999px;padding:6px 11px;font:13px Georgia,serif;cursor:pointer}
+    #solnik-pill button{background:#30251B;color:#E9DDC6;border:1px solid #6b5626;border-radius:999px;padding:6px 11px;min-height:44px;font:13px Georgia,serif;cursor:pointer}
     #solnik-pill button:hover{background:#453219}#solnik-pill button[aria-pressed="true"]{background:#C9A227;color:#141210}
     #solnik-pill .who{color:#C9A227;font-size:12.5px;padding:0 4px;letter-spacing:.04em}
     #solnik-talk{position:absolute;right:14px;bottom:64px;pointer-events:auto;display:none;background:rgba(20,16,10,.95);
       border:1px solid #C9A227;border-radius:12px;padding:8px;box-shadow:0 6px 24px rgba(0,0,0,.45)}
     #solnik-talk.on{display:flex;gap:6px}
     #solnik-talk input{background:#141210;color:#E9DDC6;border:1px solid #6b5626;border-radius:8px;padding:7px 9px;font:14px Georgia,serif;width:210px}
-    #solnik-talk button{background:#C9A227;color:#141210;border:0;border-radius:8px;padding:7px 12px;font:13px Georgia,serif;cursor:pointer}
+    #solnik-talk button{background:#C9A227;color:#141210;border:0;border-radius:8px;padding:7px 12px;min-height:44px;font:13px Georgia,serif;cursor:pointer}
     #solnik-poster{position:absolute;right:14px;bottom:64px;width:190px;border:1px solid #C9A227;border-radius:12px;overflow:hidden;background:#141210;color:#E9DDC6}
     #solnik-poster img{width:100%;display:block}#solnik-poster p{margin:0;padding:8px 10px;font-size:12.5px;line-height:1.4}
     @media (max-width:560px){
       #solnik-pill{flex-wrap:wrap;justify-content:flex-end;max-width:calc(100vw - 16px);border-radius:16px;right:8px;bottom:8px}
       #solnik-pill .who{display:none}
-      #solnik-pill button{padding:5px 9px;font-size:12.5px}
+      #solnik-pill button{padding:5px 9px;font-size:12.5px;min-height:40px}
       #solnik-caption{max-width:225px;font-size:13.5px}
       #solnik-talk{right:8px;bottom:104px}
     }
@@ -68,7 +71,7 @@ export async function initSolnik() {
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({ canvas: $('#solnik-canvas', root), alpha: true, antialias: true, powerPreference: 'high-performance' });
-  } catch (e) { return posterMode(root, say); }
+  } catch (e) { return posterMode(root, say, greetingVariant); }
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.06;
   const scene = new THREE.Scene();
@@ -90,7 +93,10 @@ export async function initSolnik() {
 
   // ---------- load the body ----------
   const mobile = Math.min(VW, VH) < 620 || (navigator.hardwareConcurrency || 8) <= 4;
-  const gltf = await new GLTFLoader().loadAsync(BASE + 'assets/' + (mobile ? 'solnik-v1-mobile.glb' : 'solnik-v1.glb'));
+  let gltf;
+  try {
+    gltf = await new GLTFLoader().loadAsync(BASE + 'assets/' + (mobile ? 'solnik-v1-mobile.glb' : 'solnik-v1.glb'));
+  } catch (e) { return posterMode(root, say, greetingVariant); } // a failed body load degrades to the portrait, never to a dead pill
   const model = gltf.scene;
   const byName = {};
   model.traverse(o => { byName[o.name.replace(/[^a-z0-9]/gi, '').toLowerCase()] = o; });
@@ -164,10 +170,11 @@ export async function initSolnik() {
   function perchAt(a, instant) {
     perchId = a.id;
     const dest = { x: a.x, y: a.topY };
-    if (instant || reduced) { pos.x = dest.x; pos.y = dest.y; place(); fireBurst(dest.x, dest.y + 30); return; }
+    if (instant || reduced) { pos.x = dest.x; pos.y = dest.y; place(); fireBurst(dest.x, dest.y + 30); return 0; }
     const dx = dest.x - pos.x, dy = dest.y - pos.y, distPx = Math.hypot(dx, dy);
     // long vertical hops step through intermediate anchors (his graph edges)
     travel = { x0: pos.x, y0: pos.y, x1: dest.x, y1: dest.y, apex: Math.max(pos.y, dest.y) + 120 + distPx * 0.12, t: 0, dur: clamp(distPx / 620, 0.65, 1.9) };
+    return travel.dur;
   }
   function stepTravel(dt) {
     if (!travel) return;
@@ -263,9 +270,8 @@ export async function initSolnik() {
     resetVisemes();
   }
   const freqData = new Uint8Array(256);
-  function band(lo, hi) { // Hz -> mean energy via analyser bins
+  function band(lo, hi) { // Hz -> mean energy via analyser bins (freqData is refreshed once per frame in stepVisemes)
     if (!analyser) return 0;
-    analyser.getByteFrequencyData(freqData);
     const nyq = actx.sampleRate / 2, a = Math.floor(lo / nyq * 256), b = Math.min(255, Math.ceil(hi / nyq * 256));
     let s = 0; for (let i = a; i <= b; i++) s += freqData[i];
     return s / Math.max(1, b - a + 1) / 255;
@@ -276,6 +282,7 @@ export async function initSolnik() {
     if (!mouth) return;
     const target = { viseme_sil: 1 };
     if (speaking && analyser) {
+      analyser.getByteFrequencyData(freqData); // one snapshot per frame for all five band reads
       const lo = band(85, 320), mid = band(320, 1250), hi = band(2000, 6400), amp = band(85, 6400);
       if (amp > 0.03) {
         target.viseme_sil = 0;
@@ -300,13 +307,14 @@ export async function initSolnik() {
     const a = anchors(true)[anchorId];
     if (!a) return;
     if (scroll) a.el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
-    setTimeout(() => { const b = anchors(true)[anchorId]; if (b) { perchAt({ id: anchorId, ...b }, false); setTimeout(() => playClip('point', 0.15), 950); setTimeout(() => playClip('idle', 0.4, true), 2900); } }, reduced ? 60 : 650);
+    setTimeout(() => { const b = anchors(true)[anchorId]; if (b) { const dur = perchAt({ id: anchorId, ...b }, false) || 0; const arrive = dur ? dur * 1000 + 60 : 950; setTimeout(() => playClip('point', 0.15), arrive); setTimeout(() => playClip('idle', 0.4, true), arrive + 1950); } }, reduced ? 60 : 650);
   }
   function connectBrain() {
     try { ws = new WebSocket(BRAIN); } catch (e) { return; }
     ws.binaryType = 'arraybuffer';
-    ws.onopen = () => { wsTries = 0; ws.send(JSON.stringify({ type: 'hello', visitorId: store.visitor() })); };
+    ws.onopen = () => { wsTries = 0; ws.send(JSON.stringify({ type: 'hello', visitorId: store.visitor(), variant: greetingVariant })); };
     ws.onmessage = (ev) => {
+      if (!visibleWanted) return; // Dismiss is sovereign: no voice, no captions, no travel until Summon
       if (ev.data instanceof ArrayBuffer) { audioQ.push(ev.data); pumpAudio(); return; }
       let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
       if (m.type === 'sentence') {
@@ -374,13 +382,17 @@ export async function initSolnik() {
   $('#sk-dismiss', root).onclick = () => { visibleWanted = false; group.visible = false; caption.classList.remove('on'); stopSpeaking(true); };
   $('#sk-summon', root).onclick = () => {
     ensureAudio();
+    if (!ws || ws.readyState > 1) { wsTries = 0; connectBrain(); } // Summon also revives a dead brain link
     if (asleep && ws && ws.readyState === 1) { ws.send(JSON.stringify({ type: 'wake' })); asleep = false; }
     visibleWanted = true; group.visible = true;
     const a = nearestAnchor(); if (a) perchAt(a, false);
-    if (!greeted && ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'hello', visitorId: store.visitor() }));
+    if (!greeted && ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'hello', visitorId: store.visitor(), variant: greetingVariant }));
   };
   $('#sk-disable', root).onclick = () => {
-    localStorage.setItem('solnik_disabled', '1');
+    lsSet('solnik_disabled', '1');
+    speakOn = false; listening = false; // Disable kills the microphone too — sovereignty is total
+    if (vad) { try { vad.pause(); } catch (e) {} }
+    if (sr) { try { sr.stop(); } catch (e) {} sr = null; }
     stopSpeaking(false);
     if (ws) { try { ws.close(); } catch (e) {} }
     cancelAnimationFrame(raf); root.remove();
@@ -430,14 +442,43 @@ function renderReenable(note) {
   const d = document.createElement('div');
   d.style.cssText = 'position:fixed;right:14px;bottom:14px;z-index:2147483000;background:rgba(20,16,10,.92);border:1px solid #C9A227;border-radius:999px;padding:7px 13px;font:13px Georgia,serif;color:#E9DDC6';
   d.innerHTML = (note ? note + ' ' : 'Solnik is off. ') + '<a href="#" style="color:#C9A227">Re-enable Solnik</a>';
-  d.querySelector('a').onclick = (e) => { e.preventDefault(); localStorage.removeItem('solnik_disabled'); location.reload(); };
+  d.querySelector('a').onclick = (e) => { e.preventDefault(); try { localStorage.removeItem('solnik_disabled'); } catch (err) {} location.reload(); };
   document.body.appendChild(d);
 }
 
-function posterMode(root, say) { // no WebGL: the adopted portrait + working text chat doorway
+function posterMode(root, say, greetingVariant) { // no WebGL / no body: the adopted portrait + working text chat + full sovereignty pill
+  if (root.dataset.posterWired) return;
+  root.dataset.posterWired = '1';
   const p = document.createElement('div');
   p.id = 'solnik-poster';
   p.innerHTML = '<img src="' + new URL('.', import.meta.url).pathname + 'assets/solnik-character-v1.jpg" alt="Solnik, the brass service sprite of Provadia"><p><strong style="color:#C9A227">Solnik</strong> — the town\'s service sprite. This device can\'t show him in 3D, but he is still here: use Type below to talk to him.</p>';
   root.appendChild(p);
+  const caption = $('#solnik-caption', root); // the main loop never runs here, so park the caption top-right
+  if (caption) { caption.style.left = 'auto'; caption.style.right = '14px'; caption.style.top = '14px'; }
   say('This is Solnik, in portrait form — my 3D body needs WebGL, which this device has off.');
+  // The pill and Type box were built with the root but the 3D path wires them — wire them here too,
+  // or Summon/Mute/Dismiss/Disable and the promised text chat are dead buttons in this mode.
+  let pws = null, dismissed = false;
+  const connect = () => {
+    try { pws = new WebSocket(BRAIN); } catch (e) { return; }
+    pws.onopen = () => pws.send(JSON.stringify({ type: 'hello', visitorId: store.visitor(), variant: greetingVariant }));
+    pws.onmessage = (ev) => {
+      if (dismissed || ev.data instanceof ArrayBuffer) return; // portrait mode is text-only: voice frames are dropped
+      let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
+      if (m.type === 'sentence' && m.text) say(m.text);
+      if (m.type === 'voice_capped') say('My voice is resting for today — but I can still chat in writing.');
+    };
+    pws.onclose = () => { pws = null; };
+  };
+  connect();
+  const q = (s) => root.querySelector(s);
+  q('#sk-type').onclick = () => { q('#solnik-talk').classList.toggle('on'); q('#solnik-input').focus(); };
+  const doSend = () => { const i = q('#solnik-input'); const t = i.value.trim(); if (!t) return; i.value = ''; if (!pws || pws.readyState !== 1) { connect(); say('One moment — my brain is still waking up. Try again in a second.'); return; } pws.send(JSON.stringify({ type: 'say', text: t })); };
+  q('#solnik-send').onclick = doSend;
+  q('#solnik-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') doSend(); });
+  q('#sk-speak').onclick = () => say('Voice needs my 3D body — but you can type to me, and I will answer in writing.');
+  q('#sk-mute').onclick = (e) => { store.muted = !store.muted; e.currentTarget.setAttribute('aria-pressed', String(store.muted)); };
+  q('#sk-dismiss').onclick = () => { dismissed = true; p.style.display = 'none'; caption.classList.remove('on'); };
+  q('#sk-summon').onclick = () => { dismissed = false; p.style.display = ''; if (!pws) connect(); };
+  q('#sk-disable').onclick = () => { lsSet('solnik_disabled', '1'); if (pws) { try { pws.close(); } catch (e) {} } root.remove(); renderReenable('Solnik is off. He stays off until you call him back.'); };
 }
