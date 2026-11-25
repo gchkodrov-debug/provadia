@@ -194,6 +194,7 @@
 .da-empty{font-size:13px;color:rgba(233,221,198,.6)}
 
 </style>
+<script type="importmap">{"imports":{"three":"/solnik/vendor/three.module.js","three/addons/":"/solnik/vendor/addons/"}}</script>
 </head>
 <body>
 <div id="stage" aria-hidden="true"></div>
@@ -226,7 +227,7 @@
 </div>
 <div class="sk-arrival" id="sk-arrival">
 <p class="sk-eyebrow">INSIDE THE COIN · DOOR 07 · THE KEEPER'S CHAMBER</p>
-<h2 class="sk-title">Solnik, Keeper of the Wall</h2>
+<h2 class="sk-title" data-solnik-anchor="knock-chamber" data-solnik-x="0.5">Solnik, Keeper of the Wall</h2>
 <p class="sk-sub">The town's resident herald and steward — guiding visitors end to end, minding the Wall counter, and keeping the Book of Wants under an unbending Receipt Law.</p>
 <div class="sk-chips">
 <span class="sk-chip">HOST STATUS: OFF WATCH — HONESTLY OFFLINE UNTIL FOUNDER KEY STEPS LAND</span>
@@ -304,7 +305,7 @@
 <section class="town-panel" aria-label="The Drafting Astrolabe">
 <div class="panel-inner">
 <p class="panel-eyebrow">The Knock · The Drafting Astrolabe</p>
-<h2 class="panel-title">The Drafting Astrolabe</h2>
+<h2 class="panel-title" data-solnik-anchor="knock-panel" data-solnik-x="0.5">The Drafting Astrolabe</h2>
 <p class="panel-lead">Solnik is off watch — so tonight the table works without him: a self-guided bench for shaping a knock before you knock.</p>
 <p class="panel-body">Four instruments shape the idea — its purpose, its target audience, its deliverable shape, and its honest constraints — the same evidence the criteria on this page ask for. Nothing you type here is sent anywhere by this page. Compose the brief, copy it or download it, and carry it to the town through its written doors — <a href="../agora/">the Forum's support door</a> or <a href="../catalogue/">the Catalogue's Custom Build door</a>. The road from there is the house's standing one: a written quote, with scope approved before any charge — and if we can't build it, we say so plainly and charge nothing.</p>
 <div class="da-fields">
@@ -865,5 +866,6 @@
 })();
 
 </script>
+<script type="module">import('/solnik/living-entity.js').then(function(m){m.initSolnik({greeting:'visitor'});}).catch(function(){});</script>
 </body>
 </html>
