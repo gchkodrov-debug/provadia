@@ -375,8 +375,8 @@ export async function initSolnik() {
     renderReenable('Solnik is off. He stays off until you call him back.');
   };
   $('#sk-type', root).onclick = () => { $('#solnik-talk', root).classList.toggle('on'); $('#solnik-input', root).focus(); };
-  $('#sk-send', root).onclick = () => { const i = $('#solnik-input', root); const t = i.value.trim(); if (t) { i.value = ''; sendSay(t); } };
-  $('#solnik-input', root).addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#sk-send', root).click(); });
+  $('#solnik-send', root).onclick = () => { const i = $('#solnik-input', root); const t = i.value.trim(); if (t) { i.value = ''; sendSay(t); } };
+  $('#solnik-input', root).addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#solnik-send', root).click(); });
   $('#sk-speak', root).onclick = (e) => toggleSpeak(e.currentTarget);
 
   // ---------- caption placement (floats beside him) ----------
