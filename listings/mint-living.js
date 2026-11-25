@@ -246,10 +246,20 @@
     ctx.fillStyle = '#E4C65B';
     ctx.fillRect(-W / 2 - 30, -25, W + 60, 50);
     ctx.fillStyle = '#141210';
-    ctx.font = '700 20px Inter, sans-serif';
+    /* Fit the tape inside the frame: at a fixed 20px the line measures
+       wider than the 720px canvas, so its first and last letters clipped
+       at the edges ("ONCEPT PREVIEW — … DEPLO"). Shrink the font until
+       the whole line fits with margin to spare. */
+    var tapeText = 'CONCEPT PREVIEW — NOT FINISHED ARTWORK · DOES NOT MINT OR DEPLOY';
+    var tapeSize = 20;
+    ctx.font = '700 ' + tapeSize + 'px Inter, sans-serif';
+    while (tapeSize > 11 && ctx.measureText(tapeText).width > W - 56) {
+      tapeSize -= 1;
+      ctx.font = '700 ' + tapeSize + 'px Inter, sans-serif';
+    }
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('CONCEPT PREVIEW — NOT FINISHED ARTWORK · DOES NOT MINT OR DEPLOY', 0, 1);
+    ctx.fillText(tapeText, 0, 1);
     ctx.restore();
   }
 
